@@ -1,0 +1,1841 @@
+<!DOCTYPE html>
+<html lang="en" class="dark">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+    <title>TapReview Mobile — Nothing Phone (2a) Plus Edition</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+
+    <script>
+        tailwind.config = {
+            darkMode: 'class',
+            theme: { extend: { fontFamily: {
+                sans: ['Inter', 'sans-serif'],
+                mono: ['JetBrains Mono', 'monospace'],
+            } } }
+        }
+    </script>
+
+    <style>
+        :root {
+            --safe-top: env(safe-area-inset-top, 0px);
+            --safe-bottom: env(safe-area-inset-bottom, 0px);
+        }
+        html, body { max-width: 100vw; overflow-x: hidden; }
+        body {
+            background-color: #05070b;
+            color: #f3f4f6;
+            background-image:
+                radial-gradient(rgba(255, 255, 255, 0.045) 1px, transparent 1px),
+                radial-gradient(at 0% 0%, rgba(99, 102, 241, 0.14) 0px, transparent 55%),
+                radial-gradient(at 100% 100%, rgba(16, 185, 129, 0.10) 0px, transparent 55%);
+            background-size: 18px 18px, 100% 100%, 100% 100%;
+            background-attachment: fixed;
+            -webkit-tap-highlight-color: transparent;
+            padding-top: var(--safe-top);
+            padding-bottom: calc(6.5rem + var(--safe-bottom));
+        }
+        ::-webkit-scrollbar { width: 5px; height: 5px; }
+        ::-webkit-scrollbar-track { background: #0f172a; }
+        ::-webkit-scrollbar-thumb { background: #334155; border-radius: 3px; }
+        .code-big-input {
+            letter-spacing: 0.3em;
+            text-indent: 0.3em;
+            text-transform: uppercase;
+        }
+        .step-card-transition { transition: opacity 0.2s ease, transform 0.2s ease; }
+        .tr-svg-icon {
+            display: inline-block;
+            width: 1.05em;
+            height: 1.05em;
+            vertical-align: -0.15em;
+            fill: none;
+            stroke: currentColor;
+            stroke-width: 2;
+            stroke-linecap: round;
+            stroke-linejoin: round;
+            flex-shrink: 0;
+        }
+        .bottom-safe-bar { padding-bottom: calc(0.65rem + var(--safe-bottom)); }
+    </style>
+</head>
+<body class="min-h-screen flex flex-col antialiased selection:bg-indigo-500 selection:text-white">
+
+    <header class="border-b border-slate-800/90 bg-slate-950/95 backdrop-blur-md sticky top-0 z-40">
+        <div class="w-full max-w-[430px] mx-auto px-3 py-2.5 flex items-center justify-between gap-2">
+            <div class="flex items-center space-x-2 min-w-0">
+                <div class="w-8 h-8 rounded-xl bg-gradient-to-br from-indigo-500 to-emerald-500 flex items-center justify-center shadow-md shadow-indigo-500/20 flex-shrink-0">
+                    <i class="fa-solid fa-wifi rotate-90 text-white text-xs"></i>
+                </div>
+                <div class="min-w-0">
+                    <div class="flex items-center space-x-1.5">
+                        <h1 class="font-extrabold text-sm tracking-tight text-white truncate">TapReview</h1>
+                        <span id="cloudBadgeHeader" onclick="toggleCloudModal()" class="cursor-pointer text-[9px] font-mono font-semibold uppercase px-1.5 py-0.5 rounded bg-emerald-500/15 text-emerald-400 border border-emerald-500/30 flex items-center gap-1 flex-shrink-0">
+                            <i class="fa-solid fa-cloud text-[8px]"></i>
+                            <span id="cloudTextHeader">Cloud</span>
+                        </span>
+                    </div>
+                    <p id="liveClockHeader" class="text-[10px] text-slate-400 leading-none mt-1 font-mono truncate">137B Ultralight Studio</p>
+                </div>
+            </div>
+
+            <div class="flex items-center space-x-1.5 flex-shrink-0">
+                <div class="inline-flex rounded-xl bg-slate-900 p-0.5 border border-slate-700/80">
+                    <button id="btnNormalMode" onclick="setViewLayoutMode('normal')" class="px-2.5 py-1.5 rounded-lg text-[11px] font-bold transition bg-indigo-600 text-white shadow">Normal</button>
+                    <button id="btnSimpleMode" onclick="setViewLayoutMode('simple')" class="px-2.5 py-1.5 rounded-lg text-[11px] font-bold transition text-slate-400">Simple</button>
+                </div>
+                <button onclick="toggleApiModal()" title="Google Places API Key" class="flex items-center justify-center w-8 h-8 rounded-xl bg-slate-900 active:bg-slate-800 border border-slate-700/80 text-xs font-semibold text-slate-200 transition">
+                    <i id="apiKeyIcon" class="fa-solid fa-key text-indigo-400"></i>
+                </button>
+            </div>
+        </div>
+
+        <div id="simpleModeStepperBar" class="hidden border-t border-slate-800/80 bg-slate-900/95 px-3 py-2">
+            <div class="w-full max-w-[430px] mx-auto space-y-2">
+                <div class="flex items-center justify-between text-[10px] font-mono">
+                    <span id="simpleStepTitle" class="font-bold text-indigo-300 truncate">CARD 1 OF 5 • FIND BUSINESS</span>
+                    <span class="text-slate-400 flex-shrink-0">20:9 Card View</span>
+                </div>
+                <div class="grid grid-cols-5 gap-1">
+                    <button onclick="goToSimpleCard(1)" id="stepDot1" class="py-1.5 rounded-lg text-[10px] font-mono font-bold bg-indigo-600 text-white border border-indigo-400">1. Link</button>
+                    <button onclick="goToSimpleCard(2)" id="stepDot2" class="py-1.5 rounded-lg text-[10px] font-mono font-bold bg-slate-950 text-slate-400 border border-slate-800">2. Code</button>
+                    <button onclick="goToSimpleCard(3)" id="stepDot3" class="py-1.5 rounded-lg text-[10px] font-mono font-bold bg-slate-950 text-slate-400 border border-slate-800">3. Info</button>
+                    <button onclick="goToSimpleCard(4)" id="stepDot4" class="py-1.5 rounded-lg text-[10px] font-mono font-bold bg-slate-950 text-slate-400 border border-slate-800">4. Write</button>
+                    <button onclick="goToSimpleCard(5)" id="stepDot5" class="py-1.5 rounded-lg text-[10px] font-mono font-bold bg-slate-950 text-slate-400 border border-slate-800">5. Queue</button>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <main class="flex-grow w-full max-w-[430px] mx-auto px-3 pt-3.5 space-y-3.5">
+
+        <section id="cardSection1" class="step-card-transition bg-slate-900/95 border border-slate-800 rounded-2xl p-3.5 shadow-xl space-y-3">
+            <div class="flex items-center justify-between gap-2">
+                <div class="flex items-center gap-2 min-w-0">
+                    <span class="w-6 h-6 rounded-lg bg-indigo-500/20 border border-indigo-500/30 text-indigo-400 text-xs font-bold flex items-center justify-center flex-shrink-0">1</span>
+                    <h2 class="text-sm font-bold text-white truncate">Find Business & Link</h2>
+                </div>
+                <div class="inline-flex rounded-xl bg-slate-950 p-0.5 border border-slate-800 flex-shrink-0">
+                    <button id="tabNoApi" onclick="switchMode('no-api')" class="px-2.5 py-1 rounded-lg text-[11px] font-semibold transition bg-indigo-600 text-white shadow">Quick Lookup</button>
+                    <button id="tabLiveApi" onclick="switchMode('live-api')" class="px-2.5 py-1 rounded-lg text-[11px] font-semibold transition text-slate-400">Live API</button>
+                </div>
+            </div>
+
+            <div id="panelNoApi" class="space-y-3">
+                <div class="p-3 rounded-xl bg-slate-950/90 border border-slate-800/90 space-y-2.5">
+                    <div class="flex items-center justify-between">
+                        <label for="manualBizQuery" class="text-[11px] font-semibold uppercase tracking-wider text-indigo-400">Step A: Type Business Name & Area</label>
+                        <button onclick="clearSearchInputs()" class="text-[11px] text-slate-400 active:text-white">
+                            <i class="fa-solid fa-rotate-left mr-0.5"></i>Reset
+                        </button>
+                    </div>
+                    <div class="relative">
+                        <i class="fa-solid fa-store absolute left-3.5 top-3.5 text-slate-500 text-sm"></i>
+                        <input id="manualBizQuery" type="text" placeholder="e.g. Vaishali Restaurant FC Road Pune"
+                            oninput="syncBizNameFromQuery(this.value)"
+                            class="w-full pl-9 pr-3 py-2.5 bg-slate-900 border border-slate-700 rounded-xl text-sm text-white placeholder-slate-500 focus:outline-none focus:border-indigo-500">
+                    </div>
+                    <div class="grid grid-cols-2 gap-2">
+                        <button onclick="openOfficialPlaceFinder()" class="py-2.5 px-3 bg-indigo-600/20 active:bg-indigo-600/30 text-indigo-300 border border-indigo-500/30 rounded-xl text-xs font-semibold transition flex items-center justify-center gap-1.5">
+                            <i class="fa-solid fa-magnifying-glass-location"></i>
+                            <span>Find Place ID</span>
+                        </button>
+                        <button onclick="openGoogleMapsSearch()" class="py-2.5 px-3 bg-slate-900 active:bg-slate-800 text-slate-300 border border-slate-700 rounded-xl text-xs font-semibold transition flex items-center justify-center gap-1.5">
+                            <i class="fa-brands fa-google text-emerald-400"></i>
+                            <span>Open Maps</span>
+                        </button>
+                    </div>
+                </div>
+
+                <div class="p-3 rounded-xl bg-slate-950/90 border border-slate-800/90 space-y-2">
+                    <div class="flex items-center justify-between">
+                        <label for="smartInput" class="text-[11px] font-semibold uppercase tracking-wider text-emerald-400">Step B: Paste Place ID or Link</label>
+                        <span id="parserBadge" class="text-[10px] font-mono px-2 py-0.5 rounded bg-slate-800 text-slate-400">Ready</span>
+                    </div>
+                    <div class="flex gap-2">
+                        <div class="relative flex-1">
+                            <input id="smartInput" type="text"
+                                placeholder="ChIJ... or writereview?placeid=..."
+                                oninput="handleSmartInput(this.value)"
+                                class="w-full px-3 py-2.5 bg-slate-900 border border-slate-700 rounded-xl text-xs font-mono text-white placeholder-slate-500 focus:outline-none focus:border-emerald-500">
+                        </div>
+                        <button type="button" onclick="pasteFromClipboard('smartInput')" class="px-3.5 py-2.5 rounded-xl bg-emerald-600 active:bg-emerald-500 text-white text-xs font-bold transition flex items-center gap-1.5 shadow-md shadow-emerald-600/20 flex-shrink-0">
+                            <i class="fa-regular fa-paste"></i>
+                            <span>Paste</span>
+                        </button>
+                    </div>
+                    <p id="parserHint" class="text-[11px] text-slate-400 leading-tight">
+                        Accepts <code class="text-slate-300">ChIJ...</code> IDs, <code class="text-slate-300">?placeid=</code> URLs, or short <code class="text-slate-300">g.page/r/...</code> review links.
+                    </p>
+                </div>
+
+                <div class="p-3 rounded-xl bg-slate-950/90 border border-amber-500/30 space-y-2.5">
+                    <div class="flex items-center justify-between">
+                        <label for="mapsShareLinkInput" class="text-[11px] font-semibold uppercase tracking-wider text-amber-400 flex items-center gap-1.5">
+                            <i class="fa-solid fa-map-location-dot"></i>
+                            <span>Step C: Google Maps Share Link</span>
+                        </label>
+                        <span id="mapsShareBadge" class="text-[10px] font-mono px-2 py-0.5 rounded bg-slate-800 text-slate-400">maps.app.goo.gl</span>
+                    </div>
+                    <div class="flex gap-2">
+                        <input id="mapsShareLinkInput" type="text"
+                            placeholder="Paste https://maps.app.goo.gl/... or Maps share text"
+                            oninput="handleMapsShareInputPreview(this.value)"
+                            class="flex-1 px-3 py-2.5 bg-slate-900 border border-slate-700 rounded-xl text-xs font-mono text-white placeholder-slate-500 focus:outline-none focus:border-amber-500">
+                        <button type="button" onclick="pasteFromClipboard('mapsShareLinkInput')" class="px-3.5 py-2.5 rounded-xl bg-slate-800 active:bg-slate-700 border border-slate-700 text-amber-300 text-xs font-bold transition flex items-center gap-1.5 flex-shrink-0">
+                            <i class="fa-regular fa-paste"></i>
+                            <span>Paste</span>
+                        </button>
+                    </div>
+                    <button id="resolveMapsShareBtn" type="button" onclick="resolveGoogleMapsShareLink()" class="w-full py-2.5 px-3 rounded-xl bg-amber-500/20 active:bg-amber-500/30 border border-amber-500/40 text-amber-300 text-xs font-bold transition flex items-center justify-center gap-2">
+                        <i id="resolveMapsShareIcon" class="fa-solid fa-location-arrow"></i>
+                        <span id="resolveMapsShareText">Extract Review Link from Maps Share Link</span>
+                    </button>
+                    <p id="mapsShareStatusText" class="text-[11px] text-slate-400 leading-tight">
+                        Share any place from the Google Maps app &rarr; Copy Link &rarr; Paste here to resolve its Place ID &amp; Review URL.
+                    </p>
+                </div>
+            </div>
+
+            <div id="panelLiveApi" class="hidden space-y-3">
+                <div class="p-3.5 rounded-xl bg-indigo-950/25 border border-indigo-500/30 space-y-2.5">
+                    <div class="flex items-center justify-between">
+                        <span class="text-[11px] font-semibold uppercase tracking-wider text-indigo-300 flex items-center gap-1.5">
+                            <span id="liveApiDot" class="w-2 h-2 rounded-full bg-amber-400"></span>
+                            <span>Google Places Autocomplete</span>
+                        </span>
+                        <button onclick="toggleApiModal()" class="text-[11px] text-indigo-400 underline">Configure Key</button>
+                    </div>
+                    <div class="relative">
+                        <i class="fa-solid fa-magnifying-glass absolute left-3.5 top-3.5 text-indigo-400 text-sm"></i>
+                        <input id="placesAutocompleteInput" type="text"
+                            placeholder="Type business name & city..."
+                            class="w-full pl-9 pr-3 py-3 bg-slate-900 border border-indigo-500/40 rounded-xl text-sm text-white placeholder-slate-500 focus:outline-none focus:border-indigo-400">
+                    </div>
+                    <p id="liveApiNotice" class="text-[11px] text-slate-400">
+                        Select a business from the dropdown to automatically extract its Place ID and Business Name.
+                    </p>
+                </div>
+            </div>
+        </section>
+
+        <section id="cardSection2" class="step-card-transition bg-slate-900/95 border-2 border-indigo-500/40 rounded-2xl p-3.5 shadow-xl space-y-3">
+            <div class="flex items-center justify-between gap-2">
+                <div class="flex items-center gap-2 min-w-0">
+                    <span class="w-6 h-6 rounded-lg bg-indigo-500/20 border border-indigo-500/30 text-indigo-400 text-xs font-bold flex items-center justify-center flex-shrink-0">2</span>
+                    <div class="min-w-0">
+                        <h2 class="text-sm font-bold text-white leading-tight truncate">6-Character Code (CAPS)</h2>
+                        <p class="text-[11px] text-slate-400 truncate">Saved into Box 3 of Client Queue</p>
+                    </div>
+                </div>
+                <span id="codeLengthBadge" class="font-mono text-[11px] font-bold px-2 py-1 rounded-lg bg-amber-500/20 text-amber-300 border border-amber-500/30 flex-shrink-0">0 / 6</span>
+            </div>
+            <div class="relative">
+                <input id="sixCharCodeInput" type="text" maxlength="6" value=""
+                    autocapitalize="characters" autocomplete="off" spellcheck="false"
+                    placeholder="______"
+                    oninput="handleSixCharInput(this)"
+                    class="code-big-input w-full py-3 px-3 bg-slate-950 border-2 border-indigo-500/60 focus:border-emerald-400 rounded-2xl text-center font-mono text-3xl font-extrabold text-amber-400 placeholder-slate-800 focus:outline-none shadow-inner">
+            </div>
+            <div class="pt-0.5">
+                <button type="button" onclick="clearSixCode()" class="w-full py-3 px-4 rounded-xl bg-slate-800 active:bg-slate-700 border border-slate-700 text-xs font-bold text-slate-200 flex items-center justify-center gap-2 transition">
+                    <i class="fa-solid fa-eraser text-amber-400"></i>
+                    <span>Clear 6-Character Code</span>
+                </button>
+            </div>
+        </section>
+
+        <section id="cardSection3" class="step-card-transition bg-slate-900/95 border border-slate-800 rounded-2xl p-3.5 shadow-xl space-y-3.5">
+            <div class="flex items-center justify-between gap-2">
+                <div class="flex items-center gap-2 min-w-0">
+                    <span class="w-6 h-6 rounded-lg bg-indigo-500/20 border border-indigo-500/30 text-indigo-400 text-xs font-bold flex items-center justify-center flex-shrink-0">3</span>
+                    <h2 class="text-sm font-bold text-white whitespace-nowrap">Records Fill Box</h2>
+                </div>
+                <span id="formTimestampPreview" class="text-[10px] font-mono text-slate-400 bg-slate-950 px-2 py-1 rounded-lg border border-slate-800 truncate max-w-[175px]">
+                    <i class="fa-regular fa-clock text-indigo-400 mr-1"></i><span id="formTimestampText">--</span>
+                </span>
+            </div>
+            <div class="space-y-3">
+                <div>
+                    <label for="bizNameInput" class="flex items-center gap-1.5 text-xs font-semibold text-slate-300 mb-1.5">
+                        <i class="fa-solid fa-building text-indigo-400"></i>
+                        <span>Business Name (Box 1)</span>
+                    </label>
+                    <input id="bizNameInput" type="text" placeholder="Enter Business Name"
+                        oninput="updateCurrentBusinessMeta()"
+                        class="w-full px-3.5 py-3 bg-slate-950 border border-slate-700 rounded-xl text-sm font-medium text-white placeholder-slate-500 focus:outline-none focus:border-indigo-500">
+                </div>
+                <div>
+                    <label for="bizPhoneInput" class="flex items-center gap-1.5 text-xs font-semibold text-slate-300 mb-1.5">
+                        <i class="fa-solid fa-phone text-emerald-400"></i>
+                        <span>Phone Number (Box 2)</span>
+                    </label>
+                    <div class="flex items-stretch gap-2">
+                        <input id="bizPhoneInput" type="tel" placeholder="e.g. +91 98765 43210"
+                            oninput="updateCurrentBusinessMeta()"
+                            class="flex-1 min-w-0 px-3.5 py-3 bg-slate-950 border border-slate-700 rounded-xl text-sm font-mono text-white placeholder-slate-500 focus:outline-none focus:border-emerald-500">
+                        <button type="button" onclick="callPhoneCurrent()" title="Call Client" class="w-12 rounded-xl bg-sky-600/20 active:bg-sky-600/35 border border-sky-500/40 text-sky-400 font-bold flex items-center justify-center flex-shrink-0">
+                            <i class="fa-solid fa-phone text-sm"></i>
+                        </button>
+                        <button type="button" onclick="openWhatsAppCurrent()" title="WhatsApp Client" class="w-12 rounded-xl bg-emerald-600/20 active:bg-emerald-600/35 border border-emerald-500/40 text-emerald-400 font-bold flex items-center justify-center flex-shrink-0">
+                            <i class="fa-brands fa-whatsapp text-base"></i>
+                        </button>
+                    </div>
+                </div>
+                <div class="pt-0.5">
+                    <div class="flex items-center justify-between mb-1.5">
+                        <label class="flex items-center gap-1.5 text-xs font-semibold text-slate-300">
+                            <i class="fa-solid fa-location-dot text-rose-400"></i>
+                            <span>Location Tagging (Box 4 • Phone GPS)</span>
+                        </label>
+                        <button id="clearGpsBtn" type="button" onclick="clearCurrentGps()" class="hidden text-[11px] text-slate-400 active:text-red-400">
+                            <i class="fa-solid fa-xmark mr-0.5"></i>Remove GPS
+                        </button>
+                    </div>
+                    <div class="flex flex-col gap-2">
+                        <button id="captureGpsBtn" type="button" onclick="capturePhoneGps()" class="w-full py-3 px-3.5 rounded-xl bg-indigo-600/20 active:bg-indigo-600/35 border border-indigo-500/40 text-indigo-300 text-xs font-bold flex items-center justify-center gap-2 transition">
+                            <i id="gpsBtnIcon" class="fa-solid fa-location-crosshairs text-rose-400"></i>
+                            <span id="gpsBtnText">Add Location (Use Phone GPS)</span>
+                        </button>
+                        <div id="gpsPreviewBox" class="hidden p-2.5 rounded-xl bg-slate-950 border border-emerald-500/30 text-xs space-y-1">
+                            <div class="flex items-center justify-between">
+                                <span id="gpsCoordText" class="font-mono text-[11px] font-bold text-emerald-400">--</span>
+                                <a id="gpsMapLink" href="#" target="_blank" rel="noopener noreferrer" class="text-[11px] text-indigo-400 underline font-semibold flex items-center gap-1">
+                                    <span>View Map</span>
+                                    <i class="fa-solid fa-arrow-up-right-from-square text-[9px]"></i>
+                                </a>
+                            </div>
+                            <p id="gpsAddressText" class="text-[11px] text-slate-300 leading-snug break-words">--</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section id="cardSection4" class="step-card-transition bg-slate-900/95 border border-slate-800 rounded-2xl p-3.5 shadow-xl space-y-3.5">
+            <div class="flex items-center justify-between gap-2">
+                <div class="flex items-center gap-2 min-w-0">
+                    <span class="w-6 h-6 rounded-lg bg-emerald-500/20 border border-emerald-500/30 text-emerald-400 text-xs font-bold flex items-center justify-center flex-shrink-0">4</span>
+                    <div class="min-w-0">
+                        <h2 class="text-sm font-bold text-white truncate">NXP MIFARE Ultralight (137B)</h2>
+                        <p id="byteBreakdownText" class="text-[11px] font-mono text-slate-400 truncate">69B URI + 6B NDEF Header</p>
+                    </div>
+                </div>
+                <div class="text-right flex-shrink-0">
+                    <span id="byteCountBadge" class="text-sm font-mono font-extrabold text-emerald-400">75 / 137 B</span>
+                    <span id="ultralightFitBadge" class="block text-[10px] font-mono font-bold uppercase text-emerald-400">✓ 62B FREE</span>
+                </div>
+            </div>
+            <div class="space-y-1.5">
+                <div class="w-full h-3 bg-slate-950 rounded-full overflow-hidden border border-slate-800 p-0.5">
+                    <div id="byteProgressBar" class="h-full rounded-full bg-gradient-to-r from-indigo-500 via-teal-400 to-emerald-400 transition-all duration-300" style="width: 55%"></div>
+                </div>
+            </div>
+            <div class="p-3 rounded-xl bg-slate-950 border border-slate-800 space-y-1.5">
+                <div class="flex items-center justify-between text-[10px] font-mono text-slate-400">
+                    <span>NDEF URI PAYLOAD (0x04 HTTPS://)</span>
+                    <span id="urlCharCount">77 chars</span>
+                </div>
+                <div id="generatedUrlDisplay" class="font-mono text-xs text-emerald-400 break-all select-all leading-relaxed">
+                    https://search.google.com/local/writereview?placeid=ChIJef51K_vAwjsR_m0tS8G9R5k
+                </div>
+            </div>
+            <div class="grid grid-cols-2 gap-2">
+                <button type="button" onclick="copyReviewLink()" class="py-3 px-3 rounded-xl bg-slate-800 active:bg-slate-700 text-white font-semibold text-xs border border-slate-700 transition flex items-center justify-center gap-2">
+                    <i class="fa-regular fa-copy text-indigo-400"></i>
+                    <span id="copyBtnText">Copy Review Link</span>
+                </button>
+                <a id="testLinkAnchor" href="https://search.google.com/local/writereview?placeid=ChIJef51K_vAwjsR_m0tS8G9R5k" target="_blank" rel="noopener noreferrer"
+                    class="py-3 px-3 rounded-xl bg-slate-800 active:bg-slate-700 text-slate-200 font-semibold text-xs border border-slate-700 transition flex items-center justify-center gap-2">
+                    <span>Test Link</span>
+                    <i class="fa-solid fa-arrow-up-right-from-square text-[11px] text-emerald-400"></i>
+                </a>
+            </div>
+            <div class="pt-2.5 border-t border-slate-800 space-y-2.5">
+                <div class="p-2.5 rounded-xl bg-slate-950 border border-slate-800/90 space-y-2">
+                    <div class="flex items-center justify-between">
+                        <span class="text-[10px] font-mono uppercase tracking-wider text-amber-400 font-bold flex items-center gap-1.5">
+                            <i class="fa-solid fa-bolt"></i>
+                            <span>com.wakdev.nfctools.pro</span>
+                        </span>
+                        <span class="text-[9px] font-mono px-1.5 py-0.5 rounded bg-emerald-500/15 text-emerald-400 border border-emerald-500/30">No Play Store Redirect</span>
+                    </div>
+                    <select id="nfcLaunchMethod" class="w-full bg-slate-900 border border-slate-700 rounded-lg px-2.5 py-2 text-xs text-slate-200 font-mono focus:outline-none focus:border-indigo-500">
+                        <option value="nfc_scheme">Direct App Launch (nfc:// URI Scheme)</option>
+                        <option value="safe_intent">Safe Intent (No Market Fallback)</option>
+                        <option value="android_share">Android Share Sheet → NFC Tools Pro</option>
+                    </select>
+                </div>
+                <button type="button" onclick="launchNfcToolsPro()" class="w-full py-3.5 px-4 rounded-2xl bg-gradient-to-r from-indigo-600 via-indigo-500 to-emerald-600 active:scale-[0.99] text-white font-bold text-sm shadow-lg shadow-indigo-600/25 transition flex items-center justify-center gap-2.5">
+                    <i class="fa-solid fa-wifi rotate-90 text-base"></i>
+                    <span>Copy Link & Open NFC Tools Pro</span>
+                </button>
+                <div class="grid grid-cols-2 gap-2">
+                    <button type="button" onclick="shareUrlToNfcTools()" class="py-3 px-3 rounded-xl bg-indigo-500/15 active:bg-indigo-500/25 text-indigo-300 border border-indigo-500/30 font-semibold text-xs transition flex items-center justify-center gap-1.5">
+                        <i class="fa-solid fa-share-nodes"></i>
+                        <span>Share URL to App</span>
+                    </button>
+                    <button type="button" onclick="saveToClientBatch()" class="py-3 px-3 rounded-xl bg-emerald-600/20 active:bg-emerald-600/30 text-emerald-300 border border-emerald-500/40 font-bold text-xs transition flex items-center justify-center gap-1.5">
+                        <i class="fa-solid fa-floppy-disk"></i>
+                        <span>Save to Order Queue</span>
+                    </button>
+                </div>
+            </div>
+        </section>
+
+        <section id="cardSection5" class="step-card-transition bg-slate-900/95 border border-slate-800 rounded-2xl p-3.5 shadow-xl space-y-3.5">
+            <div class="flex items-center justify-between gap-2">
+                <div class="min-w-0">
+                    <div class="flex items-center gap-1.5">
+                        <span class="w-6 h-6 rounded-lg bg-indigo-500/20 border border-indigo-500/30 text-indigo-400 text-xs font-bold flex items-center justify-center flex-shrink-0">5</span>
+                        <h2 class="text-sm font-bold text-white truncate">Client Card Order Queue</h2>
+                        <span id="batchCountBadge" class="px-2 py-0.5 text-[11px] font-mono font-bold rounded-full bg-indigo-500/15 text-indigo-300 border border-indigo-500/30 flex-shrink-0">0</span>
+                    </div>
+                    <p class="text-[10px] text-slate-400 mt-0.5 truncate">1: Biz • 2: Phone • 3: 6-Code • 4: GPS • 5: Date/Time</p>
+                </div>
+                <button type="button" onclick="exportBatchCsv()" class="px-3 py-2.5 rounded-xl bg-emerald-600 active:bg-emerald-500 text-white text-xs font-bold transition flex items-center gap-1.5 shadow-md shadow-emerald-600/20 flex-shrink-0">
+                    <i class="fa-solid fa-file-csv text-sm"></i>
+                    <span>Export CSV</span>
+                </button>
+            </div>
+
+            <div class="p-3 rounded-xl bg-slate-950/90 border border-slate-800/90 space-y-2.5">
+                <div class="flex items-center justify-between gap-2">
+                    <div class="flex items-center gap-1.5 text-[11px] text-emerald-400 font-medium">
+                        <i id="storageStatusIcon" class="fa-solid fa-cloud-arrow-up"></i>
+                        <span id="storageStatusText">Cloud Sync + IndexedDB + HTML DB Ready</span>
+                    </div>
+                    <button type="button" onclick="toggleCloudModal()" class="px-2.5 py-1 rounded-lg bg-emerald-500/15 active:bg-emerald-500/25 border border-emerald-500/30 text-[10px] font-bold text-emerald-300 flex items-center gap-1">
+                        <i class="fa-solid fa-cloud"></i>
+                        <span>Cloud Settings</span>
+                    </button>
+                </div>
+                <div class="grid grid-cols-3 gap-1.5">
+                    <button type="button" onclick="downloadHtmlWithEmbeddedData()" class="py-2 px-2 rounded-lg bg-indigo-500/20 active:bg-indigo-500/35 border border-indigo-500/40 text-[10px] font-bold text-indigo-200 flex items-center justify-center gap-1" title="Saves this entire app + embedded database into a standalone HTML file">
+                        <i class="fa-solid fa-file-code text-indigo-400"></i>
+                        <span>Save HTML w/ Entries</span>
+                    </button>
+                    <button type="button" onclick="downloadDatabaseFile()" class="py-2 px-2 rounded-lg bg-amber-500/15 active:bg-amber-500/30 border border-amber-500/30 text-[10px] font-bold text-amber-300 flex items-center justify-center gap-1" title="Saves a standalone .db.json database file">
+                        <i class="fa-solid fa-database text-amber-400"></i>
+                        <span>Save DB File</span>
+                    </button>
+                    <button type="button" onclick="document.getElementById('importJsonInput').click()" class="py-2 px-2 rounded-lg bg-slate-900 active:bg-slate-800 border border-slate-700 text-[10px] font-bold text-slate-300 flex items-center justify-center gap-1">
+                        <i class="fa-solid fa-file-import text-emerald-400"></i>
+                        <span>Load DB / HTML</span>
+                    </button>
+                    <input id="importJsonInput" type="file" accept=".json,.db,.html,.htm" class="hidden" onchange="importBackupFile(event)">
+                </div>
+            </div>
+
+            <div class="relative">
+                <i class="fa-solid fa-filter absolute left-3.5 top-3 text-slate-500 text-xs"></i>
+                <input id="queueFilterInput" type="text" placeholder="Filter by 6-char code, business, phone, location, or date..."
+                    oninput="renderBatchQueue()"
+                    class="w-full pl-9 pr-3 py-2 bg-slate-950 border border-slate-800 rounded-xl text-xs text-white placeholder-slate-500 focus:outline-none focus:border-indigo-500">
+            </div>
+
+            <div id="batchQueueContainer" class="space-y-3"></div>
+        </section>
+
+        <div id="simpleModeNavFooter" class="hidden pt-1 pb-4">
+            <div class="grid grid-cols-2 gap-2.5">
+                <button id="btnPrevCard" type="button" onclick="stepSimpleCard(-1)" class="py-3 px-4 rounded-xl bg-slate-900 active:bg-slate-800 border border-slate-700 text-xs font-bold text-slate-200 flex items-center justify-center gap-2">
+                    <i class="fa-solid fa-arrow-left"></i>
+                    <span>Previous Card</span>
+                </button>
+                <button id="btnNextCard" type="button" onclick="stepSimpleCard(1)" class="py-3 px-4 rounded-xl bg-indigo-600 active:bg-indigo-500 text-xs font-bold text-white flex items-center justify-center gap-2 shadow-lg shadow-indigo-600/20">
+                    <span>Next Card</span>
+                    <i class="fa-solid fa-arrow-right"></i>
+                </button>
+            </div>
+        </div>
+    </main>
+
+    <div class="fixed bottom-0 inset-x-0 z-40 bg-slate-950/95 backdrop-blur-md border-t border-slate-800/90 px-3 pt-2 bottom-safe-bar">
+        <div class="w-full max-w-[430px] mx-auto flex items-stretch gap-1.5">
+            <div class="px-2 py-1.5 rounded-xl bg-slate-900 border border-slate-800 flex-shrink-0 flex flex-col justify-center text-center min-w-[60px]">
+                <span class="block text-[8px] font-mono uppercase text-slate-400 leading-none">CODE</span>
+                <span id="stickyCodePreview" class="font-mono font-extrabold text-xs text-amber-400 tracking-wider mt-0.5">------</span>
+            </div>
+            <button type="button" onclick="saveAndLaunchNfcToolsPro()" class="flex-1 min-w-0 py-3 px-2.5 rounded-xl bg-gradient-to-r from-indigo-600 to-emerald-600 active:opacity-95 text-white font-bold text-xs shadow-lg flex items-center justify-center gap-1.5">
+                <i class="fa-solid fa-bolt flex-shrink-0"></i>
+                <span class="truncate">Save + Open NFC Tools</span>
+            </button>
+            <button type="button" onclick="downloadHtmlWithEmbeddedData()" title="Save HTML w/ Entries (Portable Database HTML)" class="py-3 px-2.5 rounded-xl bg-slate-900 active:bg-slate-800 border border-indigo-500/50 text-indigo-300 font-bold text-[11px] flex items-center justify-center gap-1 flex-shrink-0 shadow">
+                <i class="fa-solid fa-download text-emerald-400"></i>
+                <span class="whitespace-nowrap">Save HTML DB</span>
+            </button>
+        </div>
+    </div>
+
+    <div id="cloudModal" class="fixed inset-0 z-50 hidden bg-black/80 backdrop-blur-sm flex items-center justify-center p-4">
+        <div class="bg-slate-900 border border-slate-700 rounded-2xl max-w-md w-full p-5 shadow-2xl space-y-4">
+            <div class="flex items-center justify-between">
+                <h3 class="text-sm font-bold text-white flex items-center gap-2">
+                    <i class="fa-solid fa-cloud text-emerald-400"></i>
+                    <span>Cloud Database Sync</span>
+                </h3>
+                <button type="button" onclick="toggleCloudModal()" class="text-slate-400 hover:text-white p-1">
+                    <i class="fa-solid fa-xmark text-lg"></i>
+                </button>
+            </div>
+            <div class="p-3 rounded-xl bg-slate-950 border border-slate-800 space-y-1.5 text-xs">
+                <div class="flex items-center justify-between">
+                    <span class="text-slate-400">Cloud Status:</span>
+                    <span id="cloudModalStatus" class="font-mono font-bold text-emerald-400">Connecting...</span>
+                </div>
+                <div class="flex items-center justify-between">
+                    <span class="text-slate-400">Device User ID:</span>
+                    <span id="cloudUserIdDisplay" class="font-mono text-[10px] text-slate-300 select-all break-all">--</span>
+                </div>
+            </div>
+            <div class="space-y-1.5">
+                <label for="cloudSyncChannelInput" class="block text-xs font-semibold text-slate-300">Shared Cloud Workspace Code (Sync across phones/PC)</label>
+                <div class="flex gap-2">
+                    <input id="cloudSyncChannelInput" type="text" value="DEFAULT_STUDIO" placeholder="e.g. MY_NFC_SHOP_1"
+                        class="flex-1 px-3 py-2 bg-slate-950 border border-slate-700 rounded-xl text-xs font-mono uppercase text-amber-300 focus:outline-none focus:border-emerald-500">
+                    <button type="button" onclick="applyCloudWorkspaceChannel()" class="px-3.5 py-2 rounded-xl bg-emerald-600 text-white text-xs font-bold">Set Code</button>
+                </div>
+                <p class="text-[11px] text-slate-400 leading-relaxed">Any device using the same Workspace Code automatically syncs your Client Card Order Queue in real time.</p>
+            </div>
+            <div class="flex items-center justify-between gap-2 pt-2 border-t border-slate-800">
+                <button type="button" onclick="forcePushAllToCloud()" class="flex-1 py-2.5 px-3 rounded-xl bg-indigo-600/25 border border-indigo-500/40 text-xs font-bold text-indigo-300 flex items-center justify-center gap-1.5">
+                    <i class="fa-solid fa-cloud-arrow-up"></i>
+                    <span>Push Local Queue to Cloud</span>
+                </button>
+                <button type="button" onclick="toggleCloudModal()" class="px-4 py-2.5 rounded-xl bg-slate-800 text-xs font-semibold text-slate-300">Done</button>
+            </div>
+        </div>
+    </div>
+
+    <div id="apiModal" class="fixed inset-0 z-50 hidden bg-black/80 backdrop-blur-sm flex items-center justify-center p-4">
+        <div class="bg-slate-900 border border-slate-700 rounded-2xl max-w-md w-full p-5 shadow-2xl space-y-4">
+            <div class="flex items-center justify-between">
+                <h3 class="text-sm font-bold text-white flex items-center gap-2">
+                    <i class="fa-solid fa-key text-indigo-400"></i>
+                    <span>Google Maps Places API Key</span>
+                </h3>
+                <button onclick="toggleApiModal()" class="text-slate-400 hover:text-white p-1">
+                    <i class="fa-solid fa-xmark text-lg"></i>
+                </button>
+            </div>
+            <p class="text-xs text-slate-300 leading-relaxed">Enter your Google Maps JavaScript API Key (with Places API enabled) for live dropdown search. Stored locally on your phone.</p>
+            <div>
+                <input id="apiKeyInput" type="password" placeholder="AIzaSy..."
+                    class="w-full px-3.5 py-2.5 bg-slate-950 border border-slate-700 rounded-xl text-xs font-mono text-white focus:outline-none focus:border-indigo-500">
+            </div>
+            <div class="flex items-center justify-end gap-2 pt-1">
+                <button onclick="clearSavedApiKey()" class="px-3 py-2 rounded-xl bg-slate-800 text-xs text-slate-300">Remove Key</button>
+                <button onclick="saveApiKeyAndLoad()" class="px-4 py-2 rounded-xl bg-indigo-600 text-xs font-bold text-white">Save & Enable</button>
+            </div>
+        </div>
+    </div>
+
+    <div id="toastBanner" class="fixed top-16 inset-x-3.5 max-w-md mx-auto z-50 transform -translate-y-24 opacity-0 transition-all duration-300 pointer-events-none">
+        <div class="flex items-center space-x-2.5 px-4 py-3 rounded-xl bg-slate-900/95 backdrop-blur border border-indigo-500/50 shadow-2xl text-xs font-semibold text-white">
+            <i class="fa-solid fa-circle-check text-emerald-400 text-sm"></i>
+            <span id="toastMessage">Link copied & ready!</span>
+        </div>
+    </div>
+
+    <script id="embeddedBatchSnapshot" type="application/json">[]</script>
+
+    <script>
+        // ==========================================
+        // CONSTANTS & STATE
+        // ==========================================
+        const REVIEW_BASE_URL = "https://search.google.com/local/writereview?placeid=";
+        const MIFARE_ULTRALIGHT_MAX_BYTES = 137;
+        const STORAGE_KEY_BATCH = "tapreview_ultralight_batch_v2";
+        const LEGACY_KEYS = ["tapreview_ultralight_v2", "tapreview_batch_orders_v1"];
+        const STORAGE_KEY_API = "tapreview_google_api_key";
+        const IDB_NAME = "TapReviewStudioDB";
+        const IDB_STORE = "orders_store";
+
+        let viewLayoutMode = "normal";
+        let currentSimpleStep = 1;
+        const SIMPLE_STEP_TITLES = {
+            1: "CARD 1 OF 5 • FIND BUSINESS & LINK",
+            2: "CARD 2 OF 5 • 6-CHARACTER CODE",
+            3: "CARD 3 OF 5 • RECORDS FILL BOX",
+            4: "CARD 4 OF 5 • 137B NFC TOOLS WRITER",
+            5: "CARD 5 OF 5 • ORDER BATCH QUEUE"
+        };
+
+        let currentState = {
+            businessName: "",
+            phoneNumber: "",
+            sixCharCode: "",
+            placeId: "ChIJef51K_vAwjsR_m0tS8G9R5k",
+            reviewUrl: "https://search.google.com/local/writereview?placeid=ChIJef51K_vAwjsR_m0tS8G9R5k",
+            byteSize: 75,
+            location: null
+        };
+
+        let batchList = [];
+        let dbPromise = null;
+
+        const INLINE_SVG_PATHS = window.__INLINE_SVG_PATHS || {};
+        if (Object.keys(INLINE_SVG_PATHS).length === 0) {
+            const minimal = {
+                'fa-wifi': '<path d="M5 12.55a11 11 0 0 1 14.08 0"/><path d="M1.42 9a16 16 0 0 1 21.16 0"/><path d="M8.53 16.11a6 6 0 0 1 6.95 0"/><line x1="12" y1="20" x2="12.01" y2="20"/>',
+                'fa-cloud': '<path d="M17.5 19H9a7 7 0 1 1 6.71-9h1.79a4.5 4.5 0 1 1 0 9Z"/>',
+                'fa-key': '<circle cx="7.5" cy="15.5" r="5.5"/><path d="m21 2-9.6 9.6"/><path d="m15.5 7.5 3 3L22 7l-3-3"/>',
+                'fa-paste': '<rect width="8" height="4" x="8" y="2" rx="1" ry="1"/><path d="M16 4h2a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h2"/>',
+                'fa-eraser': '<path d="m7 21-4.3-4.3c-1-1-1-2.5 0-3.4l9.6-9.6c1-1 2.5-1 3.4 0l5.6 5.6c1 1 1 2.5 0 3.4L13 21"/><path d="M22 21H7"/><path d="m5 11 9 9"/>',
+                'fa-phone': '<path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z"/>',
+                'fa-whatsapp': '<path d="M3 21l1.65-3.8a9 9 0 1 1 3.4 2.9L3 21"/><path d="M9 10a.5.5 0 0 0 1 0V9a.5.5 0 0 0-1 0v1a5 5 0 0 0 5 5h1a.5.5 0 0 0 0-1h-1a.5.5 0 0 0 0 1"/>',
+                'fa-bolt': '<polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/>',
+                'fa-floppy-disk': '<path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z"/><polyline points="17 21 17 13 7 13 7 21"/><polyline points="7 3 7 8 15 8"/>',
+                'fa-copy': '<rect width="14" height="14" x="8" y="8" rx="2" ry="2"/><path d="M4 16c-1.1 0-2-.9-2-2V4c0-1.1.9-2 2-2h10c1.1 0 2 .9 2 2"/>',
+                'fa-share-nodes': '<circle cx="18" cy="5" r="3"/><circle cx="6" cy="12" r="3"/><circle cx="18" cy="19" r="3"/><line x1="8.59" y1="13.51" x2="15.42" y2="17.49"/><line x1="15.41" y1="6.51" x2="8.59" y2="10.49"/>',
+                'fa-download': '<path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/>',
+                'fa-trash-can': '<path d="M3 6h18"/><path d="M19 6v14c0 1-1 2-2 2H7c-1 0-2-1-2-2V6"/><path d="M8 6V4c0-1 1-2 2-2h4c1 0 2 1 2 2v2"/><line x1="10" y1="11" x2="10" y2="17"/><line x1="14" y1="11" x2="14" y2="17"/>',
+                'fa-spinner': '<path d="M21 12a9 9 0 1 1-6.219-8.56"/>',
+                'fa-circle-check': '<circle cx="12" cy="12" r="10"/><path d="m9 12 2 2 4-4"/>'
+            };
+            Object.assign(INLINE_SVG_PATHS, minimal);
+        }
+
+        function hydrateOfflineSvgIcons(root = document) {
+            const icons = root.querySelectorAll('i[class*="fa-"]');
+            icons.forEach(el => {
+                if (el.dataset.hydrated === '1') return;
+                let matchedKey = null;
+                for (const cls of el.classList) {
+                    if (INLINE_SVG_PATHS[cls]) { matchedKey = cls; break; }
+                }
+                if (matchedKey) {
+                    const isSpin = el.classList.contains('fa-spin') ? 'animate-spin' : '';
+                    el.innerHTML = `<svg viewBox="0 0 24 24" class="tr-svg-icon ${isSpin}" aria-hidden="true">${INLINE_SVG_PATHS[matchedKey]}</svg>`;
+                    el.classList.remove('fa-solid', 'fa-regular', 'fa-brands');
+                    el.dataset.hydrated = '1';
+                }
+            });
+        }
+
+        window.addEventListener('DOMContentLoaded', function () {
+            hydrateOfflineSvgIcons();
+            updateLiveTimestampClock();
+            setInterval(updateLiveTimestampClock, 10000);
+
+            const codeInput = document.getElementById('sixCharCodeInput');
+            codeInput.value = "";
+            updateCodeBadges("");
+
+            const doLoad = () => { loadBatchFromStorage(); updateAllOutputs(); };
+            if ('requestIdleCallback' in window) requestIdleCallback(doLoad, { timeout: 1200 });
+            else setTimeout(doLoad, 50);
+
+            const savedKey = localStorage.getItem(STORAGE_KEY_API);
+            if (savedKey) {
+                document.getElementById('apiKeyInput').value = savedKey;
+                loadGooglePlacesScript(savedKey);
+            }
+        });
+
+        function setViewLayoutMode(mode) {
+            triggerHaptic(20);
+            viewLayoutMode = mode === 'simple' ? 'simple' : 'normal';
+            const btnNormal = document.getElementById('btnNormalMode');
+            const btnSimple = document.getElementById('btnSimpleMode');
+            const stepperBar = document.getElementById('simpleModeStepperBar');
+            const navFooter = document.getElementById('simpleModeNavFooter');
+
+            if (viewLayoutMode === 'simple') {
+                btnSimple.className = "px-2.5 py-1.5 rounded-lg text-[11px] font-bold transition bg-indigo-600 text-white shadow";
+                btnNormal.className = "px-2.5 py-1.5 rounded-lg text-[11px] font-bold transition text-slate-400";
+                stepperBar.classList.remove('hidden');
+                navFooter.classList.remove('hidden');
+                goToSimpleCard(currentSimpleStep);
+            } else {
+                btnNormal.className = "px-2.5 py-1.5 rounded-lg text-[11px] font-bold transition bg-indigo-600 text-white shadow";
+                btnSimple.className = "px-2.5 py-1.5 rounded-lg text-[11px] font-bold transition text-slate-400";
+                stepperBar.classList.add('hidden');
+                navFooter.classList.add('hidden');
+                for (let i = 1; i <= 5; i++) {
+                    const sec = document.getElementById(`cardSection${i}`);
+                    if (sec) sec.classList.remove('hidden');
+                }
+            }
+        }
+
+        function goToSimpleCard(stepNum) {
+            triggerHaptic(15);
+            currentSimpleStep = Math.max(1, Math.min(5, stepNum));
+            for (let i = 1; i <= 5; i++) {
+                const sec = document.getElementById(`cardSection${i}`);
+                const dot = document.getElementById(`stepDot${i}`);
+                if (sec) {
+                    if (viewLayoutMode === 'simple') sec.classList.toggle('hidden', i !== currentSimpleStep);
+                    else sec.classList.remove('hidden');
+                }
+                if (dot) {
+                    dot.className = i === currentSimpleStep
+                        ? "py-1.5 rounded-lg text-[10px] font-mono font-bold bg-indigo-600 text-white border border-indigo-400 shadow"
+                        : "py-1.5 rounded-lg text-[10px] font-mono font-bold bg-slate-950 text-slate-400 border border-slate-800";
+                }
+            }
+            const titleEl = document.getElementById('simpleStepTitle');
+            if (titleEl) titleEl.textContent = SIMPLE_STEP_TITLES[currentSimpleStep] || "";
+            const prevBtn = document.getElementById('btnPrevCard');
+            const nextBtn = document.getElementById('btnNextCard');
+            if (prevBtn) { prevBtn.disabled = currentSimpleStep <= 1; prevBtn.classList.toggle('opacity-40', currentSimpleStep <= 1); }
+            if (nextBtn) {
+                if (currentSimpleStep === 5) nextBtn.innerHTML = `<i class="fa-solid fa-rotate-left"></i><span>Back to Card 1</span>`;
+                else nextBtn.innerHTML = `<span>Next Card (${currentSimpleStep + 1}/5)</span><i class="fa-solid fa-arrow-right"></i>`;
+            }
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+        }
+
+        function stepSimpleCard(delta) {
+            if (currentSimpleStep === 5 && delta > 0) { goToSimpleCard(1); return; }
+            goToSimpleCard(currentSimpleStep + delta);
+        }
+
+        function formatDateTimeHuman(dateObj) {
+            const d = dateObj instanceof Date ? dateObj : new Date(dateObj);
+            if (isNaN(d.getTime())) return "—";
+            return d.toLocaleString('en-IN', {
+                day: '2-digit', month: 'short', year: 'numeric',
+                hour: '2-digit', minute: '2-digit', hour12: true
+            });
+        }
+
+        function updateLiveTimestampClock() {
+            const nowFormatted = formatDateTimeHuman(new Date());
+            const el = document.getElementById('formTimestampText');
+            if (el) el.textContent = nowFormatted;
+            const headerClock = document.getElementById('liveClockHeader');
+            if (headerClock) headerClock.textContent = nowFormatted;
+        }
+
+        function triggerHaptic(ms = 25) {
+            if (navigator.vibrate) { try { navigator.vibrate(ms); } catch (e) {} }
+        }
+
+        function handleSixCharInput(inputEl) {
+            const cleaned = inputEl.value.toUpperCase().replace(/[^A-Z0-9]/g, '').slice(0, 6);
+            inputEl.value = cleaned;
+            currentState.sixCharCode = cleaned;
+            updateCodeBadges(cleaned);
+        }
+
+        function updateCodeBadges(codeStr) {
+            const len = (codeStr || "").length;
+            const badge = document.getElementById('codeLengthBadge');
+            badge.textContent = `${len} / 6`;
+            badge.className = len === 6
+                ? "font-mono text-[11px] font-bold px-2 py-1 rounded-lg bg-emerald-500/20 text-emerald-300 border border-emerald-500/30 flex-shrink-0"
+                : "font-mono text-[11px] font-bold px-2 py-1 rounded-lg bg-amber-500/20 text-amber-300 border border-amber-500/30 flex-shrink-0";
+            document.getElementById('stickyCodePreview').textContent = codeStr || "------";
+        }
+
+        function clearSixCode() {
+            triggerHaptic();
+            const inputEl = document.getElementById('sixCharCodeInput');
+            inputEl.value = "";
+            currentState.sixCharCode = "";
+            updateCodeBadges("");
+            inputEl.focus();
+        }
+
+        function capturePhoneGps(targetOrderId = null) {
+            triggerHaptic(30);
+            if (!navigator.geolocation) { showToast("GPS Geolocation is not supported."); return; }
+
+            const btnIcon = document.getElementById('gpsBtnIcon');
+            const btnText = document.getElementById('gpsBtnText');
+            if (!targetOrderId && btnIcon && btnText) {
+                btnIcon.className = "fa-solid fa-spinner fa-spin text-amber-400";
+                btnText.textContent = "Getting Phone GPS Location...";
+            }
+
+            navigator.geolocation.getCurrentPosition(
+                async (pos) => {
+                    const lat = Number(pos.coords.latitude.toFixed(6));
+                    const lng = Number(pos.coords.longitude.toFixed(6));
+                    const accuracy = Math.round(pos.coords.accuracy || 0);
+                    const mapUrl = `https://www.google.com/maps?q=${lat},${lng}`;
+                    let addressLabel = `${lat}, ${lng} (±${accuracy}m)`;
+
+                    try {
+                        const controller = new AbortController();
+                        const timer = setTimeout(() => controller.abort(), 4000);
+                        const res = await fetch(
+                            `https://nominatim.openstreetmap.org/reverse?format=jsonv2&lat=${lat}&lon=${lng}`,
+                            { headers: { 'Accept-Language': 'en' }, signal: controller.signal }
+                        );
+                        clearTimeout(timer);
+                        if (res.ok) {
+                            const data = await res.json();
+                            if (data && data.display_name) {
+                                const parts = data.display_name.split(',').map(s => s.trim());
+                                addressLabel = parts.slice(0, 4).join(', ');
+                            }
+                        }
+                    } catch (err) {}
+
+                    const locObj = { lat, lng, accuracy, address: addressLabel, mapUrl };
+
+                    if (targetOrderId) {
+                        const item = batchList.find(o => o.id === targetOrderId);
+                        if (item) {
+                            item.location = locObj;
+                            await saveBatchToStorage();
+                            renderBatchQueue();
+                            triggerHaptic([40, 30, 50]);
+                            showToast(`Tagged GPS for [${item.sixCharCode || item.businessName}]!`);
+                        }
+                    } else {
+                        currentState.location = locObj;
+                        renderCurrentGpsPreview();
+                        if (btnIcon && btnText) {
+                            btnIcon.className = "fa-solid fa-location-dot text-emerald-400";
+                            btnText.textContent = "Update GPS Location";
+                        }
+                        triggerHaptic([40, 30, 50]);
+                        showToast("Phone GPS Location tagged!");
+                    }
+                },
+                (err) => {
+                    if (!targetOrderId && btnIcon && btnText) {
+                        btnIcon.className = "fa-solid fa-location-crosshairs text-rose-400";
+                        btnText.textContent = "Add Location (Use Phone GPS)";
+                    }
+                    let msg = "Could not get GPS location. Enable Location permissions.";
+                    if (err.code === 1) msg = "Location permission denied. Allow GPS access in browser settings.";
+                    showToast(msg);
+                },
+                { enableHighAccuracy: true, timeout: 12000, maximumAge: 0 }
+            );
+        }
+
+        function renderCurrentGpsPreview() {
+            const box = document.getElementById('gpsPreviewBox');
+            const clearBtn = document.getElementById('clearGpsBtn');
+            const coordEl = document.getElementById('gpsCoordText');
+            const addrEl = document.getElementById('gpsAddressText');
+            const mapLink = document.getElementById('gpsMapLink');
+            if (!currentState.location) {
+                box.classList.add('hidden');
+                clearBtn.classList.add('hidden');
+                return;
+            }
+            box.classList.remove('hidden');
+            clearBtn.classList.remove('hidden');
+            coordEl.textContent = `${currentState.location.lat}, ${currentState.location.lng} (±${currentState.location.accuracy}m)`;
+            addrEl.textContent = currentState.location.address || "";
+            mapLink.href = currentState.location.mapUrl;
+        }
+
+        function clearCurrentGps() {
+            triggerHaptic();
+            currentState.location = null;
+            renderCurrentGpsPreview();
+            const btnIcon = document.getElementById('gpsBtnIcon');
+            const btnText = document.getElementById('gpsBtnText');
+            if (btnIcon) btnIcon.className = "fa-solid fa-location-crosshairs text-rose-400";
+            if (btnText) btnText.textContent = "Add Location (Use Phone GPS)";
+        }
+
+        function switchMode(mode) {
+            triggerHaptic(15);
+            const tabNoApi = document.getElementById('tabNoApi');
+            const tabLiveApi = document.getElementById('tabLiveApi');
+            const panelNoApi = document.getElementById('panelNoApi');
+            const panelLiveApi = document.getElementById('panelLiveApi');
+            if (mode === 'no-api') {
+                tabNoApi.className = "px-2.5 py-1 rounded-lg text-[11px] font-semibold transition bg-indigo-600 text-white shadow";
+                tabLiveApi.className = "px-2.5 py-1 rounded-lg text-[11px] font-semibold transition text-slate-400";
+                panelNoApi.classList.remove('hidden');
+                panelLiveApi.classList.add('hidden');
+            } else {
+                tabLiveApi.className = "px-2.5 py-1 rounded-lg text-[11px] font-semibold transition bg-indigo-600 text-white shadow";
+                tabNoApi.className = "px-2.5 py-1 rounded-lg text-[11px] font-semibold transition text-slate-400";
+                panelLiveApi.classList.remove('hidden');
+                panelNoApi.classList.add('hidden');
+                if (!localStorage.getItem(STORAGE_KEY_API)) toggleApiModal();
+            }
+        }
+
+        function clearSearchInputs() {
+            triggerHaptic();
+            document.getElementById('manualBizQuery').value = "";
+            document.getElementById('smartInput').value = "";
+            const mapsShareEl = document.getElementById('mapsShareLinkInput');
+            if (mapsShareEl) mapsShareEl.value = "";
+            document.getElementById('manualBizQuery').focus();
+        }
+
+        function syncBizNameFromQuery(val) {
+            if (val.trim().length > 1) {
+                document.getElementById('bizNameInput').value = val.trim();
+                updateCurrentBusinessMeta();
+            }
+        }
+
+        function updateCurrentBusinessMeta() {
+            currentState.businessName = document.getElementById('bizNameInput').value.trim();
+            currentState.phoneNumber = document.getElementById('bizPhoneInput').value.trim();
+        }
+
+        function parseGoogleMapsUrlForDetails(rawText) {
+            const text = (rawText || "").trim();
+            if (!text) return null;
+            const result = { placeId: null, businessName: null, lat: null, lng: null, extractedUrl: null };
+            const urlMatch = text.match(/https?:\/\/[^\s]+/i);
+            if (urlMatch) result.extractedUrl = urlMatch[0];
+            const lines = text.split(/\r?\n/).map(l => l.trim()).filter(Boolean);
+            if (lines.length > 1 && !lines[0].startsWith('http')) result.businessName = lines[0];
+            const pidMatch = text.match(/[?&]place_?id=([A-Za-z0-9_-]+)/i) || text.match(/\b(ChIJ[A-Za-z0-9_-]{10,})\b/);
+            if (pidMatch && pidMatch[1]) result.placeId = pidMatch[1];
+            const placePathMatch = text.match(/\/maps\/place\/([^/@?]+)/i);
+            if (placePathMatch && placePathMatch[1]) {
+                try {
+                    const decodedName = decodeURIComponent(placePathMatch[1].replace(/\+/g, ' ')).trim();
+                    if (decodedName && !result.businessName) result.businessName = decodedName;
+                } catch (e) {}
+            }
+            const coordMatch = text.match(/@(-?\d+\.\d+),(-?\d+\.\d+)/);
+            if (coordMatch) { result.lat = parseFloat(coordMatch[1]); result.lng = parseFloat(coordMatch[2]); }
+            const qParamMatch = text.match(/[?&]q=([^&]+)/i);
+            if (qParamMatch && qParamMatch[1] && !result.businessName) {
+                try {
+                    const decodedQ = decodeURIComponent(qParamMatch[1].replace(/\+/g, ' ')).trim();
+                    if (decodedQ && !/^[-?\d.,\s]+$/.test(decodedQ)) result.businessName = decodedQ;
+                } catch (e) {}
+            }
+            return result;
+        }
+
+        function handleMapsShareInputPreview(val) {
+            const badge = document.getElementById('mapsShareBadge');
+            const statusEl = document.getElementById('mapsShareStatusText');
+            const parsed = parseGoogleMapsUrlForDetails(val);
+            if (!parsed) {
+                badge.textContent = "maps.app.goo.gl";
+                badge.className = "text-[10px] font-mono px-2 py-0.5 rounded bg-slate-800 text-slate-400";
+                return;
+            }
+            if (parsed.businessName) {
+                document.getElementById('bizNameInput').value = parsed.businessName;
+                document.getElementById('manualBizQuery').value = parsed.businessName;
+                updateCurrentBusinessMeta();
+            }
+            if (parsed.placeId) {
+                currentState.placeId = parsed.placeId;
+                document.getElementById('smartInput').value = parsed.placeId;
+                badge.textContent = "✓ Place ID Found";
+                badge.className = "text-[10px] font-mono px-2 py-0.5 rounded bg-emerald-500/20 text-emerald-300 border border-emerald-500/30";
+                statusEl.innerHTML = `Extracted Place ID <code class="text-emerald-400 font-mono">${escapeHtml(parsed.placeId)}</code> directly from link!`;
+                updateAllOutputs(false);
+                return;
+            }
+            badge.textContent = "Link Ready";
+            badge.className = "text-[10px] font-mono px-2 py-0.5 rounded bg-amber-500/20 text-amber-300";
+            statusEl.textContent = "Tap 'Extract Review Link from Maps Share Link' below to resolve Place ID.";
+        }
+
+        async function resolveGoogleMapsShareLink() {
+            triggerHaptic(30);
+            const rawVal = document.getElementById('mapsShareLinkInput').value.trim();
+            const statusEl = document.getElementById('mapsShareStatusText');
+            const badge = document.getElementById('mapsShareBadge');
+            const iconEl = document.getElementById('resolveMapsShareIcon');
+            const textEl = document.getElementById('resolveMapsShareText');
+
+            if (!rawVal) {
+                showToast("Paste a Google Maps share link in Step C first!");
+                document.getElementById('mapsShareLinkInput').focus();
+                return;
+            }
+
+            const initialParsed = parseGoogleMapsUrlForDetails(rawVal);
+            if (initialParsed && initialParsed.placeId) {
+                handleSmartInput(initialParsed.placeId);
+                showToast("Extracted Place ID & generated Review Link!");
+                return;
+            }
+
+            iconEl.className = "fa-solid fa-spinner fa-spin";
+            textEl.textContent = "Resolving...";
+            statusEl.textContent = "Unshortening link & looking up Google Place ID...";
+
+            let expandedUrl = initialParsed?.extractedUrl || rawVal;
+            let discoveredBizName = initialParsed?.businessName || "";
+
+            if (/goo\.gl|maps\.app/i.test(expandedUrl)) {
+                try {
+                    const controller = new AbortController();
+                    const timer = setTimeout(() => controller.abort(), 3000);
+                    const r = await fetch(`https://unshorten.me/json/${encodeURIComponent(expandedUrl)}`, { signal: controller.signal });
+                    clearTimeout(timer);
+                    if (r.ok) {
+                        const d = await r.json();
+                        if (d && d.resolved_url) expandedUrl = d.resolved_url;
+                    }
+                } catch (e) {}
+
+                const expandedParsed = parseGoogleMapsUrlForDetails(expandedUrl);
+                if (expandedParsed) {
+                    if (expandedParsed.placeId) {
+                        currentState.placeId = expandedParsed.placeId;
+                        if (expandedParsed.businessName) {
+                            document.getElementById('bizNameInput').value = expandedParsed.businessName;
+                            document.getElementById('manualBizQuery').value = expandedParsed.businessName;
+                            updateCurrentBusinessMeta();
+                        }
+                        document.getElementById('smartInput').value = expandedParsed.placeId;
+                        handleSmartInput(expandedParsed.placeId);
+                        badge.textContent = "✓ Resolved";
+                        badge.className = "text-[10px] font-mono px-2 py-0.5 rounded bg-emerald-500/20 text-emerald-300";
+                        statusEl.innerHTML = `Resolved Place ID: <code class="text-emerald-400 font-mono">${escapeHtml(expandedParsed.placeId)}</code>`;
+                        iconEl.className = "fa-solid fa-location-arrow";
+                        textEl.textContent = "Extract Review Link from Maps Share Link";
+                        showToast("Review link extracted from Maps share link!");
+                        return;
+                    }
+                    if (expandedParsed.businessName && !discoveredBizName) discoveredBizName = expandedParsed.businessName;
+                }
+            }
+
+            if (discoveredBizName) {
+                document.getElementById('bizNameInput').value = discoveredBizName;
+                document.getElementById('manualBizQuery').value = discoveredBizName;
+                updateCurrentBusinessMeta();
+                copyTextFallback(discoveredBizName);
+                statusEl.innerHTML = `Extracted <strong class="text-white">${escapeHtml(discoveredBizName)}</strong> (copied). Tap <strong>Find Place ID</strong> above.`;
+                showToast(`Extracted "${discoveredBizName}"! Copied.`);
+            } else {
+                statusEl.textContent = "Could not auto-extract ChIJ ID. Copy the business name into Step A or use a full Google Maps link.";
+                showToast("Tip: Use Step A instead.");
+            }
+
+            iconEl.className = "fa-solid fa-location-arrow";
+            textEl.textContent = "Extract Review Link from Maps Share Link";
+        }
+
+        function handleSmartInput(rawInput) {
+            const input = rawInput.trim();
+            const badge = document.getElementById('parserBadge');
+            const hint = document.getElementById('parserHint');
+            if (!input) {
+                badge.textContent = "Ready";
+                badge.className = "text-[10px] font-mono px-2 py-0.5 rounded bg-slate-800 text-slate-400";
+                return;
+            }
+            if (/^https?:\/\/(g\.page\/r\/[A-Za-z0-9_-]+)/i.test(input)) {
+                currentState.reviewUrl = input;
+                badge.textContent = "✓ Short Review URL";
+                badge.className = "text-[10px] font-mono px-2 py-0.5 rounded bg-emerald-500/20 text-emerald-300";
+                updateAllOutputs(true);
+                return;
+            }
+            let extractedId = null;
+            const urlParamMatch = input.match(/[?&]place_?id=([A-Za-z0-9_-]+)/i);
+            if (urlParamMatch && urlParamMatch[1]) extractedId = urlParamMatch[1];
+            if (!extractedId) {
+                const colonMatch = input.match(/place_?id\s*[:=]\s*["']?([A-Za-z0-9_-]{15,})["']?/i);
+                if (colonMatch && colonMatch[1]) extractedId = colonMatch[1];
+            }
+            if (!extractedId) {
+                const chijMatch = input.match(/\b(ChIJ[A-Za-z0-9_-]{10,})\b/);
+                if (chijMatch && chijMatch[1]) extractedId = chijMatch[1];
+                else if (/^[A-Za-z0-9_-]{18,65}$/.test(input)) extractedId = input;
+            }
+            if (extractedId) {
+                currentState.placeId = extractedId;
+                badge.textContent = "✓ Place ID Set";
+                badge.className = "text-[10px] font-mono px-2 py-0.5 rounded bg-emerald-500/20 text-emerald-300 border border-emerald-500/30";
+                hint.innerHTML = `Active Place ID: <code class="text-emerald-400 font-mono">${extractedId}</code>`;
+                updateAllOutputs(false);
+                triggerHaptic(30);
+            } else {
+                badge.textContent = "No Place ID";
+                badge.className = "text-[10px] font-mono px-2 py-0.5 rounded bg-amber-500/20 text-amber-300";
+                hint.innerHTML = `Tap <strong>"Find Place ID"</strong> above to copy the <code class="text-slate-200">ChIJ...</code> ID.`;
+            }
+        }
+
+        function openOfficialPlaceFinder() {
+            triggerHaptic();
+            const query = document.getElementById('manualBizQuery').value.trim();
+            if (query) { copyTextFallback(query); showToast(`Copied "${query}"! Paste in Place Finder.`); }
+            window.open("https://developers.google.com/maps/documentation/javascript/examples/places-placeid-finder", "_blank", "noopener,noreferrer");
+        }
+
+        function openGoogleMapsSearch() {
+            triggerHaptic();
+            const query = document.getElementById('manualBizQuery').value.trim() || currentState.businessName || "Pune";
+            window.open(`https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(query)}`, "_blank", "noopener,noreferrer");
+        }
+
+        async function pasteFromClipboard(targetInputId = 'smartInput') {
+            triggerHaptic(30);
+            const inputEl = document.getElementById(targetInputId);
+            if (!inputEl) return;
+            if (navigator.clipboard && typeof navigator.clipboard.readText === 'function') {
+                try {
+                    const clipText = await navigator.clipboard.readText();
+                    if (clipText && clipText.trim()) {
+                        const cleaned = clipText.trim();
+                        inputEl.value = cleaned;
+                        if (targetInputId === 'mapsShareLinkInput') {
+                            handleMapsShareInputPreview(cleaned);
+                        } else {
+                            handleSmartInput(cleaned);
+                        }
+                        showToast("Pasted from clipboard!");
+                        return;
+                    } else {
+                        showToast("Clipboard is empty.");
+                        return;
+                    }
+                } catch (e) {}
+            }
+            inputEl.focus();
+            showToast("Allow Clipboard permission in browser bar, or long-press input to paste.");
+        }
+
+        function calculateNdefBytes(url) {
+            let stripped = url;
+            if (url.startsWith("https://")) stripped = url.slice(8);
+            else if (url.startsWith("http://")) stripped = url.slice(7);
+            const uriPayloadBytes = new TextEncoder().encode(stripped).length + 1;
+            return { totalBytes: uriPayloadBytes + 6, uriBytes: uriPayloadBytes, headerBytes: 6 };
+        }
+
+        function updateAllOutputs(useCustomUrl = false) {
+            if (!useCustomUrl) currentState.reviewUrl = `${REVIEW_BASE_URL}${currentState.placeId}`;
+            const finalUrl = currentState.reviewUrl;
+            document.getElementById('generatedUrlDisplay').textContent = finalUrl;
+            document.getElementById('urlCharCount').textContent = `${finalUrl.length} chars`;
+            document.getElementById('testLinkAnchor').href = finalUrl;
+            const ndef = calculateNdefBytes(finalUrl);
+            currentState.byteSize = ndef.totalBytes;
+            const countBadge = document.getElementById('byteCountBadge');
+            const fitBadge = document.getElementById('ultralightFitBadge');
+            const progressBar = document.getElementById('byteProgressBar');
+            countBadge.textContent = `${ndef.totalBytes} / ${MIFARE_ULTRALIGHT_MAX_BYTES} B`;
+            document.getElementById('byteBreakdownText').textContent = `${ndef.uriBytes}B URI + ${ndef.headerBytes}B NDEF Header`;
+            const pct = Math.min(100, Math.round((ndef.totalBytes / MIFARE_ULTRALIGHT_MAX_BYTES) * 100));
+            progressBar.style.width = `${pct}%`;
+            const remaining = MIFARE_ULTRALIGHT_MAX_BYTES - ndef.totalBytes;
+            if (remaining >= 0) {
+                countBadge.className = "text-base font-mono font-extrabold text-emerald-400";
+                fitBadge.className = "block text-[10px] font-mono font-bold uppercase text-emerald-400";
+                fitBadge.textContent = `✓ FITS (${remaining}B FREE)`;
+                progressBar.className = "h-full rounded-full bg-gradient-to-r from-indigo-500 via-teal-400 to-emerald-400 transition-all duration-300";
+            } else {
+                countBadge.className = "text-base font-mono font-extrabold text-red-400";
+                fitBadge.className = "block text-[10px] font-mono font-bold uppercase text-red-400";
+                fitBadge.textContent = `⚠ OVERFLOW BY ${Math.abs(remaining)}B`;
+                progressBar.className = "h-full rounded-full bg-red-500 transition-all duration-300";
+            }
+        }
+
+        async function launchNfcToolsPro(customUrl) {
+            triggerHaptic(40);
+            const targetUrl = customUrl || currentState.reviewUrl;
+            copyTextFallback(targetUrl);
+            try {
+                if (navigator.clipboard && navigator.clipboard.writeText) await navigator.clipboard.writeText(targetUrl);
+            } catch (e) {}
+            const method = document.getElementById('nfcLaunchMethod').value;
+            if (method === "android_share" && navigator.share) {
+                try {
+                    await navigator.share({ title: "Write NFC Review Link", text: targetUrl, url: targetUrl });
+                    return;
+                } catch (err) {}
+            }
+            showToast("Link copied! Opening NFC Tools Pro...");
+            const currentUrlFallback = encodeURIComponent(window.location.href);
+            if (method === "nfc_scheme") {
+                const a = document.createElement('a');
+                a.href = "nfc://scan/";
+                a.style.display = "none";
+                document.body.appendChild(a);
+                a.click();
+                setTimeout(() => { if (a.parentNode) a.parentNode.removeChild(a); }, 500);
+            } else {
+                const safeIntent = `intent://scan/#Intent;scheme=nfc;package=com.wakdev.nfctools.pro;S.browser_fallback_url=${currentUrlFallback};end`;
+                window.location.href = safeIntent;
+            }
+        }
+
+        async function shareUrlToNfcTools(customUrl) {
+            triggerHaptic(35);
+            const targetUrl = customUrl || currentState.reviewUrl;
+            copyTextFallback(targetUrl);
+            if (navigator.share) {
+                try { await navigator.share({ text: targetUrl }); showToast("Shared link to app!"); } catch (e) {}
+            } else {
+                launchNfcToolsPro(targetUrl);
+            }
+        }
+
+        function saveAndLaunchNfcToolsPro() {
+            const urlToWrite = currentState.reviewUrl;
+            saveToClientBatch(true);
+            launchNfcToolsPro(urlToWrite);
+        }
+
+        function openIndexedDB() {
+            if (dbPromise) return dbPromise;
+            dbPromise = new Promise((resolve) => {
+                if (!window.indexedDB) { resolve(null); return; }
+                const req = indexedDB.open(IDB_NAME, 1);
+                req.onupgradeneeded = (e) => {
+                    const db = e.target.result;
+                    if (!db.objectStoreNames.contains(IDB_STORE)) db.createObjectStore(IDB_STORE, { keyPath: "key" });
+                };
+                req.onsuccess = (e) => {
+                    const db = e.target.result;
+                    db.onversionchange = () => { try { db.close(); } catch (err) {} dbPromise = null; };
+                    resolve(db);
+                };
+                req.onerror = () => resolve(null);
+            });
+            return dbPromise;
+        }
+
+        async function readFromIndexedDB() {
+            const db = await openIndexedDB();
+            if (!db) return null;
+            return new Promise((resolve) => {
+                try {
+                    const tx = db.transaction(IDB_STORE, "readonly");
+                    const store = tx.objectStore(IDB_STORE);
+                    const getReq = store.get(STORAGE_KEY_BATCH);
+                    getReq.onsuccess = () => resolve(getReq.result ? getReq.result.records : null);
+                    getReq.onerror = () => resolve(null);
+                } catch (e) { resolve(null); }
+            });
+        }
+
+        async function writeToIndexedDB(records) {
+            const db = await openIndexedDB();
+            if (!db) return;
+            return new Promise((resolve) => {
+                try {
+                    const tx = db.transaction(IDB_STORE, "readwrite");
+                    tx.objectStore(IDB_STORE).put({ key: STORAGE_KEY_BATCH, records, updatedAt: Date.now() });
+                    tx.oncomplete = () => resolve(true);
+                    tx.onerror = () => resolve(false);
+                } catch (e) { resolve(false); }
+            });
+        }
+
+        async function loadBatchFromStorage() {
+            let loadedRecords = [];
+            try {
+                const snapEl = document.getElementById('embeddedBatchSnapshot');
+                if (snapEl && snapEl.textContent) {
+                    const parsedSnap = JSON.parse(snapEl.textContent);
+                    if (Array.isArray(parsedSnap) && parsedSnap.length > 0) loadedRecords = parsedSnap;
+                }
+            } catch (e) {}
+            try {
+                const rawLocal = localStorage.getItem(STORAGE_KEY_BATCH);
+                if (rawLocal) {
+                    const parsedLocal = JSON.parse(rawLocal);
+                    if (Array.isArray(parsedLocal) && parsedLocal.length > 0) {
+                        loadedRecords = mergeOrderLists(loadedRecords, parsedLocal.filter(r => r.id !== "ord_101"));
+                    }
+                }
+            } catch (e) {}
+            for (const legKey of LEGACY_KEYS) {
+                try {
+                    const rawLeg = localStorage.getItem(legKey);
+                    if (rawLeg) {
+                        const parsedLeg = JSON.parse(rawLeg);
+                        if (Array.isArray(parsedLeg) && parsedLeg.length > 0) {
+                            const normalized = parsedLeg
+                                .filter(r => r.id !== "ord_101" && r.id !== "ord_1" && r.id !== "ord_2")
+                                .map(r => ({
+                                    id: r.id || ("ord_" + Date.now() + Math.random()),
+                                    businessName: r.businessName || r.name || "Untitled Business",
+                                    phoneNumber: r.phoneNumber || r.phone || "",
+                                    sixCharCode: (r.sixCharCode || r.code || "").toUpperCase(),
+                                    placeId: r.placeId || "",
+                                    reviewUrl: r.reviewUrl || r.url || "",
+                                    bytes: r.bytes || 75,
+                                    status: r.status || "Programmed",
+                                    createdAt: r.createdAt || formatDateTimeHuman(new Date()),
+                                    location: r.location || null
+                                }));
+                            loadedRecords = mergeOrderLists(loadedRecords, normalized);
+                        }
+                    }
+                } catch (e) {}
+            }
+            try {
+                const idbRecords = await readFromIndexedDB();
+                if (Array.isArray(idbRecords) && idbRecords.length > 0) loadedRecords = mergeOrderLists(loadedRecords, idbRecords);
+            } catch (e) {}
+            batchList = loadedRecords;
+            await saveBatchToStorage();
+            renderBatchQueue();
+        }
+
+        function mergeOrderLists(listA, listB) {
+            const map = new Map();
+            [...(listA || []), ...(listB || [])].forEach(item => {
+                if (item && item.id) map.set(item.id, item);
+            });
+            return Array.from(map.values());
+        }
+
+        async function saveBatchToStorage() {
+            try { localStorage.setItem(STORAGE_KEY_BATCH, JSON.stringify(batchList)); } catch (e) {}
+            await writeToIndexedDB(batchList);
+            const snapEl = document.getElementById('embeddedBatchSnapshot');
+            if (snapEl) snapEl.textContent = JSON.stringify(batchList);
+            if (typeof window.syncBatchListToCloud === 'function') {
+                window.syncBatchListToCloud(batchList);
+            }
+        }
+
+        async function saveToClientBatch(silent = false) {
+            triggerHaptic(35);
+            updateCurrentBusinessMeta();
+            const code = document.getElementById('sixCharCodeInput').value.toUpperCase().replace(/[^A-Z0-9]/g, '').slice(0, 6);
+            const nowFormatted = formatDateTimeHuman(new Date());
+            const newRecord = {
+                id: "ord_" + Date.now(),
+                businessName: currentState.businessName || "Untitled Business",
+                phoneNumber: currentState.phoneNumber || "",
+                sixCharCode: code || "------",
+                placeId: currentState.placeId,
+                reviewUrl: currentState.reviewUrl,
+                bytes: currentState.byteSize,
+                status: "Programmed",
+                createdAt: nowFormatted,
+                location: currentState.location ? { ...currentState.location } : null
+            };
+            batchList.unshift(newRecord);
+            await saveBatchToStorage();
+            renderBatchQueue();
+            if (!silent) showToast(`Saved [${newRecord.sixCharCode}] ${newRecord.businessName}!`);
+        }
+
+        async function toggleOrderStatus(orderId) {
+            triggerHaptic(20);
+            const item = batchList.find(o => o.id === orderId);
+            if (item) {
+                item.status = item.status === "Programmed" ? "Pending" : "Programmed";
+                await saveBatchToStorage();
+                renderBatchQueue();
+            }
+        }
+
+        async function deleteOrder(orderId) {
+            triggerHaptic(25);
+            batchList = batchList.filter(o => o.id !== orderId);
+            if (typeof window.deleteOrderFromCloud === 'function') window.deleteOrderFromCloud(orderId);
+            await saveBatchToStorage();
+            renderBatchQueue();
+            showToast("Removed record from queue.");
+        }
+
+        function loadOrderIntoEditor(orderId) {
+            triggerHaptic(25);
+            const item = batchList.find(o => o.id === orderId);
+            if (!item) return;
+            currentState.businessName = item.businessName;
+            currentState.phoneNumber = item.phoneNumber || "";
+            currentState.sixCharCode = item.sixCharCode === "------" ? "" : (item.sixCharCode || "");
+            currentState.placeId = item.placeId;
+            currentState.reviewUrl = item.reviewUrl;
+            currentState.location = item.location ? { ...item.location } : null;
+            document.getElementById('bizNameInput').value = currentState.businessName;
+            document.getElementById('bizPhoneInput').value = currentState.phoneNumber;
+            document.getElementById('sixCharCodeInput').value = currentState.sixCharCode;
+            document.getElementById('smartInput').value = currentState.placeId;
+            updateCodeBadges(currentState.sixCharCode);
+            renderCurrentGpsPreview();
+            updateAllOutputs();
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+            showToast(`Loaded [${item.sixCharCode}] into editor.`);
+        }
+
+        function renderBatchQueue() {
+            const container = document.getElementById('batchQueueContainer');
+            const badge = document.getElementById('batchCountBadge');
+            const filterQuery = (document.getElementById('queueFilterInput').value || "").trim().toLowerCase();
+            badge.textContent = batchList.length;
+
+            const filtered = batchList.filter(item => {
+                if (!filterQuery) return true;
+                return (
+                    (item.businessName && item.businessName.toLowerCase().includes(filterQuery)) ||
+                    (item.phoneNumber && item.phoneNumber.toLowerCase().includes(filterQuery)) ||
+                    (item.sixCharCode && item.sixCharCode.toLowerCase().includes(filterQuery)) ||
+                    (item.createdAt && item.createdAt.toLowerCase().includes(filterQuery)) ||
+                    (item.location && item.location.address && item.location.address.toLowerCase().includes(filterQuery))
+                );
+            });
+
+            if (filtered.length === 0) {
+                container.innerHTML = `<div class="p-6 rounded-xl bg-slate-950/70 border border-slate-800 text-center text-xs text-slate-500">No saved client entries yet. Fill in the details above and tap <strong>"Save to Order Queue"</strong>.</div>`;
+                hydrateOfflineSvgIcons(container);
+                return;
+            }
+
+            container.innerHTML = filtered.map(item => {
+                const isDone = item.status === "Programmed";
+                const statusBadge = isDone
+                    ? `<span class="px-2 py-0.5 rounded-md bg-emerald-500/15 text-emerald-400 border border-emerald-500/30 text-[10px] font-mono font-bold">✓ ENCODED</span>`
+                    : `<span class="px-2 py-0.5 rounded-md bg-amber-500/15 text-amber-300 border border-amber-500/30 text-[10px] font-mono font-bold">⏳ PENDING</span>`;
+                const hasLocation = item.location && item.location.lat !== undefined;
+                const gpsHtml = hasLocation
+                    ? `<div class="flex items-center justify-between gap-1"><a href="${escapeHtml(item.location.mapUrl)}" target="_blank" rel="noopener noreferrer" class="text-[11px] font-mono font-semibold text-emerald-400 underline truncate"><i class="fa-solid fa-location-dot text-rose-400 mr-1"></i>${item.location.lat}, ${item.location.lng}</a><button onclick="capturePhoneGps('${item.id}')" class="text-[10px] text-slate-400 active:text-white px-1.5 py-0.5 rounded bg-slate-800" title="Refresh GPS"><i class="fa-solid fa-arrows-rotate"></i></button></div><div class="text-[10px] text-slate-400 truncate mt-0.5" title="${escapeHtml(item.location.address || '')}">${escapeHtml(item.location.address || '')}</div>`
+                    : `<button onclick="capturePhoneGps('${item.id}')" class="mt-0.5 w-full py-1 px-2 rounded-lg bg-indigo-500/15 active:bg-indigo-500/30 border border-indigo-500/30 text-[10px] font-semibold text-indigo-300 flex items-center justify-center gap-1"><i class="fa-solid fa-location-crosshairs text-rose-400"></i><span>Add GPS Location</span></button>`;
+
+                return `
+                    <div class="p-3 rounded-2xl bg-slate-950/90 border border-slate-800/90 space-y-2">
+                        <div class="grid grid-cols-12 gap-2 items-stretch">
+                            <div class="col-span-7 p-2.5 rounded-xl bg-slate-900 border border-slate-800 flex flex-col justify-between min-w-0">
+                                <div class="flex items-center justify-between gap-1">
+                                    <span class="text-[9px] font-mono uppercase text-slate-400">1. Business</span>
+                                    <span class="text-[9px] font-mono text-emerald-400">${item.bytes || 75}/137B</span>
+                                </div>
+                                <div class="font-bold text-xs text-white truncate mt-1" title="${escapeHtml(item.businessName)}">${escapeHtml(item.businessName)}</div>
+                            </div>
+                            <div class="col-span-5 p-2.5 rounded-xl bg-indigo-950/40 border-2 border-indigo-500/40 flex flex-col items-center justify-center text-center">
+                                <span class="text-[9px] font-mono uppercase text-indigo-300">3. 6-Char Code</span>
+                                <div class="font-mono font-extrabold text-base text-amber-400 tracking-widest mt-0.5">${escapeHtml(item.sixCharCode || "------")}</div>
+                            </div>
+                        </div>
+                        <div class="p-2.5 rounded-xl bg-slate-900 border border-slate-800 flex items-center justify-between gap-2">
+                            <div class="min-w-0 flex-1">
+                                <span class="block text-[9px] font-mono uppercase text-slate-400">2. Phone Number</span>
+                                <div class="font-mono font-semibold text-xs text-slate-100 truncate mt-0.5">${escapeHtml(item.phoneNumber || "No phone saved")}</div>
+                            </div>
+                            <div class="flex items-center gap-1.5 flex-shrink-0">
+                                <button onclick="callPhoneForOrder('${item.id}')" class="py-1.5 px-3 rounded-lg bg-sky-500/15 active:bg-sky-500/30 border border-sky-500/30 text-[11px] text-sky-400 font-bold flex items-center justify-center gap-1.5" title="Call Client"><i class="fa-solid fa-phone"></i><span>Call</span></button>
+                                <button onclick="sendWhatsAppForOrder('${item.id}')" class="py-1.5 px-3 rounded-lg bg-emerald-500/15 active:bg-emerald-500/30 border border-emerald-500/30 text-[11px] text-emerald-400 font-bold flex items-center justify-center gap-1.5" title="WhatsApp Client"><i class="fa-brands fa-whatsapp"></i><span>WhatsApp</span></button>
+                            </div>
+                        </div>
+                        <div class="grid grid-cols-12 gap-2 items-stretch">
+                            <div class="col-span-7 p-2.5 rounded-xl bg-slate-900/90 border border-slate-800 flex flex-col justify-between min-w-0">
+                                <span class="text-[9px] font-mono uppercase text-slate-400">4. GPS Location Tag</span>
+                                ${gpsHtml}
+                            </div>
+                            <div class="col-span-5 p-2.5 rounded-xl bg-slate-900/90 border border-slate-800 flex flex-col justify-between min-w-0">
+                                <span class="text-[9px] font-mono uppercase text-slate-400">5. Date & Timing</span>
+                                <div class="font-mono text-[10px] font-semibold text-slate-200 mt-0.5 leading-snug break-words"><i class="fa-regular fa-calendar-check text-indigo-400 mr-1"></i>${escapeHtml(item.createdAt || "—")}</div>
+                            </div>
+                        </div>
+                        <div class="flex items-center justify-between gap-1.5 pt-1.5 border-t border-slate-800/80">
+                            <button onclick="toggleOrderStatus('${item.id}')" class="flex-shrink-0">${statusBadge}</button>
+                            <div class="flex items-center gap-1 flex-shrink-0">
+                                <button onclick="launchNfcToolsPro('${escapeHtml(item.reviewUrl)}')" class="px-2.5 py-1.5 rounded-lg bg-indigo-600/25 active:bg-indigo-600/40 border border-indigo-500/40 text-[11px] font-bold text-indigo-300 flex items-center gap-1"><i class="fa-solid fa-wifi rotate-90 text-[10px]"></i><span>Write</span></button>
+                                <button onclick="shareUrlToNfcTools('${escapeHtml(item.reviewUrl)}')" class="p-1.5 px-2 rounded-lg bg-slate-900 border border-slate-700 text-xs text-indigo-300" title="Share URL"><i class="fa-solid fa-share-nodes"></i></button>
+                                <button onclick="copyCustomUrl('${escapeHtml(item.reviewUrl)}')" class="p-1.5 px-2 rounded-lg bg-slate-900 border border-slate-700 text-xs text-slate-300" title="Copy Link"><i class="fa-regular fa-copy"></i></button>
+                                <button onclick="loadOrderIntoEditor('${item.id}')" class="p-1.5 px-2 rounded-lg bg-slate-900 border border-slate-700 text-xs text-slate-300" title="Edit"><i class="fa-solid fa-pen"></i></button>
+                                <button onclick="deleteOrder('${item.id}')" class="p-1.5 px-2 rounded-lg bg-slate-900 border border-slate-800 text-xs text-slate-500 active:text-red-400" title="Delete"><i class="fa-solid fa-trash-can"></i></button>
+                            </div>
+                        </div>
+                    </div>`;
+            }).join('');
+
+            hydrateOfflineSvgIcons(container);
+        }
+
+        function exportBatchCsv() {
+            triggerHaptic();
+            if (batchList.length === 0) { showToast("Queue is empty. Save a card first!"); return; }
+            const headers = ["Business Name (Box 1)","Phone Number (Box 2)","6-Char Code (Box 3)","GPS Coordinates (Box 4)","GPS Address (Box 4)","Google Maps GPS Link","Date & Timing (Box 5)","Place ID","Direct Review URL","NDEF Bytes (Max 137)","Status"];
+            const rows = batchList.map(item => {
+                const coords = item.location ? `${item.location.lat}, ${item.location.lng}` : "";
+                const addr = item.location ? (item.location.address || "") : "";
+                const mapLink = item.location ? (item.location.mapUrl || "") : "";
+                return [
+                    `"${(item.businessName || "").replace(/"/g, '""')}"`,
+                    `"${(item.phoneNumber || "").replace(/"/g, '""')}"`,
+                    `"${(item.sixCharCode || "").replace(/"/g, '""')}"`,
+                    `"${coords}"`,
+                    `"${addr.replace(/"/g, '""')}"`,
+                    `"${mapLink}"`,
+                    `"${(item.createdAt || "").replace(/"/g, '""')}"`,
+                    `"${item.placeId || ""}"`,
+                    `"${item.reviewUrl || ""}"`,
+                    item.bytes || 0,
+                    `"${item.status || ""}"`
+                ];
+            });
+            const csvContent = [headers.join(","), ...rows.map(r => r.join(","))].join("\n");
+            const blob = new Blob([csvContent], { type: "text/csv;charset=utf-8;" });
+            const url = URL.createObjectURL(blob);
+            const link = document.createElement("a");
+            link.href = url;
+            link.download = `nfc_orders_${new Date().toISOString().slice(0,10)}.csv`;
+            link.click();
+            URL.revokeObjectURL(url);
+            showToast("Exported CSV with Date, Time & GPS!");
+        }
+
+        function callPhoneCurrent() {
+            triggerHaptic();
+            const rawPhone = (document.getElementById('bizPhoneInput').value || "").trim();
+            const cleaned = rawPhone.replace(/[^0-9+]/g, '');
+            if (!cleaned) { showToast("Enter a phone number in Box 2 first."); document.getElementById('bizPhoneInput').focus(); return; }
+            window.location.href = `tel:${cleaned}`;
+        }
+        function callPhoneForOrder(orderId) {
+            triggerHaptic();
+            const item = batchList.find(o => o.id === orderId);
+            if (!item || !item.phoneNumber) { showToast("No phone number saved."); return; }
+            const cleaned = item.phoneNumber.replace(/[^0-9+]/g, '');
+            if (!cleaned) { showToast("No valid phone number."); return; }
+            window.location.href = `tel:${cleaned}`;
+        }
+        function openWhatsAppCurrent() {
+            triggerHaptic();
+            const phone = (document.getElementById('bizPhoneInput').value || "").replace(/[^0-9]/g, '');
+            const biz = currentState.businessName || "Business";
+            const code = currentState.sixCharCode || "------";
+            const msg = `Hello *${biz}*,\nYour Google Review NFC Card (Code: *${code}*) is programmed!\n\nDirect Review Link:\n${currentState.reviewUrl}`;
+            const waUrl = phone ? `https://wa.me/${phone}?text=${encodeURIComponent(msg)}` : `https://wa.me/?text=${encodeURIComponent(msg)}`;
+            window.open(waUrl, "_blank", "noopener,noreferrer");
+        }
+        function sendWhatsAppForOrder(orderId) {
+            triggerHaptic();
+            const item = batchList.find(o => o.id === orderId);
+            if (!item) return;
+            const phone = (item.phoneNumber || "").replace(/[^0-9]/g, '');
+            const msg = `Hello *${item.businessName}*,\nYour Google Review NFC Card (Code: *${item.sixCharCode}*) is ready!\n\nDirect Review Link:\n${item.reviewUrl}`;
+            const waUrl = phone ? `https://wa.me/${phone}?text=${encodeURIComponent(msg)}` : `https://wa.me/?text=${encodeURIComponent(msg)}`;
+            window.open(waUrl, "_blank", "noopener,noreferrer");
+        }
+
+        function toggleApiModal() { document.getElementById('apiModal').classList.toggle('hidden'); }
+
+        function saveApiKeyAndLoad() {
+            const key = document.getElementById('apiKeyInput').value.trim();
+            if (!key) { showToast("Enter a valid Google Maps API Key."); return; }
+            localStorage.setItem(STORAGE_KEY_API, key);
+            toggleApiModal();
+            switchMode('live-api');
+            loadGooglePlacesScript(key);
+        }
+
+        function clearSavedApiKey() {
+            localStorage.removeItem(STORAGE_KEY_API);
+            document.getElementById('apiKeyInput').value = "";
+            const keyIcon = document.getElementById('apiKeyIcon');
+            if (keyIcon) keyIcon.className = "fa-solid fa-key text-indigo-400";
+            toggleApiModal();
+            switchMode('no-api');
+            showToast("Removed API Key.");
+        }
+
+        function loadGooglePlacesScript(apiKey) {
+            if (window.google && window.google.maps && window.google.maps.places) {
+                initPlacesAutocomplete();
+                return;
+            }
+            const existingScript = document.getElementById('googleMapsScript');
+            if (existingScript) {
+                if (window.google?.maps?.places) initPlacesAutocomplete();
+                return;
+            }
+            const script = document.createElement('script');
+            script.id = 'googleMapsScript';
+            script.src = `https://maps.googleapis.com/maps/api/js?key=${encodeURIComponent(apiKey)}&libraries=places`;
+            script.async = true;
+            script.onload = () => {
+                initPlacesAutocomplete();
+                const keyIcon = document.getElementById('apiKeyIcon');
+                if (keyIcon) keyIcon.className = "fa-solid fa-key text-emerald-400";
+                const dot = document.getElementById('liveApiDot');
+                if (dot) dot.className = "w-2 h-2 rounded-full bg-emerald-400";
+                showToast("Live Places Autocomplete active!");
+            };
+            document.head.appendChild(script);
+        }
+
+        function initPlacesAutocomplete() {
+            const input = document.getElementById('placesAutocompleteInput');
+            if (!input || !window.google?.maps?.places) return;
+            if (input.dataset.autocompleteInit === '1') return;
+            input.dataset.autocompleteInit = '1';
+            const autocomplete = new google.maps.places.Autocomplete(input, {
+                fields: ["place_id", "name", "formatted_phone_number", "international_phone_number"]
+            });
+            autocomplete.addListener("place_changed", () => {
+                const place = autocomplete.getPlace();
+                if (!place.place_id) { showToast("No Place ID found for that entry."); return; }
+                currentState.placeId = place.place_id;
+                if (place.name) { currentState.businessName = place.name; document.getElementById('bizNameInput').value = place.name; }
+                const phone = place.international_phone_number || place.formatted_phone_number || "";
+                if (phone) { currentState.phoneNumber = phone; document.getElementById('bizPhoneInput').value = phone; }
+                document.getElementById('smartInput').value = place.place_id;
+                handleSmartInput(place.place_id);
+                showToast(`Selected "${place.name || 'Business'}"!`);
+            });
+        }
+
+        function downloadHtmlWithEmbeddedData() {
+            triggerHaptic(35);
+            const snapEl = document.getElementById('embeddedBatchSnapshot');
+            if (snapEl) snapEl.textContent = JSON.stringify(batchList);
+            const fullHtml = "<!DOCTYPE html>\n" + document.documentElement.outerHTML;
+            const blob = new Blob([fullHtml], { type: "text/html;charset=utf-8" });
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement("a");
+            a.href = url;
+            a.download = `TapReview_Database_${new Date().toISOString().slice(0,10)}.html`;
+            a.click();
+            URL.revokeObjectURL(url);
+            showToast(`Saved HTML w/ ${batchList.length} Entries!`);
+        }
+
+        function downloadDatabaseFile() {
+            triggerHaptic(30);
+            const dbPayload = {
+                databaseVersion: 2,
+                exportedAt: new Date().toISOString(),
+                workspaceChannel: localStorage.getItem("tapreview_cloud_channel") || "DEFAULT_STUDIO",
+                totalRecords: batchList.length,
+                records: batchList
+            };
+            const blob = new Blob([JSON.stringify(dbPayload, null, 2)], { type: "application/json;charset=utf-8" });
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement("a");
+            a.href = url;
+            a.download = `TapReview_DB_${new Date().toISOString().slice(0,10)}.db.json`;
+            a.click();
+            URL.revokeObjectURL(url);
+            showToast(`Saved Database File (${batchList.length} records)!`);
+        }
+
+        function importBackupFile(event) {
+            const file = event.target.files && event.target.files[0];
+            if (!file) return;
+            const reader = new FileReader();
+            reader.onload = async (e) => {
+                try {
+                    const content = String(e.target.result || "");
+                    let extractedRecords = null;
+                    if (content.includes('id="embeddedBatchSnapshot"')) {
+                        const match = content.match(/<script[^>]*id=["']embeddedBatchSnapshot["'][^>]*>([\s\S]*?)<\/script>/i);
+                        if (match && match[1]) extractedRecords = JSON.parse(match[1].trim());
+                    } else {
+                        const parsed = JSON.parse(content);
+                        if (Array.isArray(parsed)) extractedRecords = parsed;
+                        else if (parsed && Array.isArray(parsed.records)) extractedRecords = parsed.records;
+                    }
+                    if (Array.isArray(extractedRecords)) {
+                        batchList = mergeOrderLists(extractedRecords, batchList);
+                        await saveBatchToStorage();
+                        renderBatchQueue();
+                        showToast(`Restored ${extractedRecords.length} entries!`);
+                    } else {
+                        showToast("Could not find valid records in file.");
+                    }
+                } catch (err) {
+                    showToast("Invalid database or backup file format.");
+                }
+            };
+            reader.readAsText(file);
+        }
+
+        function toggleCloudModal() {
+            triggerHaptic(15);
+            document.getElementById('cloudModal').classList.toggle('hidden');
+        }
+
+        function applyCloudWorkspaceChannel() {
+            triggerHaptic(25);
+            const input = document.getElementById('cloudSyncChannelInput');
+            const channel = (input.value || "DEFAULT_STUDIO").trim().toUpperCase().replace(/[^A-Z0-9_-]/g, '') || "DEFAULT_STUDIO";
+            input.value = channel;
+            try { localStorage.setItem("tapreview_cloud_channel", channel); } catch (e) {}
+            if (typeof window.reconnectCloudChannel === 'function') window.reconnectCloudChannel(channel);
+            showToast(`Cloud Workspace set to [${channel}]!`);
+        }
+
+        function forcePushAllToCloud() {
+            triggerHaptic(30);
+            if (typeof window.syncBatchListToCloud === 'function') window.syncBatchListToCloud(batchList, true);
+            else showToast("Cloud connection initializing...");
+        }
+
+        function copyReviewLink() {
+            triggerHaptic(25);
+            copyTextFallback(currentState.reviewUrl);
+            const btnText = document.getElementById('copyBtnText');
+            if (btnText) { btnText.textContent = "Copied!"; setTimeout(() => { btnText.textContent = "Copy Review Link"; }, 1800); }
+            showToast("Review link copied!");
+        }
+        function copyCustomUrl(url) { triggerHaptic(25); copyTextFallback(url); showToast("Link copied!"); }
+        function copyTextFallback(text) {
+            if (!text) return;
+            if (navigator.clipboard && typeof navigator.clipboard.writeText === 'function') {
+                navigator.clipboard.writeText(text).catch(() => {});
+            }
+            try {
+                const ta = document.createElement('textarea');
+                ta.value = text;
+                ta.style.position = 'fixed';
+                ta.style.left = '-9999px';
+                document.body.appendChild(ta);
+                ta.select();
+                document.execCommand('copy');
+                document.body.removeChild(ta);
+            } catch (e) {}
+        }
+
+        let toastTimer = null;
+        function showToast(msg) {
+            const banner = document.getElementById('toastBanner');
+            const msgEl = document.getElementById('toastMessage');
+            if (!banner || !msgEl) return;
+            msgEl.textContent = msg;
+            banner.classList.remove('-translate-y-24', 'opacity-0');
+            banner.classList.add('translate-y-0', 'opacity-100');
+            if (toastTimer) clearTimeout(toastTimer);
+            toastTimer = setTimeout(() => {
+                banner.classList.remove('translate-y-0', 'opacity-100');
+                banner.classList.add('-translate-y-24', 'opacity-0');
+            }, 2600);
+        }
+
+        function escapeHtml(str) {
+            return String(str ?? '')
+                .replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;')
+                .replace(/"/g, '&quot;').replace(/'/g, '&#39;');
+        }
+    </script>
+
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js";
+        import { getAuth, signInAnonymously, signInWithCustomToken, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
+        import { getFirestore, doc, setDoc, deleteDoc, onSnapshot, collection } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
+
+        const appId = typeof __app_id !== 'undefined' ? __app_id : 'tapreview-nfc-studio';
+        let db = null, auth = null, currentUser = null;
+        let unsubscribeSnapshot = null;
+        let activeWorkspace = localStorage.getItem("tapreview_cloud_channel") || "DEFAULT_STUDIO";
+        let lastLocalWriteTs = 0;
+
+        const channelInput = document.getElementById('cloudSyncChannelInput');
+        if (channelInput) channelInput.value = activeWorkspace;
+
+        function setCloudUiState(statusText, isOnline) {
+            const modalStatus = document.getElementById('cloudModalStatus');
+            const headerText = document.getElementById('cloudTextHeader');
+            const headerBadge = document.getElementById('cloudBadgeHeader');
+            const storageText = document.getElementById('storageStatusText');
+            if (modalStatus) {
+                modalStatus.textContent = statusText;
+                modalStatus.className = isOnline ? "font-mono font-bold text-emerald-400" : "font-mono font-bold text-amber-400";
+            }
+            if (headerText) headerText.textContent = isOnline ? "Cloud Live" : "Local DB";
+            if (headerBadge) headerBadge.className = isOnline
+                ? "cursor-pointer text-[9px] font-mono font-semibold uppercase px-1.5 py-0.5 rounded bg-emerald-500/15 text-emerald-400 border border-emerald-500/30 flex items-center gap-1"
+                : "cursor-pointer text-[9px] font-mono font-semibold uppercase px-1.5 py-0.5 rounded bg-amber-500/15 text-amber-300 border border-amber-500/30 flex items-center gap-1";
+            if (storageText && isOnline) storageText.textContent = `Cloud Synced (${activeWorkspace}) + HTML DB`;
+        }
+
+        async function initCloudSync() {
+            try {
+                if (typeof __firebase_config === 'undefined' || !__firebase_config) {
+                    setCloudUiState("Offline Mode (HTML DB + IndexedDB Active)", false);
+                    return;
+                }
+                const firebaseConfig = JSON.parse(__firebase_config);
+                const app = initializeApp(firebaseConfig);
+                auth = getAuth(app);
+                db = getFirestore(app);
+                if (typeof __initial_auth_token !== 'undefined' && __initial_auth_token) {
+                    await signInWithCustomToken(auth, __initial_auth_token);
+                } else {
+                    await signInAnonymously(auth);
+                }
+                onAuthStateChanged(auth, (user) => {
+                    currentUser = user;
+                    const uidEl = document.getElementById('cloudUserIdDisplay');
+                    if (uidEl) uidEl.textContent = user ? user.uid : "Not signed in";
+                    if (user) subscribeToCloudOrders(activeWorkspace);
+                });
+            } catch (err) {
+                setCloudUiState("Local DB Active (Cloud Unavailable)", false);
+            }
+        }
+
+        function subscribeToCloudOrders(workspaceCode) {
+            if (!db || !currentUser) return;
+            if (unsubscribeSnapshot) { unsubscribeSnapshot(); unsubscribeSnapshot = null; }
+            const ordersCol = collection(db, 'artifacts', appId, 'public', 'data', 'tapreview_orders');
+            unsubscribeSnapshot = onSnapshot(
+                ordersCol,
+                (snapshot) => {
+                    if (Date.now() - lastLocalWriteTs < 5000) return;
+                    const cloudItems = [];
+                    snapshot.forEach((docSnap) => {
+                        const data = docSnap.data();
+                        if (data && data.id && (data.workspace === workspaceCode || (!data.workspace && workspaceCode === "DEFAULT_STUDIO"))) {
+                            cloudItems.push(data);
+                        }
+                    });
+                    setCloudUiState(`Synced • ${ workspaceCode }`, true);
+                    if (cloudItems.length > 0) {
+                        const beforeLen = batchList.length;
+                        batchList = mergeOrderLists(cloudItems, batchList).sort((a, b) => {
+                            const tA = Number(String(a.id).replace('ord_', '')) || 0;
+                            const tB = Number(String(b.id).replace('ord_', '')) || 0;
+                            return tB - tA;
+                        });
+                        if (batchList.length !== beforeLen) {
+                            try { localStorage.setItem(STORAGE_KEY_BATCH, JSON.stringify(batchList)); } catch (e) {}
+                            writeToIndexedDB(batchList);
+                            renderBatchQueue();
+                        }
+                    }
+                },
+                (err) => { setCloudUiState("Local DB Active (Sync Paused)", false); }
+            );
+        }
+
+        window.syncBatchListToCloud = async function (records, notifyToast = false) {
+            if (!db || !currentUser || !Array.isArray(records)) return;
+            lastLocalWriteTs = Date.now();
+            try {
+                for (const item of records) {
+                    if (!item || !item.id) continue;
+                    const docRef = doc(db, 'artifacts', appId, 'public', 'data', 'tapreview_orders', String(item.id));
+                    await setDoc(docRef, { ...item, workspace: activeWorkspace, updatedBy: currentUser.uid, syncedAt: Date.now() });
+                }
+                if (notifyToast) showToast(`Synced ${records.length} records to Cloud [${activeWorkspace}]!`);
+            } catch (e) {
+                if (notifyToast) showToast("Cloud sync error; saved locally.");
+            }
+        };
+
+        window.deleteOrderFromCloud = async function (orderId) {
+            if (!db || !currentUser || !orderId) return;
+            lastLocalWriteTs = Date.now();
+            try {
+                const docRef = doc(db, 'artifacts', appId, 'public', 'data', 'tapreview_orders', String(orderId));
+                await deleteDoc(docRef);
+            } catch (e) {}
+        };
+
+        window.reconnectCloudChannel = function (newChannel) {
+            activeWorkspace = newChannel;
+            subscribeToCloudOrders(activeWorkspace);
+            window.syncBatchListToCloud(batchList, false);
+        };
+
+        initCloudSync();
+    </script>
+</body>
+</html>
