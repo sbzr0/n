@@ -1432,13 +1432,13 @@
                 } catch (err) {}
             }
             
-            showToast("Link copied! Opening NFC Tools Pro...");
+            showToast("Link copied! Opening NFC Tools...");
             
-            // 3. Clean App Launch Intent (Fixes "Bad NFC URL" toast)
+            // 3. Clean App Launch Intent (Targets the FREE version explicitly: com.wakdev.wdnfc)
             const currentUrlFallback = encodeURIComponent(window.location.href);
             
             if (method === "nfc_scheme") {
-                // Pure launcher intent without a fallback URL
+                // Pure launcher intent targeting NFC Tools (Free)
                 const a = document.createElement('a');
                 a.href = "intent://#Intent;package=com.wakdev.wdnfc;action=android.intent.action.MAIN;category=android.intent.category.LAUNCHER;end";
                 a.style.display = "none";
@@ -1446,7 +1446,7 @@
                 a.click();
                 setTimeout(() => { if (a.parentNode) a.parentNode.removeChild(a); }, 500);
             } else {
-                // Safe intent with fallback to the browser if the app isn't installed
+                // Safe intent targeting NFC Tools (Free) with fallback to browser
                 const safeIntent = `intent://#Intent;package=com.wakdev.wdnfc;action=android.intent.action.MAIN;category=android.intent.category.LAUNCHER;S.browser_fallback_url=${currentUrlFallback};end`;
                 window.location.href = safeIntent;
             }
