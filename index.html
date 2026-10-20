@@ -360,7 +360,7 @@
                     <div class="flex items-center justify-between">
                         <span class="text-[10px] font-mono uppercase tracking-wider text-amber-400 font-bold flex items-center gap-1.5">
                             <i class="fa-solid fa-bolt"></i>
-                            <span>com.wakdev.nfctools.pro</span>
+                            <span>com.wakdev.wdnfc</span>
                         </span>
                         <span class="text-[9px] font-mono px-1.5 py-0.5 rounded bg-emerald-500/15 text-emerald-400 border border-emerald-500/30">No Play Store Redirect</span>
                     </div>
@@ -1558,14 +1558,14 @@
             if (method === "nfc_scheme") {
                 // Pure launcher intent without a fallback URL
                 const a = document.createElement('a');
-                a.href = "intent://#Intent;package=com.wakdev.nfctools.pro;action=android.intent.action.MAIN;category=android.intent.category.LAUNCHER;end";
+                a.href = "intent://#Intent;package=com.wakdev.wdnfc;action=android.intent.action.MAIN;category=android.intent.category.LAUNCHER;end";
                 a.style.display = "none";
                 document.body.appendChild(a);
                 a.click();
                 setTimeout(() => { if (a.parentNode) a.parentNode.removeChild(a); }, 500);
             } else {
                 // Safe intent with fallback to the browser if the app isn't installed
-                const safeIntent = `intent://#Intent;package=com.wakdev.nfctools.pro;action=android.intent.action.MAIN;category=android.intent.category.LAUNCHER;S.browser_fallback_url=${currentUrlFallback};end`;
+                const safeIntent = `intent://#Intent;package=com.wakdev.wdnfc;action=android.intent.action.MAIN;category=android.intent.category.LAUNCHER;S.browser_fallback_url=${currentUrlFallback};end`;
                 window.location.href = safeIntent;
             }
         }
