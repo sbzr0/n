@@ -1531,28 +1531,41 @@
         async function launchNfcToolsPro(customUrl) {
             triggerHaptic(40);
             const targetUrl = customUrl || currentState.reviewUrl;
+            
+            // 1. Copy the URL to the clipboard
             copyTextFallback(targetUrl);
             try {
-                if (navigator.clipboard && navigator.clipboard.writeText) await navigator.clipboard.writeText(targetUrl);
+                if (navigator.clipboard && navigator.clipboard.writeText) {
+                    await navigator.clipboard.writeText(targetUrl);
+                }
             } catch (e) {}
+            
             const method = document.getElementById('nfcLaunchMethod').value;
+            
+            // 2. Handle Android Share Sheet option
             if (method === "android_share" && navigator.share) {
                 try {
                     await navigator.share({ title: "Write NFC Review Link", text: targetUrl, url: targetUrl });
                     return;
                 } catch (err) {}
             }
+            
             showToast("Link copied! Opening NFC Tools Pro...");
+            
+            // 3. Clean App Launch Intent (Fixes "Bad NFC URL" toast)
             const currentUrlFallback = encodeURIComponent(window.location.href);
+            
             if (method === "nfc_scheme") {
+                // Pure launcher intent without a fallback URL
                 const a = document.createElement('a');
-                a.href = "nfc://scan/";
+                a.href = "intent://#Intent;package=com.wakdev.nfctools.pro;action=android.intent.action.MAIN;category=android.intent.category.LAUNCHER;end";
                 a.style.display = "none";
                 document.body.appendChild(a);
                 a.click();
                 setTimeout(() => { if (a.parentNode) a.parentNode.removeChild(a); }, 500);
             } else {
-                const safeIntent = `intent://scan/#Intent;scheme=nfc;package=com.wakdev.nfctools.pro;S.browser_fallback_url=${currentUrlFallback};end`;
+                // Safe intent with fallback to the browser if the app isn't installed
+                const safeIntent = `intent://#Intent;package=com.wakdev.nfctools.pro;action=android.intent.action.MAIN;category=android.intent.category.LAUNCHER;S.browser_fallback_url=${currentUrlFallback};end`;
                 window.location.href = safeIntent;
             }
         }
