@@ -718,7 +718,7 @@
                         repo: parsed.repo !== undefined ? parsed.repo.trim() : "n",
                         branch: (parsed.branch || "main").trim() || "main",
                         path: (parsed.path || "entries.json").trim().replace(/^\/+/, '') || "entries.json",
-                        token: parsed.token !== undefined ? parsed.token.trim() : "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",
+                        token: parsed.token !== undefined ? parsed.token.trim() : "",
                         autoSync: parsed.autoSync !== false
                     };
                 }
@@ -730,7 +730,7 @@
                 repo: "n",
                 branch: "main",
                 path: "entries.json",
-                token: "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",
+                token: "",
                 autoSync: true
             };
         }
