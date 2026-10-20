@@ -1,24 +1,6 @@
 {
   "records": [
     {
-      "id": "ord_1792503751531",
-      "businessName": "shawarma king",
-      "phoneNumber": "74487788443",
-      "sixCharCode": "FE8FD3",
-      "placeId": "ChIJR1ctPEH9DDkRdiGiHhl5kuw",
-      "reviewUrl": "https://search.google.com/local/writereview?placeid=ChIJR1ctPEH9DDkRdiGiHhl5kuw",
-      "bytes": 78,
-      "status": "Programmed",
-      "createdAt": "20 Oct 2026, 07:12 pm",
-      "location": {
-        "lat": 18.54246,
-        "lng": 73.836311,
-        "accuracy": 132,
-        "address": "Mandalay Lines, Pune, Pune City Subdistrict, Pune District",
-        "mapUrl": "https://www.google.com/maps?q=18.54246,73.836311"
-      }
-    },
-    {
       "id": "ord_1792503653970",
       "businessName": "shawarma king",
       "phoneNumber": "74487788445",
