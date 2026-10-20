@@ -1434,24 +1434,17 @@
             
             showToast("Link copied! Opening NFC Tools...");
             
-            // 3. Clean App Launch Intent (Targets the FREE version explicitly: com.wakdev.wdnfc)
-            const currentUrlFallback = encodeURIComponent(window.location.href);
-            
+            // 3. Direct Navigation (Fixes the Play Store Redirect Loop)
             if (method === "nfc_scheme") {
-                // Pure launcher intent targeting NFC Tools (Free)
-                const a = document.createElement('a');
-                a.href = "intent://#Intent;package=com.wakdev.wdnfc;action=android.intent.action.MAIN;category=android.intent.category.LAUNCHER;end";
-                a.style.display = "none";
-                document.body.appendChild(a);
-                a.click();
-                setTimeout(() => { if (a.parentNode) a.parentNode.removeChild(a); }, 500);
+                // Uses the custom scheme but stripped of "scan/" to avoid the "Bad URL" error
+                window.location.assign("nfc://"); 
             } else {
-                // Safe intent targeting NFC Tools (Free) with fallback to browser
-                const safeIntent = `intent://#Intent;package=com.wakdev.wdnfc;action=android.intent.action.MAIN;category=android.intent.category.LAUNCHER;S.browser_fallback_url=${currentUrlFallback};end`;
-                window.location.href = safeIntent;
+                // The most basic, universal package intent. Because it uses window.location.assign 
+                // directly inside a user tap, Chrome won't block it and redirect to the Play Store.
+                window.location.assign("intent://#Intent;package=com.wakdev.wdnfc;end");
             }
         }
-
+        
         async function shareUrlToNfcTools(customUrl) {
             triggerHaptic(35);
             const targetUrl = customUrl || currentState.reviewUrl;
