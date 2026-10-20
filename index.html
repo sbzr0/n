@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
-    <title>TapReview Mobile — Nothing Phone (2a) Plus Edition</title>
+    <title>TapReview Mobile</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -74,9 +74,9 @@
                 <div class="min-w-0">
                     <div class="flex items-center space-x-1.5">
                         <h1 class="font-extrabold text-sm tracking-tight text-white truncate">TapReview</h1>
-                        <span id="cloudBadgeHeader" onclick="toggleCloudModal()" class="cursor-pointer text-[9px] font-mono font-semibold uppercase px-1.5 py-0.5 rounded bg-emerald-500/15 text-emerald-400 border border-emerald-500/30 flex items-center gap-1 flex-shrink-0">
-                            <i class="fa-solid fa-cloud text-[8px]"></i>
-                            <span id="cloudTextHeader">Cloud</span>
+                        <span id="githubBadgeHeader" onclick="toggleGithubModal()" class="cursor-pointer text-[9px] font-mono font-semibold uppercase px-1.5 py-0.5 rounded bg-slate-800 text-slate-300 border border-slate-700 flex items-center gap-1 flex-shrink-0">
+                            <i class="fa-brands fa-github text-[10px]"></i>
+                            <span id="githubTextHeader">GitHub Setup</span>
                         </span>
                     </div>
                     <p id="liveClockHeader" class="text-[10px] text-slate-400 leading-none mt-1 font-mono truncate">137B Ultralight Studio</p>
@@ -405,27 +405,39 @@
 
             <div class="p-3 rounded-xl bg-slate-950/90 border border-slate-800/90 space-y-2.5">
                 <div class="flex items-center justify-between gap-2">
-                    <div class="flex items-center gap-1.5 text-[11px] text-emerald-400 font-medium">
-                        <i id="storageStatusIcon" class="fa-solid fa-cloud-arrow-up"></i>
-                        <span id="storageStatusText">Cloud Sync + IndexedDB + HTML DB Ready</span>
+                    <div class="flex items-center gap-1.5 text-[11px] text-emerald-400 font-medium min-w-0">
+                        <i id="storageStatusIcon" class="fa-brands fa-github flex-shrink-0"></i>
+                        <span id="storageStatusText" class="truncate">GitHub Repo Sync + Local DB Ready</span>
                     </div>
-                    <button type="button" onclick="toggleCloudModal()" class="px-2.5 py-1 rounded-lg bg-emerald-500/15 active:bg-emerald-500/25 border border-emerald-500/30 text-[10px] font-bold text-emerald-300 flex items-center gap-1">
-                        <i class="fa-solid fa-cloud"></i>
-                        <span>Cloud Settings</span>
+                    <button type="button" onclick="toggleGithubModal()" class="px-2.5 py-1 rounded-lg bg-indigo-500/15 active:bg-indigo-500/25 border border-indigo-500/30 text-[10px] font-bold text-indigo-300 flex items-center gap-1 flex-shrink-0">
+                        <i class="fa-brands fa-github"></i>
+                        <span>GitHub Setup</span>
                     </button>
                 </div>
-                <div class="grid grid-cols-3 gap-1.5">
-                    <button type="button" onclick="downloadHtmlWithEmbeddedData()" class="py-2 px-2 rounded-lg bg-indigo-500/20 active:bg-indigo-500/35 border border-indigo-500/40 text-[10px] font-bold text-indigo-200 flex items-center justify-center gap-1" title="Saves this entire app + embedded database into a standalone HTML file">
-                        <i class="fa-solid fa-file-code text-indigo-400"></i>
-                        <span>Save HTML w/ Entries</span>
+
+                <div class="grid grid-cols-2 gap-1.5">
+                    <button type="button" onclick="pullFromGithubRepo(false)" class="py-2 px-2.5 rounded-lg bg-emerald-500/15 active:bg-emerald-500/30 border border-emerald-500/30 text-[10px] font-bold text-emerald-300 flex items-center justify-center gap-1.5">
+                        <i id="ghPullIcon" class="fa-solid fa-cloud-arrow-down"></i>
+                        <span>Load from GitHub</span>
                     </button>
-                    <button type="button" onclick="downloadDatabaseFile()" class="py-2 px-2 rounded-lg bg-amber-500/15 active:bg-amber-500/30 border border-amber-500/30 text-[10px] font-bold text-amber-300 flex items-center justify-center gap-1" title="Saves a standalone .db.json database file">
+                    <button type="button" onclick="pushToGithubRepo(true)" class="py-2 px-2.5 rounded-lg bg-indigo-500/20 active:bg-indigo-500/35 border border-indigo-500/40 text-[10px] font-bold text-indigo-200 flex items-center justify-center gap-1.5">
+                        <i id="ghPushIcon" class="fa-solid fa-cloud-arrow-up"></i>
+                        <span>Sync to GitHub</span>
+                    </button>
+                </div>
+
+                <div class="grid grid-cols-3 gap-1.5 pt-1 border-t border-slate-800/70">
+                    <button type="button" onclick="downloadHtmlWithEmbeddedData()" class="py-2 px-2 rounded-lg bg-slate-900 active:bg-slate-800 border border-slate-700 text-[10px] font-bold text-indigo-200 flex items-center justify-center gap-1" title="Saves this entire app + embedded database into a standalone HTML file">
+                        <i class="fa-solid fa-file-code text-indigo-400"></i>
+                        <span>Save HTML DB</span>
+                    </button>
+                    <button type="button" onclick="downloadDatabaseFile()" class="py-2 px-2 rounded-lg bg-slate-900 active:bg-slate-800 border border-slate-700 text-[10px] font-bold text-amber-300 flex items-center justify-center gap-1" title="Saves a standalone .json database file">
                         <i class="fa-solid fa-database text-amber-400"></i>
-                        <span>Save DB File</span>
+                        <span>Save JSON</span>
                     </button>
                     <button type="button" onclick="document.getElementById('importJsonInput').click()" class="py-2 px-2 rounded-lg bg-slate-900 active:bg-slate-800 border border-slate-700 text-[10px] font-bold text-slate-300 flex items-center justify-center gap-1">
                         <i class="fa-solid fa-file-import text-emerald-400"></i>
-                        <span>Load DB / HTML</span>
+                        <span>Import File</span>
                     </button>
                     <input id="importJsonInput" type="file" accept=".json,.db,.html,.htm" class="hidden" onchange="importBackupFile(event)">
                 </div>
@@ -465,49 +477,96 @@
                 <i class="fa-solid fa-bolt flex-shrink-0"></i>
                 <span class="truncate">Save + Open NFC Tools</span>
             </button>
-            <button type="button" onclick="downloadHtmlWithEmbeddedData()" title="Save HTML w/ Entries (Portable Database HTML)" class="py-3 px-2.5 rounded-xl bg-slate-900 active:bg-slate-800 border border-indigo-500/50 text-indigo-300 font-bold text-[11px] flex items-center justify-center gap-1 flex-shrink-0 shadow">
-                <i class="fa-solid fa-download text-emerald-400"></i>
-                <span class="whitespace-nowrap">Save HTML DB</span>
+            <button type="button" onclick="pushToGithubRepo(true)" title="Sync Entries to GitHub Repo" class="py-3 px-2.5 rounded-xl bg-slate-900 active:bg-slate-800 border border-indigo-500/50 text-indigo-300 font-bold text-[11px] flex items-center justify-center gap-1 flex-shrink-0 shadow">
+                <i class="fa-brands fa-github text-emerald-400"></i>
+                <span class="whitespace-nowrap">Sync GitHub</span>
             </button>
         </div>
     </div>
 
-    <div id="cloudModal" class="fixed inset-0 z-50 hidden bg-black/80 backdrop-blur-sm flex items-center justify-center p-4">
-        <div class="bg-slate-900 border border-slate-700 rounded-2xl max-w-md w-full p-5 shadow-2xl space-y-4">
+    <!-- GITHUB REPO SYNC MODAL -->
+    <div id="githubModal" class="fixed inset-0 z-50 hidden bg-black/80 backdrop-blur-sm flex items-center justify-center p-4">
+        <div class="bg-slate-900 border border-slate-700 rounded-2xl max-w-md w-full p-5 shadow-2xl space-y-3.5 max-h-[92vh] overflow-y-auto">
             <div class="flex items-center justify-between">
                 <h3 class="text-sm font-bold text-white flex items-center gap-2">
-                    <i class="fa-solid fa-cloud text-emerald-400"></i>
-                    <span>Cloud Database Sync</span>
+                    <i class="fa-brands fa-github text-emerald-400 text-base"></i>
+                    <span>GitHub Repository Sync</span>
                 </h3>
-                <button type="button" onclick="toggleCloudModal()" class="text-slate-400 hover:text-white p-1">
+                <button type="button" onclick="toggleGithubModal()" class="text-slate-400 hover:text-white p-1">
                     <i class="fa-solid fa-xmark text-lg"></i>
                 </button>
             </div>
-            <div class="p-3 rounded-xl bg-slate-950 border border-slate-800 space-y-1.5 text-xs">
+
+            <div class="p-3 rounded-xl bg-slate-950 border border-slate-800 space-y-1 text-xs">
                 <div class="flex items-center justify-between">
-                    <span class="text-slate-400">Cloud Status:</span>
-                    <span id="cloudModalStatus" class="font-mono font-bold text-emerald-400">Connecting...</span>
+                    <span class="text-slate-400">Sync Status:</span>
+                    <span id="githubModalStatus" class="font-mono font-bold text-amber-400">Not Configured</span>
                 </div>
                 <div class="flex items-center justify-between">
-                    <span class="text-slate-400">Device User ID:</span>
-                    <span id="cloudUserIdDisplay" class="font-mono text-[10px] text-slate-300 select-all break-all">--</span>
+                    <span class="text-slate-400">Target Path:</span>
+                    <span id="githubTargetDisplay" class="font-mono text-[10px] text-slate-300 truncate max-w-[210px]">--</span>
                 </div>
             </div>
-            <div class="space-y-1.5">
-                <label for="cloudSyncChannelInput" class="block text-xs font-semibold text-slate-300">Shared Cloud Workspace Code (Sync across phones/PC)</label>
-                <div class="flex gap-2">
-                    <input id="cloudSyncChannelInput" type="text" value="DEFAULT_STUDIO" placeholder="e.g. MY_NFC_SHOP_1"
-                        class="flex-1 px-3 py-2 bg-slate-950 border border-slate-700 rounded-xl text-xs font-mono uppercase text-amber-300 focus:outline-none focus:border-emerald-500">
-                    <button type="button" onclick="applyCloudWorkspaceChannel()" class="px-3.5 py-2 rounded-xl bg-emerald-600 text-white text-xs font-bold">Set Code</button>
+
+            <div class="space-y-2.5 text-xs">
+                <div class="grid grid-cols-2 gap-2">
+                    <div>
+                        <label class="block text-[11px] font-semibold text-slate-300 mb-1">GitHub Username</label>
+                        <input id="ghOwnerInput" type="text" placeholder="e.g. johndoe"
+                            class="w-full px-3 py-2 bg-slate-950 border border-slate-700 rounded-xl text-xs font-mono text-white focus:outline-none focus:border-indigo-500">
+                    </div>
+                    <div>
+                        <label class="block text-[11px] font-semibold text-slate-300 mb-1">Repository Name</label>
+                        <input id="ghRepoInput" type="text" placeholder="e.g. tapreview-app"
+                            class="w-full px-3 py-2 bg-slate-950 border border-slate-700 rounded-xl text-xs font-mono text-white focus:outline-none focus:border-indigo-500">
+                    </div>
                 </div>
-                <p class="text-[11px] text-slate-400 leading-relaxed">Any device using the same Workspace Code automatically syncs your Client Card Order Queue in real time.</p>
+
+                <div class="grid grid-cols-2 gap-2">
+                    <div>
+                        <label class="block text-[11px] font-semibold text-slate-300 mb-1">Branch</label>
+                        <input id="ghBranchInput" type="text" value="main" placeholder="main"
+                            class="w-full px-3 py-2 bg-slate-950 border border-slate-700 rounded-xl text-xs font-mono text-white focus:outline-none focus:border-indigo-500">
+                    </div>
+                    <div>
+                        <label class="block text-[11px] font-semibold text-slate-300 mb-1">Database File Path</label>
+                        <input id="ghPathInput" type="text" value="entries.json" placeholder="entries.json"
+                            class="w-full px-3 py-2 bg-slate-950 border border-slate-700 rounded-xl text-xs font-mono text-amber-300 focus:outline-none focus:border-indigo-500">
+                    </div>
+                </div>
+
+                <div>
+                    <label class="block text-[11px] font-semibold text-slate-300 mb-1">Personal Access Token (PAT)</label>
+                    <input id="ghTokenInput" type="password" placeholder="github_pat_... or ghp_..."
+                        class="w-full px-3 py-2 bg-slate-950 border border-slate-700 rounded-xl text-xs font-mono text-emerald-300 focus:outline-none focus:border-emerald-500">
+                    <p class="text-[10px] text-slate-400 mt-1 leading-relaxed">
+                        Stored only in your device's browser <code class="text-slate-300">localStorage</code>. Requires <strong>Contents: Read &amp; Write</strong> permission on your repo.
+                    </p>
+                </div>
+
+                <label class="flex items-center justify-between p-2.5 rounded-xl bg-slate-950 border border-slate-800 cursor-pointer">
+                    <span class="text-xs font-semibold text-slate-200">Auto-sync on Save / Delete / Status Change</span>
+                    <input id="ghAutoSyncToggle" type="checkbox" checked class="w-4 h-4 accent-emerald-500 rounded">
+                </label>
             </div>
-            <div class="flex items-center justify-between gap-2 pt-2 border-t border-slate-800">
-                <button type="button" onclick="forcePushAllToCloud()" class="flex-1 py-2.5 px-3 rounded-xl bg-indigo-600/25 border border-indigo-500/40 text-xs font-bold text-indigo-300 flex items-center justify-center gap-1.5">
-                    <i class="fa-solid fa-cloud-arrow-up"></i>
-                    <span>Push Local Queue to Cloud</span>
+
+            <div class="grid grid-cols-2 gap-2 pt-1">
+                <button type="button" onclick="pullFromGithubRepo(false)" class="py-2.5 px-3 rounded-xl bg-emerald-600/20 active:bg-emerald-600/35 border border-emerald-500/40 text-xs font-bold text-emerald-300 flex items-center justify-center gap-1.5">
+                    <i class="fa-solid fa-cloud-arrow-down"></i>
+                    <span>Load from Repo</span>
                 </button>
-                <button type="button" onclick="toggleCloudModal()" class="px-4 py-2.5 rounded-xl bg-slate-800 text-xs font-semibold text-slate-300">Done</button>
+                <button type="button" onclick="pushToGithubRepo(true)" class="py-2.5 px-3 rounded-xl bg-indigo-600/25 active:bg-indigo-600/40 border border-indigo-500/40 text-xs font-bold text-indigo-300 flex items-center justify-center gap-1.5">
+                    <i class="fa-solid fa-cloud-arrow-up"></i>
+                    <span>Push to Repo</span>
+                </button>
+            </div>
+
+            <div class="flex items-center justify-between gap-2 pt-2 border-t border-slate-800">
+                <button type="button" onclick="clearGithubSettings()" class="px-3 py-2 rounded-xl bg-slate-800 text-xs text-rose-300 font-semibold">Clear Token</button>
+                <div class="flex items-center gap-2">
+                    <button type="button" onclick="toggleGithubModal()" class="px-3.5 py-2 rounded-xl bg-slate-800 text-xs font-semibold text-slate-300">Close</button>
+                    <button type="button" onclick="saveGithubConfig()" class="px-4 py-2 rounded-xl bg-emerald-600 active:bg-emerald-500 text-xs font-bold text-white shadow">Save & Sync</button>
+                </div>
             </div>
         </div>
     </div>
@@ -553,6 +612,7 @@
         const STORAGE_KEY_BATCH = "tapreview_ultralight_batch_v2";
         const LEGACY_KEYS = ["tapreview_ultralight_v2", "tapreview_batch_orders_v1"];
         const STORAGE_KEY_API = "tapreview_google_api_key";
+        const STORAGE_KEY_GH_CONFIG = "tapreview_github_sync_config_v1";
         const IDB_NAME = "TapReviewStudioDB";
         const IDB_STORE = "orders_store";
 
@@ -578,12 +638,13 @@
 
         let batchList = [];
         let dbPromise = null;
+        let lastKnownGithubSha = null;
+        let isGithubSyncing = false;
 
         const INLINE_SVG_PATHS = window.__INLINE_SVG_PATHS || {};
         if (Object.keys(INLINE_SVG_PATHS).length === 0) {
             const minimal = {
                 'fa-wifi': '<path d="M5 12.55a11 11 0 0 1 14.08 0"/><path d="M1.42 9a16 16 0 0 1 21.16 0"/><path d="M8.53 16.11a6 6 0 0 1 6.95 0"/><line x1="12" y1="20" x2="12.01" y2="20"/>',
-                'fa-cloud': '<path d="M17.5 19H9a7 7 0 1 1 6.71-9h1.79a4.5 4.5 0 1 1 0 9Z"/>',
                 'fa-key': '<circle cx="7.5" cy="15.5" r="5.5"/><path d="m21 2-9.6 9.6"/><path d="m15.5 7.5 3 3L22 7l-3-3"/>',
                 'fa-paste': '<rect width="8" height="4" x="8" y="2" rx="1" ry="1"/><path d="M16 4h2a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h2"/>',
                 'fa-eraser': '<path d="m7 21-4.3-4.3c-1-1-1-2.5 0-3.4l9.6-9.6c1-1 2.5-1 3.4 0l5.6 5.6c1 1 1 2.5 0 3.4L13 21"/><path d="M22 21H7"/><path d="m5 11 9 9"/>',
@@ -627,7 +688,13 @@
             codeInput.value = "";
             updateCodeBadges("");
 
-            const doLoad = () => { loadBatchFromStorage(); updateAllOutputs(); };
+            loadGithubConfigIntoUi();
+
+            const doLoad = async () => {
+                await loadBatchFromStorage();
+                updateAllOutputs();
+                await initGithubAutoLoad();
+            };
             if ('requestIdleCallback' in window) requestIdleCallback(doLoad, { timeout: 1200 });
             else setTimeout(doLoad, 50);
 
@@ -638,6 +705,328 @@
             }
         });
 
+        // ==========================================
+        // GITHUB REPO SYNC ENGINE
+        // ==========================================
+        function getGithubConfig() {
+            try {
+                const raw = localStorage.getItem(STORAGE_KEY_GH_CONFIG);
+                if (raw) {
+                    const parsed = JSON.parse(raw);
+                    return {
+                        owner: (parsed.owner || "").trim(),
+                        repo: (parsed.repo || "").trim(),
+                        branch: (parsed.branch || "main").trim() || "main",
+                        path: (parsed.path || "entries.json").trim().replace(/^\/+/, '') || "entries.json",
+                        token: (parsed.token || "").trim(),
+                        autoSync: parsed.autoSync !== false
+                    };
+                }
+            } catch (e) {}
+
+            // Auto-detect owner/repo if hosted on *.github.io
+            let defaultOwner = "";
+            let defaultRepo = "";
+            if (location.hostname.endsWith(".github.io")) {
+                defaultOwner = location.hostname.split(".")[0];
+                const pathParts = location.pathname.split("/").filter(Boolean);
+                if (pathParts.length > 0) defaultRepo = pathParts[0];
+            }
+
+            return {
+                owner: defaultOwner,
+                repo: defaultRepo,
+                branch: "main",
+                path: "entries.json",
+                token: "",
+                autoSync: true
+            };
+        }
+
+        function loadGithubConfigIntoUi() {
+            const cfg = getGithubConfig();
+            document.getElementById('ghOwnerInput').value = cfg.owner;
+            document.getElementById('ghRepoInput').value = cfg.repo;
+            document.getElementById('ghBranchInput').value = cfg.branch;
+            document.getElementById('ghPathInput').value = cfg.path;
+            document.getElementById('ghTokenInput').value = cfg.token;
+            document.getElementById('ghAutoSyncToggle').checked = cfg.autoSync;
+
+            const targetDisplay = document.getElementById('githubTargetDisplay');
+            if (cfg.owner && cfg.repo) {
+                targetDisplay.textContent = `${cfg.owner}/${cfg.repo}/${cfg.path} (${cfg.branch})`;
+                if (cfg.token) {
+                    setGithubUiState("Ready (R/W)", true);
+                } else {
+                    setGithubUiState("Public Read-Only", false);
+                }
+            } else {
+                targetDisplay.textContent = "Not set";
+                setGithubUiState("Setup Required", false);
+            }
+        }
+
+        function setGithubUiState(statusText, isSynced) {
+            const modalStatus = document.getElementById('githubModalStatus');
+            const headerText = document.getElementById('githubTextHeader');
+            const headerBadge = document.getElementById('githubBadgeHeader');
+            const storageText = document.getElementById('storageStatusText');
+
+            if (modalStatus) {
+                modalStatus.textContent = statusText;
+                modalStatus.className = isSynced ? "font-mono font-bold text-emerald-400" : "font-mono font-bold text-amber-400";
+            }
+            if (headerText) headerText.textContent = isSynced ? "GitHub Synced" : statusText;
+            if (headerBadge) {
+                headerBadge.className = isSynced
+                    ? "cursor-pointer text-[9px] font-mono font-semibold uppercase px-1.5 py-0.5 rounded bg-emerald-500/15 text-emerald-400 border border-emerald-500/30 flex items-center gap-1 flex-shrink-0"
+                    : "cursor-pointer text-[9px] font-mono font-semibold uppercase px-1.5 py-0.5 rounded bg-amber-500/15 text-amber-300 border border-amber-500/30 flex items-center gap-1 flex-shrink-0";
+            }
+            if (storageText) {
+                const cfg = getGithubConfig();
+                storageText.textContent = isSynced
+                    ? `GitHub (${cfg.owner}/${cfg.repo}) • ${ statusText }`
+                    : `Local DB • ${ statusText }`;
+            }
+        }
+
+        function toggleGithubModal() {
+            triggerHaptic(15);
+            loadGithubConfigIntoUi();
+            document.getElementById('githubModal').classList.toggle('hidden');
+        }
+
+        async function saveGithubConfig() {
+            triggerHaptic(25);
+            const cfg = {
+                owner: document.getElementById('ghOwnerInput').value.trim(),
+                repo: document.getElementById('ghRepoInput').value.trim(),
+                branch: document.getElementById('ghBranchInput').value.trim() || "main",
+                path: document.getElementById('ghPathInput').value.trim().replace(/^\/+/, '') || "entries.json",
+                token: document.getElementById('ghTokenInput').value.trim(),
+                autoSync: document.getElementById('ghAutoSyncToggle').checked
+            };
+            localStorage.setItem(STORAGE_KEY_GH_CONFIG, JSON.stringify(cfg));
+            loadGithubConfigIntoUi();
+            toggleGithubModal();
+
+            if (cfg.owner && cfg.repo) {
+                await pullFromGithubRepo(true);
+                if (cfg.token) {
+                    await pushToGithubRepo(true);
+                }
+            } else {
+                showToast("Saved GitHub preferences.");
+            }
+        }
+
+        function clearGithubSettings() {
+            triggerHaptic(20);
+            localStorage.removeItem(STORAGE_KEY_GH_CONFIG);
+            lastKnownGithubSha = null;
+            loadGithubConfigIntoUi();
+            showToast("Cleared GitHub Token & Settings.");
+        }
+
+        function encodeUtf8Base64(str) {
+            const bytes = new TextEncoder().encode(str);
+            let binary = "";
+            for (let i = 0; i < bytes.byteLength; i++) {
+                binary += String.fromCharCode(bytes[i]);
+            }
+            return btoa(binary);
+        }
+
+        function decodeUtf8Base64(b64) {
+            const binary = atob(b64.replace(/\s/g, ''));
+            const bytes = new Uint8Array(binary.length);
+            for (let i = 0; i < binary.length; i++) {
+                bytes[i] = binary.charCodeAt(i);
+            }
+            return new TextDecoder().decode(bytes);
+        }
+
+        async function initGithubAutoLoad() {
+            const cfg = getGithubConfig();
+            if (cfg.owner && cfg.repo) {
+                await pullFromGithubRepo(true);
+            } else {
+                // Fallback: try fetching local ./entries.json deployed alongside index.html on Vercel/GitHub
+                try {
+                    const res = await fetch(`./entries.json?t=${Date.now()}`, { cache: "no-store" });
+                    if (res.ok) {
+                        const data = await res.json();
+                        const records = Array.isArray(data) ? data : (data && Array.isArray(data.records) ? data.records : null);
+                        if (records && records.length > 0) {
+                            batchList = mergeOrderLists(records, batchList);
+                            await saveBatchToStorage(true);
+                            renderBatchQueue();
+                            setGithubUiState("Loaded entries.json", true);
+                        }
+                    }
+                } catch (e) {}
+            }
+        }
+
+        async function pullFromGithubRepo(silent = false) {
+            const cfg = getGithubConfig();
+            if (!cfg.owner || !cfg.repo) {
+                if (!silent) {
+                    showToast("Configure GitHub Username & Repo first!");
+                    toggleGithubModal();
+                }
+                return false;
+            }
+
+            setGithubUiState("Loading...", false);
+            const encodedPath = cfg.path.split('/').map(encodeURIComponent).join('/');
+            const apiUrl = `https://api.github.com/repos/${encodeURIComponent(cfg.owner)}/${encodeURIComponent(cfg.repo)}/contents/${encodedPath}?ref=${encodeURIComponent(cfg.branch)}&t=${Date.now()}`;
+            const headers = { "Accept": "application/vnd.github+json" };
+            if (cfg.token) headers["Authorization"] = `Bearer ${cfg.token}`;
+
+            try {
+                const res = await fetch(apiUrl, { headers, cache: "no-store" });
+                if (res.status === 404) {
+                    setGithubUiState("File Not Created Yet", false);
+                    if (!silent) showToast(`${cfg.path} not found in repo yet. Click 'Sync to GitHub' to create it!`);
+                    return false;
+                }
+                if (!res.ok) {
+                    throw new Error(`HTTP ${res.status}`);
+                }
+                const fileMeta = await res.json();
+                lastKnownGithubSha = fileMeta.sha || null;
+
+                let rawJson = "";
+                if (fileMeta.content) {
+                    rawJson = decodeUtf8Base64(fileMeta.content);
+                } else if (fileMeta.download_url) {
+                    const rawRes = await fetch(fileMeta.download_url + `?t=${Date.now()}`, { cache: "no-store" });
+                    rawJson = await rawRes.text();
+                }
+
+                const parsed = JSON.parse(rawJson);
+                const remoteRecords = Array.isArray(parsed)
+                    ? parsed
+                    : (parsed && Array.isArray(parsed.records) ? parsed.records : []);
+
+                batchList = mergeOrderLists(remoteRecords, batchList).sort((a, b) => {
+                    const tA = Number(String(a.id).replace('ord_', '')) || 0;
+                    const tB = Number(String(b.id).replace('ord_', '')) || 0;
+                    return tB - tA;
+                });
+
+                await saveBatchToStorage(true);
+                renderBatchQueue();
+                setGithubUiState(`Synced (${batchList.length})`, true);
+                if (!silent) showToast(`Loaded ${remoteRecords.length} entries from GitHub!`);
+                return true;
+            } catch (err) {
+                setGithubUiState("Load Error", false);
+                if (!silent) showToast(`GitHub Load Failed: ${err.message}`);
+                return false;
+            }
+        }
+
+        async function pushToGithubRepo(notifyToast = false, replaceRemote = false) {
+            const cfg = getGithubConfig();
+            if (!cfg.owner || !cfg.repo || !cfg.token) {
+                if (notifyToast) {
+                    showToast("Enter GitHub Owner, Repo & Personal Access Token first!");
+                    toggleGithubModal();
+                }
+                return false;
+            }
+            if (isGithubSyncing) return false;
+            isGithubSyncing = true;
+            setGithubUiState("Pushing...", false);
+
+            const encodedPath = cfg.path.split('/').map(encodeURIComponent).join('/');
+            const apiUrl = `https://api.github.com/repos/${encodeURIComponent(cfg.owner)}/${encodeURIComponent(cfg.repo)}/contents/${encodedPath}`;
+            const headers = {
+                "Accept": "application/vnd.github+json",
+                "Authorization": `Bearer ${cfg.token}`,
+                "Content-Type": "application/json"
+            };
+
+            try {
+                // Fetch latest SHA and merge remote entries unless explicitly deleting/replacing
+                const getRes = await fetch(`${apiUrl}?ref=${encodeURIComponent(cfg.branch)}&t=${Date.now()}`, {
+                    headers,
+                    cache: "no-store"
+                });
+
+                if (getRes.ok) {
+                    const meta = await getRes.json();
+                    lastKnownGithubSha = meta.sha;
+                    if (!replaceRemote && meta.content) {
+                        try {
+                            const remoteData = JSON.parse(decodeUtf8Base64(meta.content));
+                            const remoteRecords = Array.isArray(remoteData)
+                                ? remoteData
+                                : (remoteData && Array.isArray(remoteData.records) ? remoteData.records : []);
+                            batchList = mergeOrderLists(remoteRecords, batchList).sort((a, b) => {
+                                const tA = Number(String(a.id).replace('ord_', '')) || 0;
+                                const tB = Number(String(b.id).replace('ord_', '')) || 0;
+                                return tB - tA;
+                            });
+                        } catch (e) {}
+                    }
+                } else if (getRes.status === 404) {
+                    lastKnownGithubSha = null;
+                } else {
+                    throw new Error(`Auth/Repo check failed (HTTP ${getRes.status})`);
+                }
+
+                const payloadObj = {
+                    databaseVersion: 2,
+                    updatedAt: new Date().toISOString(),
+                    totalRecords: batchList.length,
+                    records: batchList
+                };
+
+                const bodyPayload = {
+                    message: `Sync TapReview entries (${batchList.length} records) [${new Date().toISOString().slice(0, 19).replace('T', ' ')}]`,
+                    content: encodeUtf8Base64(JSON.stringify(payloadObj, null, 2)),
+                    branch: cfg.branch
+                };
+                if (lastKnownGithubSha) {
+                    bodyPayload.sha = lastKnownGithubSha;
+                }
+
+                const putRes = await fetch(apiUrl, {
+                    method: "PUT",
+                    headers,
+                    body: JSON.stringify(bodyPayload)
+                });
+
+                if (!putRes.ok) {
+                    const errJson = await putRes.json().catch(() => ({}));
+                    throw new Error(errJson.message || `HTTP ${putRes.status}`);
+                }
+
+                const putData = await putRes.json();
+                if (putData && putData.content && putData.content.sha) {
+                    lastKnownGithubSha = putData.content.sha;
+                }
+
+                await saveBatchToStorage(true);
+                renderBatchQueue();
+                setGithubUiState(`Synced (${batchList.length})`, true);
+                if (notifyToast) showToast(`Synced ${batchList.length} entries to GitHub (${cfg.path})!`);
+                isGithubSyncing = false;
+                return true;
+            } catch (err) {
+                isGithubSyncing = false;
+                setGithubUiState("Sync Error", false);
+                if (notifyToast) showToast(`GitHub Push Failed: ${err.message}`);
+                return false;
+            }
+        }
+
+        // ==========================================
+        // UI & WORKFLOW FUNCTIONS
+        // ==========================================
         function setViewLayoutMode(mode) {
             triggerHaptic(20);
             viewLayoutMode = mode === 'simple' ? 'simple' : 'normal';
@@ -1279,7 +1668,7 @@
                 if (Array.isArray(idbRecords) && idbRecords.length > 0) loadedRecords = mergeOrderLists(loadedRecords, idbRecords);
             } catch (e) {}
             batchList = loadedRecords;
-            await saveBatchToStorage();
+            await saveBatchToStorage(true);
             renderBatchQueue();
         }
 
@@ -1291,13 +1680,17 @@
             return Array.from(map.values());
         }
 
-        async function saveBatchToStorage() {
+        async function saveBatchToStorage(skipGithubAutoSync = false, replaceRemote = false) {
             try { localStorage.setItem(STORAGE_KEY_BATCH, JSON.stringify(batchList)); } catch (e) {}
             await writeToIndexedDB(batchList);
             const snapEl = document.getElementById('embeddedBatchSnapshot');
             if (snapEl) snapEl.textContent = JSON.stringify(batchList);
-            if (typeof window.syncBatchListToCloud === 'function') {
-                window.syncBatchListToCloud(batchList);
+
+            if (!skipGithubAutoSync) {
+                const cfg = getGithubConfig();
+                if (cfg.autoSync && cfg.owner && cfg.repo && cfg.token) {
+                    pushToGithubRepo(false, replaceRemote);
+                }
             }
         }
 
@@ -1319,7 +1712,7 @@
                 location: currentState.location ? { ...currentState.location } : null
             };
             batchList.unshift(newRecord);
-            await saveBatchToStorage();
+            await saveBatchToStorage(false, false);
             renderBatchQueue();
             if (!silent) showToast(`Saved [${newRecord.sixCharCode}] ${newRecord.businessName}!`);
         }
@@ -1329,7 +1722,7 @@
             const item = batchList.find(o => o.id === orderId);
             if (item) {
                 item.status = item.status === "Programmed" ? "Pending" : "Programmed";
-                await saveBatchToStorage();
+                await saveBatchToStorage(false, true);
                 renderBatchQueue();
             }
         }
@@ -1337,8 +1730,7 @@
         async function deleteOrder(orderId) {
             triggerHaptic(25);
             batchList = batchList.filter(o => o.id !== orderId);
-            if (typeof window.deleteOrderFromCloud === 'function') window.deleteOrderFromCloud(orderId);
-            await saveBatchToStorage();
+            await saveBatchToStorage(false, true);
             renderBatchQueue();
             showToast("Removed record from queue.");
         }
@@ -1382,7 +1774,7 @@
             });
 
             if (filtered.length === 0) {
-                container.innerHTML = `<div class="p-6 rounded-xl bg-slate-950/70 border border-slate-800 text-center text-xs text-slate-500">No saved client entries yet. Fill in the details above and tap <strong>"Save to Order Queue"</strong>.</div>`;
+                container.innerHTML = `<div class="p-6 rounded-xl bg-slate-950/70 border border-slate-800 text-center text-xs text-slate-500">No saved client entries yet. Fill in the details above and tap <strong>"Save to Order Queue"</strong> or <strong>"Load from GitHub"</strong>.</div>`;
                 hydrateOfflineSvgIcons(container);
                 return;
             }
@@ -1602,7 +1994,6 @@
             const dbPayload = {
                 databaseVersion: 2,
                 exportedAt: new Date().toISOString(),
-                workspaceChannel: localStorage.getItem("tapreview_cloud_channel") || "DEFAULT_STUDIO",
                 totalRecords: batchList.length,
                 records: batchList
             };
@@ -1610,10 +2001,10 @@
             const url = URL.createObjectURL(blob);
             const a = document.createElement("a");
             a.href = url;
-            a.download = `TapReview_DB_${new Date().toISOString().slice(0,10)}.db.json`;
+            a.download = `entries.json`;
             a.click();
             URL.revokeObjectURL(url);
-            showToast(`Saved Database File (${batchList.length} records)!`);
+            showToast(`Saved entries.json (${batchList.length} records)!`);
         }
 
         function importBackupFile(event) {
@@ -1645,27 +2036,6 @@
                 }
             };
             reader.readAsText(file);
-        }
-
-        function toggleCloudModal() {
-            triggerHaptic(15);
-            document.getElementById('cloudModal').classList.toggle('hidden');
-        }
-
-        function applyCloudWorkspaceChannel() {
-            triggerHaptic(25);
-            const input = document.getElementById('cloudSyncChannelInput');
-            const channel = (input.value || "DEFAULT_STUDIO").trim().toUpperCase().replace(/[^A-Z0-9_-]/g, '') || "DEFAULT_STUDIO";
-            input.value = channel;
-            try { localStorage.setItem("tapreview_cloud_channel", channel); } catch (e) {}
-            if (typeof window.reconnectCloudChannel === 'function') window.reconnectCloudChannel(channel);
-            showToast(`Cloud Workspace set to [${channel}]!`);
-        }
-
-        function forcePushAllToCloud() {
-            triggerHaptic(30);
-            if (typeof window.syncBatchListToCloud === 'function') window.syncBatchListToCloud(batchList, true);
-            else showToast("Cloud connection initializing...");
         }
 
         function copyReviewLink() {
@@ -1713,129 +2083,6 @@
                 .replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;')
                 .replace(/"/g, '&quot;').replace(/'/g, '&#39;');
         }
-    </script>
-
-    <script type="module">
-        import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js";
-        import { getAuth, signInAnonymously, signInWithCustomToken, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
-        import { getFirestore, doc, setDoc, deleteDoc, onSnapshot, collection } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
-
-        const appId = typeof __app_id !== 'undefined' ? __app_id : 'tapreview-nfc-studio';
-        let db = null, auth = null, currentUser = null;
-        let unsubscribeSnapshot = null;
-        let activeWorkspace = localStorage.getItem("tapreview_cloud_channel") || "DEFAULT_STUDIO";
-        let lastLocalWriteTs = 0;
-
-        const channelInput = document.getElementById('cloudSyncChannelInput');
-        if (channelInput) channelInput.value = activeWorkspace;
-
-        function setCloudUiState(statusText, isOnline) {
-            const modalStatus = document.getElementById('cloudModalStatus');
-            const headerText = document.getElementById('cloudTextHeader');
-            const headerBadge = document.getElementById('cloudBadgeHeader');
-            const storageText = document.getElementById('storageStatusText');
-            if (modalStatus) {
-                modalStatus.textContent = statusText;
-                modalStatus.className = isOnline ? "font-mono font-bold text-emerald-400" : "font-mono font-bold text-amber-400";
-            }
-            if (headerText) headerText.textContent = isOnline ? "Cloud Live" : "Local DB";
-            if (headerBadge) headerBadge.className = isOnline
-                ? "cursor-pointer text-[9px] font-mono font-semibold uppercase px-1.5 py-0.5 rounded bg-emerald-500/15 text-emerald-400 border border-emerald-500/30 flex items-center gap-1"
-                : "cursor-pointer text-[9px] font-mono font-semibold uppercase px-1.5 py-0.5 rounded bg-amber-500/15 text-amber-300 border border-amber-500/30 flex items-center gap-1";
-            if (storageText && isOnline) storageText.textContent = `Cloud Synced (${activeWorkspace}) + HTML DB`;
-        }
-
-        async function initCloudSync() {
-            try {
-                if (typeof __firebase_config === 'undefined' || !__firebase_config) {
-                    setCloudUiState("Offline Mode (HTML DB + IndexedDB Active)", false);
-                    return;
-                }
-                const firebaseConfig = JSON.parse(__firebase_config);
-                const app = initializeApp(firebaseConfig);
-                auth = getAuth(app);
-                db = getFirestore(app);
-                if (typeof __initial_auth_token !== 'undefined' && __initial_auth_token) {
-                    await signInWithCustomToken(auth, __initial_auth_token);
-                } else {
-                    await signInAnonymously(auth);
-                }
-                onAuthStateChanged(auth, (user) => {
-                    currentUser = user;
-                    const uidEl = document.getElementById('cloudUserIdDisplay');
-                    if (uidEl) uidEl.textContent = user ? user.uid : "Not signed in";
-                    if (user) subscribeToCloudOrders(activeWorkspace);
-                });
-            } catch (err) {
-                setCloudUiState("Local DB Active (Cloud Unavailable)", false);
-            }
-        }
-
-        function subscribeToCloudOrders(workspaceCode) {
-            if (!db || !currentUser) return;
-            if (unsubscribeSnapshot) { unsubscribeSnapshot(); unsubscribeSnapshot = null; }
-            const ordersCol = collection(db, 'artifacts', appId, 'public', 'data', 'tapreview_orders');
-            unsubscribeSnapshot = onSnapshot(
-                ordersCol,
-                (snapshot) => {
-                    if (Date.now() - lastLocalWriteTs < 5000) return;
-                    const cloudItems = [];
-                    snapshot.forEach((docSnap) => {
-                        const data = docSnap.data();
-                        if (data && data.id && (data.workspace === workspaceCode || (!data.workspace && workspaceCode === "DEFAULT_STUDIO"))) {
-                            cloudItems.push(data);
-                        }
-                    });
-                    setCloudUiState(`Synced • ${ workspaceCode }`, true);
-                    if (cloudItems.length > 0) {
-                        const beforeLen = batchList.length;
-                        batchList = mergeOrderLists(cloudItems, batchList).sort((a, b) => {
-                            const tA = Number(String(a.id).replace('ord_', '')) || 0;
-                            const tB = Number(String(b.id).replace('ord_', '')) || 0;
-                            return tB - tA;
-                        });
-                        if (batchList.length !== beforeLen) {
-                            try { localStorage.setItem(STORAGE_KEY_BATCH, JSON.stringify(batchList)); } catch (e) {}
-                            writeToIndexedDB(batchList);
-                            renderBatchQueue();
-                        }
-                    }
-                },
-                (err) => { setCloudUiState("Local DB Active (Sync Paused)", false); }
-            );
-        }
-
-        window.syncBatchListToCloud = async function (records, notifyToast = false) {
-            if (!db || !currentUser || !Array.isArray(records)) return;
-            lastLocalWriteTs = Date.now();
-            try {
-                for (const item of records) {
-                    if (!item || !item.id) continue;
-                    const docRef = doc(db, 'artifacts', appId, 'public', 'data', 'tapreview_orders', String(item.id));
-                    await setDoc(docRef, { ...item, workspace: activeWorkspace, updatedBy: currentUser.uid, syncedAt: Date.now() });
-                }
-                if (notifyToast) showToast(`Synced ${records.length} records to Cloud [${activeWorkspace}]!`);
-            } catch (e) {
-                if (notifyToast) showToast("Cloud sync error; saved locally.");
-            }
-        };
-
-        window.deleteOrderFromCloud = async function (orderId) {
-            if (!db || !currentUser || !orderId) return;
-            lastLocalWriteTs = Date.now();
-            try {
-                const docRef = doc(db, 'artifacts', appId, 'public', 'data', 'tapreview_orders', String(orderId));
-                await deleteDoc(docRef);
-            } catch (e) {}
-        };
-
-        window.reconnectCloudChannel = function (newChannel) {
-            activeWorkspace = newChannel;
-            subscribeToCloudOrders(activeWorkspace);
-            window.syncBatchListToCloud(batchList, false);
-        };
-
-        initCloudSync();
     </script>
 </body>
 </html>
