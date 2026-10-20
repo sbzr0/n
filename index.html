@@ -724,28 +724,9 @@
                 }
             } catch (e) {}
 
-            // Default fallback if no local storage config exists yet
             return {
                 owner: "sbzr0",
                 repo: "n",
-                branch: "main",
-                path: "entries.json",
-                token: "",
-                autoSync: true
-            };
-        }
-            // Auto-detect owner/repo if hosted on *.github.io
-            let defaultOwner = "";
-            let defaultRepo = "";
-            if (location.hostname.endsWith(".github.io")) {
-                defaultOwner = location.hostname.split(".")[0];
-                const pathParts = location.pathname.split("/").filter(Boolean);
-                if (pathParts.length > 0) defaultRepo = pathParts[0];
-            }
-
-            return {
-                owner: defaultOwner,
-                repo: defaultRepo,
                 branch: "main",
                 path: "entries.json",
                 token: "",
@@ -765,11 +746,7 @@
             const targetDisplay = document.getElementById('githubTargetDisplay');
             if (cfg.owner && cfg.repo) {
                 targetDisplay.textContent = `${cfg.owner}/${cfg.repo}/${cfg.path} (${cfg.branch})`;
-                if (cfg.token) {
-                    setGithubUiState("Ready (R/W)", true);
-                } else {
-                    setGithubUiState("Public Read-Only", false);
-                }
+                setGithubUiState("Vercel Serverless Ready", true);
             } else {
                 targetDisplay.textContent = "Not set";
                 setGithubUiState("Setup Required", false);
@@ -795,8 +772,8 @@
             if (storageText) {
                 const cfg = getGithubConfig();
                 storageText.textContent = isSynced
-                    ? `GitHub (${cfg.owner}/${cfg.repo}) • ${ statusText }`
-                    : `Local DB • ${ statusText }`;
+                    ? `GitHub (${cfg.owner}/${cfg.repo}) • ${statusText}`
+                    : `Local DB • ${statusText}`;
             }
         }
 
@@ -819,15 +796,7 @@
             localStorage.setItem(STORAGE_KEY_GH_CONFIG, JSON.stringify(cfg));
             loadGithubConfigIntoUi();
             toggleGithubModal();
-
-            if (cfg.owner && cfg.repo) {
-                await pullFromGithubRepo(true);
-                if (cfg.token) {
-                    await pushToGithubRepo(true);
-                }
-            } else {
-                showToast("Saved GitHub preferences.");
-            }
+            await pullFromGithubRepo(true);
         }
 
         function clearGithubSettings() {
@@ -835,7 +804,7 @@
             localStorage.removeItem(STORAGE_KEY_GH_CONFIG);
             lastKnownGithubSha = null;
             loadGithubConfigIntoUi();
-            showToast("Cleared GitHub Token & Settings.");
+            showToast("Cleared settings.");
         }
 
         function encodeUtf8Base64(str) {
@@ -857,37 +826,18 @@
         }
 
         async function initGithubAutoLoad() {
-            const cfg = getGithubConfig();
-            if (cfg.owner && cfg.repo) {
-                await pullFromGithubRepo(true);
-            } else {
-                // Fallback: try fetching local ./entries.json deployed alongside index.html on Vercel/GitHub
-                try {
-                    const res = await fetch(`./entries.json?t=${Date.now()}`, { cache: "no-store" });
-                    if (res.ok) {
-                        const data = await res.json();
-                        const records = Array.isArray(data) ? data : (data && Array.isArray(data.records) ? data.records : null);
-                        if (records && records.length > 0) {
-                            batchList = mergeOrderLists(records, batchList);
-                            await saveBatchToStorage(true);
-                            renderBatchQueue();
-                            setGithubUiState("Loaded entries.json", true);
-                        }
-                    }
-                } catch (e) {}
-            }
+            await pullFromGithubRepo(true);
         }
 
         async function pullFromGithubRepo(silent = false) {
             setGithubUiState("Loading...", false);
 
             try {
-                // Point to your secure Vercel API instead of GitHub directly
                 const res = await fetch('/api/sync?t=' + Date.now(), { cache: "no-store" });
                 
                 if (res.status === 404) {
                     setGithubUiState("File Not Created Yet", false);
-                    if (!silent) showToast("Database not found yet. Click 'Sync GitHub' to create it!");
+                    if (!silent) showToast("Database file not created yet. Sync an entry to create it!");
                     return false;
                 }
                 
@@ -910,11 +860,11 @@
                 await saveBatchToStorage(true);
                 renderBatchQueue();
                 setGithubUiState(`Synced (${batchList.length})`, true);
-                if (!silent) showToast(`Loaded ${remoteRecords.length} entries securely from Cloud!`);
+                if (!silent) showToast(`Loaded ${remoteRecords.length} entries securely from GitHub!`);
                 return true;
             } catch (err) {
                 setGithubUiState("Load Error", false);
-                if (!silent) showToast(`Cloud Load Failed: ${err.message}`);
+                if (!silent) showToast(`Load Failed: ${err.message}`);
                 return false;
             }
         }
@@ -925,7 +875,6 @@
             setGithubUiState("Pushing...", false);
 
             try {
-                // Send data to your Vercel API, which safely injects the token and forwards to GitHub
                 const res = await fetch('/api/sync', {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
@@ -939,20 +888,20 @@
                 if (!res.ok) throw new Error(data.error || `HTTP ${res.status}`);
 
                 if (data.sha) {
-                    lastKnownGithubSha = data.sha; // Update SHA to prevent conflict on next push
+                    lastKnownGithubSha = data.sha;
                 }
 
-                await saveBatchToStorage(true); // Save locally without triggering loop
+                await saveBatchToStorage(true);
                 renderBatchQueue();
                 setGithubUiState(`Synced (${batchList.length})`, true);
-                if (notifyToast) showToast(`Synced ${batchList.length} entries securely!`);
+                if (notifyToast) showToast(`Synced ${batchList.length} entries to GitHub!`);
                 
                 isGithubSyncing = false;
                 return true;
             } catch (err) {
                 isGithubSyncing = false;
                 setGithubUiState("Sync Error", false);
-                if (notifyToast) showToast(`Cloud Push Failed: ${err.message}`);
+                if (notifyToast) showToast(`Sync Failed: ${err.message}`);
                 return false;
             }
         }
