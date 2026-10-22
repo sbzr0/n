@@ -3,12 +3,12 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
-    <title>TapReview Mobile</title>
-    <script src="https://cdn.tailwindcss.com"></script>
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@500;600;700;800&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    <title>TapReview Mobile Studio</title>
+    <script src="[https://cdn.tailwindcss.com](https://cdn.tailwindcss.com)"></script>
+    <link rel="preconnect" href="[https://fonts.googleapis.com](https://fonts.googleapis.com)">
+    <link rel="preconnect" href="[https://fonts.gstatic.com](https://fonts.gstatic.com)" crossorigin>
+    <link href="[https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@500;600;700;800&display=swap](https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@500;600;700;800&display=swap)" rel="stylesheet">
+    <link rel="stylesheet" href="[https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css](https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css)">
 
     <script>
         tailwind.config = {
@@ -48,18 +48,6 @@
             text-transform: uppercase;
         }
         .step-card-transition { transition: opacity 0.2s ease, transform 0.2s ease; }
-        .tr-svg-icon {
-            display: inline-block;
-            width: 1.05em;
-            height: 1.05em;
-            vertical-align: -0.15em;
-            fill: none;
-            stroke: currentColor;
-            stroke-width: 2;
-            stroke-linecap: round;
-            stroke-linejoin: round;
-            flex-shrink: 0;
-        }
         .bottom-safe-bar { padding-bottom: calc(0.65rem + var(--safe-bottom)); }
     </style>
 </head>
@@ -74,9 +62,9 @@
                 <div class="min-w-0">
                     <div class="flex items-center space-x-1.5">
                         <h1 class="font-extrabold text-sm tracking-tight text-white truncate">TapReview</h1>
-                        <span id="githubBadgeHeader" onclick="toggleGithubModal()" class="cursor-pointer text-[9px] font-mono font-semibold uppercase px-1.5 py-0.5 rounded bg-slate-800 text-slate-300 border border-slate-700 flex items-center gap-1 flex-shrink-0">
+                        <span id="githubBadgeHeader" onclick="syncAllPagesWithGithub(true)" class="cursor-pointer text-[9px] font-mono font-semibold uppercase px-1.5 py-0.5 rounded bg-emerald-500/15 text-emerald-400 border border-emerald-500/30 flex items-center gap-1 flex-shrink-0">
                             <i class="fa-brands fa-github text-[10px]"></i>
-                            <span id="githubTextHeader">GitHub Setup</span>
+                            <span id="githubTextHeader">GitHub Sync</span>
                         </span>
                     </div>
                     <p id="liveClockHeader" class="text-[10px] text-slate-400 leading-none mt-1 font-mono truncate">137B Ultralight Studio</p>
@@ -84,12 +72,30 @@
             </div>
 
             <div class="flex items-center space-x-1.5 flex-shrink-0">
-                <div class="inline-flex rounded-xl bg-slate-900 p-0.5 border border-slate-700/80">
+                <div id="layoutToggleWrapper" class="inline-flex rounded-xl bg-slate-900 p-0.5 border border-slate-700/80">
                     <button id="btnNormalMode" onclick="setViewLayoutMode('normal')" class="px-2.5 py-1.5 rounded-lg text-[11px] font-bold transition bg-indigo-600 text-white shadow">Normal</button>
                     <button id="btnSimpleMode" onclick="setViewLayoutMode('simple')" class="px-2.5 py-1.5 rounded-lg text-[11px] font-bold transition text-slate-400">Simple</button>
                 </div>
                 <button onclick="toggleApiModal()" title="Google Places API Key" class="flex items-center justify-center w-8 h-8 rounded-xl bg-slate-900 active:bg-slate-800 border border-slate-700/80 text-xs font-semibold text-slate-200 transition">
                     <i id="apiKeyIcon" class="fa-solid fa-key text-indigo-400"></i>
+                </button>
+            </div>
+        </div>
+
+        <!-- TOP PAGE NAVIGATION TABS -->
+        <div class="border-t border-slate-800/80 bg-slate-900/90 px-3 py-1.5">
+            <div class="w-full max-w-[430px] mx-auto grid grid-cols-3 gap-1.5">
+                <button id="navTabNfc" onclick="switchMainPage('nfc')" class="py-2 rounded-xl text-xs font-bold flex items-center justify-center gap-1.5 transition bg-indigo-600 text-white shadow">
+                    <i class="fa-solid fa-wifi rotate-90 text-[11px]"></i>
+                    <span>NFC Studio</span>
+                </button>
+                <button id="navTabFinance" onclick="switchMainPage('finance')" class="py-2 rounded-xl text-xs font-bold flex items-center justify-center gap-1.5 transition bg-slate-950 text-slate-400 border border-slate-800">
+                    <i class="fa-solid fa-wallet text-[11px] text-emerald-400"></i>
+                    <span>Finances</span>
+                </button>
+                <button id="navTabNotes" onclick="switchMainPage('notes')" class="py-2 rounded-xl text-xs font-bold flex items-center justify-center gap-1.5 transition bg-slate-950 text-slate-400 border border-slate-800">
+                    <i class="fa-solid fa-note-sticky text-[11px] text-amber-400"></i>
+                    <span>Notes</span>
                 </button>
             </div>
         </div>
@@ -111,7 +117,10 @@
         </div>
     </header>
 
-    <main class="flex-grow w-full max-w-[430px] mx-auto px-3 pt-3.5 space-y-3.5">
+    <!-- ========================================== -->
+    <!-- PAGE 1: NFC STUDIO                         -->
+    <!-- ========================================== -->
+    <main id="pageNfcSection" class="flex-grow w-full max-w-[430px] mx-auto px-3 pt-3.5 space-y-3.5">
 
         <section id="cardSection1" class="step-card-transition bg-slate-900/95 border border-slate-800 rounded-2xl p-3.5 shadow-xl space-y-3">
             <div class="flex items-center justify-between gap-2">
@@ -168,9 +177,6 @@
                             <span>Paste</span>
                         </button>
                     </div>
-                    <p id="parserHint" class="text-[11px] text-slate-400 leading-tight">
-                        Accepts <code class="text-slate-300">ChIJ...</code> IDs, <code class="text-slate-300">?placeid=</code> URLs, or short <code class="text-slate-300">g.page/r/...</code> review links.
-                    </p>
                 </div>
 
                 <div class="p-3 rounded-xl bg-slate-950/90 border border-amber-500/30 space-y-2.5">
@@ -183,7 +189,7 @@
                     </div>
                     <div class="flex gap-2">
                         <input id="mapsShareLinkInput" type="text"
-                            placeholder="Paste https://maps.app.goo.gl/... or Maps share text"
+                            placeholder="Paste [https://maps.app.goo.gl/](https://maps.app.goo.gl/)... or Maps share text"
                             oninput="handleMapsShareInputPreview(this.value)"
                             class="flex-1 px-3 py-2.5 bg-slate-900 border border-slate-700 rounded-xl text-xs font-mono text-white placeholder-slate-500 focus:outline-none focus:border-amber-500">
                         <button type="button" onclick="pasteFromClipboard('mapsShareLinkInput')" class="px-3.5 py-2.5 rounded-xl bg-slate-800 active:bg-slate-700 border border-slate-700 text-amber-300 text-xs font-bold transition flex items-center gap-1.5 flex-shrink-0">
@@ -196,7 +202,7 @@
                         <span id="resolveMapsShareText">Extract Review Link from Maps Share Link</span>
                     </button>
                     <p id="mapsShareStatusText" class="text-[11px] text-slate-400 leading-tight">
-                        Share any place from the Google Maps app &rarr; Copy Link &rarr; Paste here to resolve its Place ID &amp; Review URL.
+                        Share any place from Google Maps &rarr; Copy Link &rarr; Paste here.
                     </p>
                 </div>
             </div>
@@ -216,9 +222,6 @@
                             placeholder="Type business name & city..."
                             class="w-full pl-9 pr-3 py-3 bg-slate-900 border border-indigo-500/40 rounded-xl text-sm text-white placeholder-slate-500 focus:outline-none focus:border-indigo-400">
                     </div>
-                    <p id="liveApiNotice" class="text-[11px] text-slate-400">
-                        Select a business from the dropdown to automatically extract its Place ID and Business Name.
-                    </p>
                 </div>
             </div>
         </section>
@@ -341,7 +344,7 @@
                     <span id="urlCharCount">77 chars</span>
                 </div>
                 <div id="generatedUrlDisplay" class="font-mono text-xs text-emerald-400 break-all select-all leading-relaxed">
-                    https://search.google.com/local/writereview?placeid=ChIJef51K_vAwjsR_m0tS8G9R5k
+                    [https://search.google.com/local/writereview?placeid=ChIJef51K_vAwjsR_m0tS8G9R5k](https://search.google.com/local/writereview?placeid=ChIJef51K_vAwjsR_m0tS8G9R5k)
                 </div>
             </div>
             <div class="grid grid-cols-2 gap-2">
@@ -349,7 +352,7 @@
                     <i class="fa-regular fa-copy text-indigo-400"></i>
                     <span id="copyBtnText">Copy Review Link</span>
                 </button>
-                <a id="testLinkAnchor" href="https://search.google.com/local/writereview?placeid=ChIJef51K_vAwjsR_m0tS8G9R5k" target="_blank" rel="noopener noreferrer"
+                <a id="testLinkAnchor" href="[https://search.google.com/local/writereview?placeid=ChIJef51K_vAwjsR_m0tS8G9R5k](https://search.google.com/local/writereview?placeid=ChIJef51K_vAwjsR_m0tS8G9R5k)" target="_blank" rel="noopener noreferrer"
                     class="py-3 px-3 rounded-xl bg-slate-800 active:bg-slate-700 text-slate-200 font-semibold text-xs border border-slate-700 transition flex items-center justify-center gap-2">
                     <span>Test Link</span>
                     <i class="fa-solid fa-arrow-up-right-from-square text-[11px] text-emerald-400"></i>
@@ -360,19 +363,19 @@
                     <div class="flex items-center justify-between">
                         <span class="text-[10px] font-mono uppercase tracking-wider text-amber-400 font-bold flex items-center gap-1.5">
                             <i class="fa-solid fa-bolt"></i>
-                            <span>com.wakdev.wdnfc</span>
+                            <span>NFC Tools Launcher</span>
                         </span>
-                        <span class="text-[9px] font-mono px-1.5 py-0.5 rounded bg-emerald-500/15 text-emerald-400 border border-emerald-500/30">No Play Store Redirect</span>
+                        <span class="text-[9px] font-mono px-1.5 py-0.5 rounded bg-emerald-500/15 text-emerald-400 border border-emerald-500/30">Direct App Switch</span>
                     </div>
                     <select id="nfcLaunchMethod" class="w-full bg-slate-900 border border-slate-700 rounded-lg px-2.5 py-2 text-xs text-slate-200 font-mono focus:outline-none focus:border-indigo-500">
-                        <option value="safe_intent">Safe Intent (No Market Fallback)</option>
-                        <option value="nfc_scheme">Direct App Launch (nfc:// URI Scheme)</option>
-                        <option value="android_share">Android Share Sheet → NFC Tools Pro</option>
+                        <option value="safe_intent">Open NFC Tools Free (com.wakdev.wdnfc)</option>
+                        <option value="pro_intent">Open NFC Tools Pro (com.wakdev.nfctools.pro)</option>
+                        <option value="android_share">Android Share Sheet &rarr; Select NFC Tools</option>
                     </select>
                 </div>
                 <button type="button" onclick="launchNfcToolsPro()" class="w-full py-3.5 px-4 rounded-2xl bg-gradient-to-r from-indigo-600 via-indigo-500 to-emerald-600 active:scale-[0.99] text-white font-bold text-sm shadow-lg shadow-indigo-600/25 transition flex items-center justify-center gap-2.5">
                     <i class="fa-solid fa-wifi rotate-90 text-base"></i>
-                    <span>Copy Link & Open NFC Tools Pro</span>
+                    <span>Copy Link & Open NFC Tools</span>
                 </button>
                 <div class="grid grid-cols-2 gap-2">
                     <button type="button" onclick="shareUrlToNfcTools()" class="py-3 px-3 rounded-xl bg-indigo-500/15 active:bg-indigo-500/25 text-indigo-300 border border-indigo-500/30 font-semibold text-xs transition flex items-center justify-center gap-1.5">
@@ -395,7 +398,7 @@
                         <h2 class="text-sm font-bold text-white truncate">Client Card Order Queue</h2>
                         <span id="batchCountBadge" class="px-2 py-0.5 text-[11px] font-mono font-bold rounded-full bg-indigo-500/15 text-indigo-300 border border-indigo-500/30 flex-shrink-0">0</span>
                     </div>
-                    <p class="text-[10px] text-slate-400 mt-0.5 truncate">1: Biz • 2: Phone • 3: 6-Code • 4: GPS • 5: Date/Time</p>
+                    <p class="text-[10px] text-slate-400 mt-0.5 truncate">Synced to sbzr0/n &rarr; entries.json</p>
                 </div>
                 <button type="button" onclick="exportBatchCsv()" class="px-3 py-2.5 rounded-xl bg-emerald-600 active:bg-emerald-500 text-white text-xs font-bold transition flex items-center gap-1.5 shadow-md shadow-emerald-600/20 flex-shrink-0">
                     <i class="fa-solid fa-file-csv text-sm"></i>
@@ -406,40 +409,20 @@
             <div class="p-3 rounded-xl bg-slate-950/90 border border-slate-800/90 space-y-2.5">
                 <div class="flex items-center justify-between gap-2">
                     <div class="flex items-center gap-1.5 text-[11px] text-emerald-400 font-medium min-w-0">
-                        <i id="storageStatusIcon" class="fa-brands fa-github flex-shrink-0"></i>
-                        <span id="storageStatusText" class="truncate">GitHub Repo Sync + Local DB Ready</span>
+                        <i class="fa-brands fa-github flex-shrink-0"></i>
+                        <span id="storageStatusText" class="truncate">GitHub Cloud Sync Active</span>
                     </div>
-                    <button type="button" onclick="toggleGithubModal()" class="px-2.5 py-1 rounded-lg bg-indigo-500/15 active:bg-indigo-500/25 border border-indigo-500/30 text-[10px] font-bold text-indigo-300 flex items-center gap-1 flex-shrink-0">
-                        <i class="fa-brands fa-github"></i>
-                        <span>GitHub Setup</span>
-                    </button>
                 </div>
 
                 <div class="grid grid-cols-2 gap-1.5">
                     <button type="button" onclick="pullFromGithubRepo(false)" class="py-2 px-2.5 rounded-lg bg-emerald-500/15 active:bg-emerald-500/30 border border-emerald-500/30 text-[10px] font-bold text-emerald-300 flex items-center justify-center gap-1.5">
-                        <i id="ghPullIcon" class="fa-solid fa-cloud-arrow-down"></i>
+                        <i class="fa-solid fa-cloud-arrow-down"></i>
                         <span>Load from GitHub</span>
                     </button>
                     <button type="button" onclick="pushToGithubRepo(true)" class="py-2 px-2.5 rounded-lg bg-indigo-500/20 active:bg-indigo-500/35 border border-indigo-500/40 text-[10px] font-bold text-indigo-200 flex items-center justify-center gap-1.5">
-                        <i id="ghPushIcon" class="fa-solid fa-cloud-arrow-up"></i>
+                        <i class="fa-solid fa-cloud-arrow-up"></i>
                         <span>Sync to GitHub</span>
                     </button>
-                </div>
-
-                <div class="grid grid-cols-3 gap-1.5 pt-1 border-t border-slate-800/70">
-                    <button type="button" onclick="downloadHtmlWithEmbeddedData()" class="py-2 px-2 rounded-lg bg-slate-900 active:bg-slate-800 border border-slate-700 text-[10px] font-bold text-indigo-200 flex items-center justify-center gap-1" title="Saves this entire app + embedded database into a standalone HTML file">
-                        <i class="fa-solid fa-file-code text-indigo-400"></i>
-                        <span>Save HTML DB</span>
-                    </button>
-                    <button type="button" onclick="downloadDatabaseFile()" class="py-2 px-2 rounded-lg bg-slate-900 active:bg-slate-800 border border-slate-700 text-[10px] font-bold text-amber-300 flex items-center justify-center gap-1" title="Saves a standalone .json database file">
-                        <i class="fa-solid fa-database text-amber-400"></i>
-                        <span>Save JSON</span>
-                    </button>
-                    <button type="button" onclick="document.getElementById('importJsonInput').click()" class="py-2 px-2 rounded-lg bg-slate-900 active:bg-slate-800 border border-slate-700 text-[10px] font-bold text-slate-300 flex items-center justify-center gap-1">
-                        <i class="fa-solid fa-file-import text-emerald-400"></i>
-                        <span>Import File</span>
-                    </button>
-                    <input id="importJsonInput" type="file" accept=".json,.db,.html,.htm" class="hidden" onchange="importBackupFile(event)">
                 </div>
             </div>
 
@@ -467,7 +450,151 @@
         </div>
     </main>
 
-    <div class="fixed bottom-0 inset-x-0 z-40 bg-slate-950/95 backdrop-blur-md border-t border-slate-800/90 px-3 pt-2 bottom-safe-bar">
+    <!-- ========================================== -->
+    <!-- PAGE 2: INCOME & EXPENSES (finances.json)  -->
+    <!-- ========================================== -->
+    <main id="pageFinanceSection" class="hidden flex-grow w-full max-w-[430px] mx-auto px-3 pt-3.5 space-y-3.5">
+        <section class="bg-slate-900/95 border border-slate-800 rounded-2xl p-3.5 shadow-xl space-y-3">
+            <div class="flex items-center justify-between">
+                <div>
+                    <h2 class="text-sm font-bold text-white flex items-center gap-2">
+                        <i class="fa-solid fa-wallet text-emerald-400"></i>
+                        <span>Income & Expense Ledger</span>
+                    </h2>
+                    <p class="text-[10px] font-mono text-slate-400 mt-0.5">Synced to sbzr0/n &rarr; finances.json</p>
+                </div>
+                <div class="flex items-center gap-1.5">
+                    <button onclick="pullFinancesFromGithub(false)" class="p-2 rounded-xl bg-slate-950 border border-slate-800 text-xs text-emerald-400" title="Reload from GitHub">
+                        <i class="fa-solid fa-cloud-arrow-down"></i>
+                    </button>
+                    <button onclick="pushFinancesToGithub(true)" class="px-2.5 py-1.5 rounded-xl bg-indigo-600/25 border border-indigo-500/40 text-[11px] font-bold text-indigo-300 flex items-center gap-1">
+                        <i class="fa-solid fa-cloud-arrow-up"></i>
+                        <span>Sync</span>
+                    </button>
+                </div>
+            </div>
+
+            <!-- Summary Cards -->
+            <div class="grid grid-cols-3 gap-2">
+                <div class="p-2.5 rounded-xl bg-slate-950 border border-slate-800">
+                    <span class="text-[9px] font-mono uppercase text-slate-400 block">Total Income</span>
+                    <span id="finTotalIncome" class="font-mono text-xs font-extrabold text-emerald-400 mt-0.5 block">₹0</span>
+                </div>
+                <div class="p-2.5 rounded-xl bg-slate-950 border border-slate-800">
+                    <span class="text-[9px] font-mono uppercase text-slate-400 block">Expenses</span>
+                    <span id="finTotalExpense" class="font-mono text-xs font-extrabold text-rose-400 mt-0.5 block">₹0</span>
+                </div>
+                <div class="p-2.5 rounded-xl bg-slate-950 border border-indigo-500/30">
+                    <span class="text-[9px] font-mono uppercase text-indigo-300 block">Net Profit</span>
+                    <span id="finNetBalance" class="font-mono text-xs font-extrabold text-white mt-0.5 block">₹0</span>
+                </div>
+            </div>
+
+            <!-- Add Entry Form -->
+            <div class="p-3 rounded-xl bg-slate-950 border border-slate-800/90 space-y-2.5">
+                <div class="grid grid-cols-2 gap-1.5 p-1 rounded-xl bg-slate-900 border border-slate-800">
+                    <button type="button" id="btnTypeIncome" onclick="setFinanceType('income')" class="py-2 rounded-lg text-xs font-bold transition bg-emerald-600 text-white shadow">
+                        + Income
+                    </button>
+                    <button type="button" id="btnTypeExpense" onclick="setFinanceType('expense')" class="py-2 rounded-lg text-xs font-bold transition text-slate-400">
+                        - Expense
+                    </button>
+                </div>
+
+                <div class="grid grid-cols-12 gap-2">
+                    <div class="col-span-5">
+                        <label class="text-[10px] font-mono uppercase text-slate-400 block mb-1">Amount (₹)</label>
+                        <input id="finAmountInput" type="number" step="any" placeholder="e.g. 500"
+                            class="w-full px-3 py-2.5 bg-slate-900 border border-slate-700 rounded-xl text-sm font-mono font-bold text-white focus:outline-none focus:border-emerald-500">
+                    </div>
+                    <div class="col-span-7">
+                        <label class="text-[10px] font-mono uppercase text-slate-400 block mb-1">Category</label>
+                        <select id="finCategoryInput" class="w-full px-3 py-2.5 bg-slate-900 border border-slate-700 rounded-xl text-xs font-semibold text-white focus:outline-none focus:border-indigo-500">
+                            <option value="NFC Card Sale">NFC Card Sale</option>
+                            <option value="Raw Blank Cards">Raw Blank Cards</option>
+                            <option value="Printing / Stickers">Printing / Stickers</option>
+                            <option value="Travel / Fuel">Travel / Fuel</option>
+                            <option value="Food / Personal">Food / Personal</option>
+                            <option value="Other">Other</option>
+                        </select>
+                    </div>
+                </div>
+
+                <div>
+                    <label class="text-[10px] font-mono uppercase text-slate-400 block mb-1">Description / Client Note</label>
+                    <input id="finDescInput" type="text" placeholder="e.g. Sold 3 cards to Vaishali FC Road"
+                        class="w-full px-3 py-2.5 bg-slate-900 border border-slate-700 rounded-xl text-xs text-white placeholder-slate-500 focus:outline-none focus:border-indigo-500">
+                </div>
+
+                <button type="button" onclick="addFinanceRecord()" class="w-full py-3 rounded-xl bg-gradient-to-r from-indigo-600 to-emerald-600 active:opacity-95 text-white font-bold text-xs shadow-lg flex items-center justify-center gap-2">
+                    <i class="fa-solid fa-plus-circle"></i>
+                    <span>Save Transaction & Sync to GitHub</span>
+                </button>
+            </div>
+        </section>
+
+        <!-- Transaction History List -->
+        <section class="bg-slate-900/95 border border-slate-800 rounded-2xl p-3.5 shadow-xl space-y-3">
+            <div class="flex items-center justify-between">
+                <h3 class="text-xs font-bold uppercase tracking-wider text-slate-300">Transaction History</h3>
+                <span id="finCountBadge" class="text-[10px] font-mono px-2 py-0.5 rounded-full bg-slate-800 text-slate-300">0 entries</span>
+            </div>
+            <div id="financeListContainer" class="space-y-2"></div>
+        </section>
+    </main>
+
+    <!-- ========================================== -->
+    <!-- PAGE 3: NOTESBOOK (notes.json)             -->
+    <!-- ========================================== -->
+    <main id="pageNotesSection" class="hidden flex-grow w-full max-w-[430px] mx-auto px-3 pt-3.5 space-y-3.5">
+        <section class="bg-slate-900/95 border border-slate-800 rounded-2xl p-3.5 shadow-xl space-y-3">
+            <div class="flex items-center justify-between">
+                <div>
+                    <h2 class="text-sm font-bold text-white flex items-center gap-2">
+                        <i class="fa-solid fa-note-sticky text-amber-400"></i>
+                        <span>Cloud Notes & Ideas</span>
+                    </h2>
+                    <p class="text-[10px] font-mono text-slate-400 mt-0.5">Synced to sbzr0/n &rarr; notes.json</p>
+                </div>
+                <div class="flex items-center gap-1.5">
+                    <button onclick="pullNotesFromGithub(false)" class="p-2 rounded-xl bg-slate-950 border border-slate-800 text-xs text-emerald-400" title="Reload Notes">
+                        <i class="fa-solid fa-cloud-arrow-down"></i>
+                    </button>
+                    <button onclick="pushNotesToGithub(true)" class="px-2.5 py-1.5 rounded-xl bg-indigo-600/25 border border-indigo-500/40 text-[11px] font-bold text-indigo-300 flex items-center gap-1">
+                        <i class="fa-solid fa-cloud-arrow-up"></i>
+                        <span>Sync</span>
+                    </button>
+                </div>
+            </div>
+
+            <div class="p-3 rounded-xl bg-slate-950 border border-slate-800/90 space-y-2.5">
+                <input id="noteTitleInput" type="text" placeholder="Note Title (e.g. Leads to visit in KP)"
+                    class="w-full px-3 py-2.5 bg-slate-900 border border-slate-700 rounded-xl text-xs font-bold text-white placeholder-slate-500 focus:outline-none focus:border-amber-500">
+                <textarea id="noteBodyInput" rows="4" placeholder="Write your note, client follow-ups, or ideas..."
+                    class="w-full px-3 py-2.5 bg-slate-900 border border-slate-700 rounded-xl text-xs text-white placeholder-slate-500 focus:outline-none focus:border-amber-500 resize-y"></textarea>
+                <div class="flex gap-2">
+                    <button type="button" id="saveNoteBtn" onclick="saveNoteItem()" class="flex-1 py-3 rounded-xl bg-amber-500 hover:bg-amber-400 text-slate-950 font-extrabold text-xs shadow-lg flex items-center justify-center gap-1.5">
+                        <i class="fa-solid fa-floppy-disk"></i>
+                        <span id="saveNoteBtnText">Save Note & Sync</span>
+                    </button>
+                    <button type="button" id="cancelNoteEditBtn" onclick="resetNoteForm()" class="hidden px-4 py-3 rounded-xl bg-slate-800 text-slate-300 font-bold text-xs">
+                        Cancel
+                    </button>
+                </div>
+            </div>
+        </section>
+
+        <section class="bg-slate-900/95 border border-slate-800 rounded-2xl p-3.5 shadow-xl space-y-3">
+            <div class="flex items-center justify-between">
+                <h3 class="text-xs font-bold uppercase tracking-wider text-slate-300">Saved Notes</h3>
+                <span id="notesCountBadge" class="text-[10px] font-mono px-2 py-0.5 rounded-full bg-slate-800 text-slate-300">0 notes</span>
+            </div>
+            <div id="notesListContainer" class="space-y-2.5"></div>
+        </section>
+    </main>
+
+    <!-- STICKY BOTTOM BAR -->
+    <div id="stickyBottomBarNfc" class="fixed bottom-0 inset-x-0 z-40 bg-slate-950/95 backdrop-blur-md border-t border-slate-800/90 px-3 pt-2 bottom-safe-bar">
         <div class="w-full max-w-[430px] mx-auto flex items-stretch gap-1.5">
             <div class="px-2 py-1.5 rounded-xl bg-slate-900 border border-slate-800 flex-shrink-0 flex flex-col justify-center text-center min-w-[60px]">
                 <span class="block text-[8px] font-mono uppercase text-slate-400 leading-none">CODE</span>
@@ -477,97 +604,10 @@
                 <i class="fa-solid fa-bolt flex-shrink-0"></i>
                 <span class="truncate">Save + Open NFC Tools</span>
             </button>
-            <button type="button" onclick="pushToGithubRepo(true)" title="Sync Entries to GitHub Repo" class="py-3 px-2.5 rounded-xl bg-slate-900 active:bg-slate-800 border border-indigo-500/50 text-indigo-300 font-bold text-[11px] flex items-center justify-center gap-1 flex-shrink-0 shadow">
+            <button type="button" onclick="syncAllPagesWithGithub(true)" title="Sync All Data with GitHub" class="py-3 px-2.5 rounded-xl bg-slate-900 active:bg-slate-800 border border-indigo-500/50 text-indigo-300 font-bold text-[11px] flex items-center justify-center gap-1 flex-shrink-0 shadow">
                 <i class="fa-brands fa-github text-emerald-400"></i>
-                <span class="whitespace-nowrap">Sync GitHub</span>
+                <span class="whitespace-nowrap">Sync All</span>
             </button>
-        </div>
-    </div>
-
-    <!-- GITHUB REPO SYNC MODAL -->
-    <div id="githubModal" class="fixed inset-0 z-50 hidden bg-black/80 backdrop-blur-sm flex items-center justify-center p-4">
-        <div class="bg-slate-900 border border-slate-700 rounded-2xl max-w-md w-full p-5 shadow-2xl space-y-3.5 max-h-[92vh] overflow-y-auto">
-            <div class="flex items-center justify-between">
-                <h3 class="text-sm font-bold text-white flex items-center gap-2">
-                    <i class="fa-brands fa-github text-emerald-400 text-base"></i>
-                    <span>GitHub Repository Sync</span>
-                </h3>
-                <button type="button" onclick="toggleGithubModal()" class="text-slate-400 hover:text-white p-1">
-                    <i class="fa-solid fa-xmark text-lg"></i>
-                </button>
-            </div>
-
-            <div class="p-3 rounded-xl bg-slate-950 border border-slate-800 space-y-1 text-xs">
-                <div class="flex items-center justify-between">
-                    <span class="text-slate-400">Sync Status:</span>
-                    <span id="githubModalStatus" class="font-mono font-bold text-amber-400">Not Configured</span>
-                </div>
-                <div class="flex items-center justify-between">
-                    <span class="text-slate-400">Target Path:</span>
-                    <span id="githubTargetDisplay" class="font-mono text-[10px] text-slate-300 truncate max-w-[210px]">--</span>
-                </div>
-            </div>
-
-            <div class="space-y-2.5 text-xs">
-                <div class="grid grid-cols-2 gap-2">
-                    <div>
-                        <label class="block text-[11px] font-semibold text-slate-300 mb-1">GitHub Username</label>
-                        <input id="ghOwnerInput" type="text" placeholder="e.g. johndoe"
-                            class="w-full px-3 py-2 bg-slate-950 border border-slate-700 rounded-xl text-xs font-mono text-white focus:outline-none focus:border-indigo-500">
-                    </div>
-                    <div>
-                        <label class="block text-[11px] font-semibold text-slate-300 mb-1">Repository Name</label>
-                        <input id="ghRepoInput" type="text" placeholder="e.g. tapreview-app"
-                            class="w-full px-3 py-2 bg-slate-950 border border-slate-700 rounded-xl text-xs font-mono text-white focus:outline-none focus:border-indigo-500">
-                    </div>
-                </div>
-
-                <div class="grid grid-cols-2 gap-2">
-                    <div>
-                        <label class="block text-[11px] font-semibold text-slate-300 mb-1">Branch</label>
-                        <input id="ghBranchInput" type="text" value="main" placeholder="main"
-                            class="w-full px-3 py-2 bg-slate-950 border border-slate-700 rounded-xl text-xs font-mono text-white focus:outline-none focus:border-indigo-500">
-                    </div>
-                    <div>
-                        <label class="block text-[11px] font-semibold text-slate-300 mb-1">Database File Path</label>
-                        <input id="ghPathInput" type="text" value="entries.json" placeholder="entries.json"
-                            class="w-full px-3 py-2 bg-slate-950 border border-slate-700 rounded-xl text-xs font-mono text-amber-300 focus:outline-none focus:border-indigo-500">
-                    </div>
-                </div>
-
-                <div>
-                    <label class="block text-[11px] font-semibold text-slate-300 mb-1">Personal Access Token (PAT)</label>
-                    <input id="ghTokenInput" type="password" placeholder="github_pat_... or ghp_..."
-                        class="w-full px-3 py-2 bg-slate-950 border border-slate-700 rounded-xl text-xs font-mono text-emerald-300 focus:outline-none focus:border-emerald-500">
-                    <p class="text-[10px] text-slate-400 mt-1 leading-relaxed">
-                        Stored only in your device's browser <code class="text-slate-300">localStorage</code>. Requires <strong>Contents: Read &amp; Write</strong> permission on your repo.
-                    </p>
-                </div>
-
-                <label class="flex items-center justify-between p-2.5 rounded-xl bg-slate-950 border border-slate-800 cursor-pointer">
-                    <span class="text-xs font-semibold text-slate-200">Auto-sync on Save / Delete / Status Change</span>
-                    <input id="ghAutoSyncToggle" type="checkbox" checked class="w-4 h-4 accent-emerald-500 rounded">
-                </label>
-            </div>
-
-            <div class="grid grid-cols-2 gap-2 pt-1">
-                <button type="button" onclick="pullFromGithubRepo(false)" class="py-2.5 px-3 rounded-xl bg-emerald-600/20 active:bg-emerald-600/35 border border-emerald-500/40 text-xs font-bold text-emerald-300 flex items-center justify-center gap-1.5">
-                    <i class="fa-solid fa-cloud-arrow-down"></i>
-                    <span>Load from Repo</span>
-                </button>
-                <button type="button" onclick="pushToGithubRepo(true)" class="py-2.5 px-3 rounded-xl bg-indigo-600/25 active:bg-indigo-600/40 border border-indigo-500/40 text-xs font-bold text-indigo-300 flex items-center justify-center gap-1.5">
-                    <i class="fa-solid fa-cloud-arrow-up"></i>
-                    <span>Push to Repo</span>
-                </button>
-            </div>
-
-            <div class="flex items-center justify-between gap-2 pt-2 border-t border-slate-800">
-                <button type="button" onclick="clearGithubSettings()" class="px-3 py-2 rounded-xl bg-slate-800 text-xs text-rose-300 font-semibold">Clear Token</button>
-                <div class="flex items-center gap-2">
-                    <button type="button" onclick="toggleGithubModal()" class="px-3.5 py-2 rounded-xl bg-slate-800 text-xs font-semibold text-slate-300">Close</button>
-                    <button type="button" onclick="saveGithubConfig()" class="px-4 py-2 rounded-xl bg-emerald-600 active:bg-emerald-500 text-xs font-bold text-white shadow">Save & Sync</button>
-                </div>
-            </div>
         </div>
     </div>
 
@@ -601,21 +641,18 @@
         </div>
     </div>
 
-    <script id="embeddedBatchSnapshot" type="application/json">[]</script>
-
     <script>
         // ==========================================
         // CONSTANTS & STATE
         // ==========================================
-        const REVIEW_BASE_URL = "https://search.google.com/local/writereview?placeid=";
+        const REVIEW_BASE_URL = "[https://search.google.com/local/writereview?placeid=](https://search.google.com/local/writereview?placeid=)";
         const MIFARE_ULTRALIGHT_MAX_BYTES = 137;
         const STORAGE_KEY_BATCH = "tapreview_ultralight_batch_v2";
-        const LEGACY_KEYS = ["tapreview_ultralight_v2", "tapreview_batch_orders_v1"];
+        const STORAGE_KEY_FINANCES = "tapreview_finances_v1";
+        const STORAGE_KEY_NOTES = "tapreview_notes_v1";
         const STORAGE_KEY_API = "tapreview_google_api_key";
-        const STORAGE_KEY_GH_CONFIG = "tapreview_github_sync_config_v1";
-        const IDB_NAME = "TapReviewStudioDB";
-        const IDB_STORE = "orders_store";
 
+        let activeMainPage = "nfc";
         let viewLayoutMode = "normal";
         let currentSimpleStep = 1;
         const SIMPLE_STEP_TITLES = {
@@ -631,283 +668,457 @@
             phoneNumber: "",
             sixCharCode: "",
             placeId: "ChIJef51K_vAwjsR_m0tS8G9R5k",
-            reviewUrl: "https://search.google.com/local/writereview?placeid=ChIJef51K_vAwjsR_m0tS8G9R5k",
+            reviewUrl: "[https://search.google.com/local/writereview?placeid=ChIJef51K_vAwjsR_m0tS8G9R5k](https://search.google.com/local/writereview?placeid=ChIJef51K_vAwjsR_m0tS8G9R5k)",
             byteSize: 75,
             location: null
         };
 
         let batchList = [];
-        let dbPromise = null;
-        let lastKnownGithubSha = null;
-        let isGithubSyncing = false;
+        let financeList = [];
+        let notesList = [];
 
-        const INLINE_SVG_PATHS = window.__INLINE_SVG_PATHS || {};
-        if (Object.keys(INLINE_SVG_PATHS).length === 0) {
-            const minimal = {
-                'fa-wifi': '<path d="M5 12.55a11 11 0 0 1 14.08 0"/><path d="M1.42 9a16 16 0 0 1 21.16 0"/><path d="M8.53 16.11a6 6 0 0 1 6.95 0"/><line x1="12" y1="20" x2="12.01" y2="20"/>',
-                'fa-key': '<circle cx="7.5" cy="15.5" r="5.5"/><path d="m21 2-9.6 9.6"/><path d="m15.5 7.5 3 3L22 7l-3-3"/>',
-                'fa-paste': '<rect width="8" height="4" x="8" y="2" rx="1" ry="1"/><path d="M16 4h2a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h2"/>',
-                'fa-eraser': '<path d="m7 21-4.3-4.3c-1-1-1-2.5 0-3.4l9.6-9.6c1-1 2.5-1 3.4 0l5.6 5.6c1 1 1 2.5 0 3.4L13 21"/><path d="M22 21H7"/><path d="m5 11 9 9"/>',
-                'fa-phone': '<path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z"/>',
-                'fa-whatsapp': '<path d="M3 21l1.65-3.8a9 9 0 1 1 3.4 2.9L3 21"/><path d="M9 10a.5.5 0 0 0 1 0V9a.5.5 0 0 0-1 0v1a5 5 0 0 0 5 5h1a.5.5 0 0 0 0-1h-1a.5.5 0 0 0 0 1"/>',
-                'fa-bolt': '<polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/>',
-                'fa-floppy-disk': '<path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z"/><polyline points="17 21 17 13 7 13 7 21"/><polyline points="7 3 7 8 15 8"/>',
-                'fa-copy': '<rect width="14" height="14" x="8" y="8" rx="2" ry="2"/><path d="M4 16c-1.1 0-2-.9-2-2V4c0-1.1.9-2 2-2h10c1.1 0 2 .9 2 2"/>',
-                'fa-share-nodes': '<circle cx="18" cy="5" r="3"/><circle cx="6" cy="12" r="3"/><circle cx="18" cy="19" r="3"/><line x1="8.59" y1="13.51" x2="15.42" y2="17.49"/><line x1="15.41" y1="6.51" x2="8.59" y2="10.49"/>',
-                'fa-download': '<path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/>',
-                'fa-trash-can': '<path d="M3 6h18"/><path d="M19 6v14c0 1-1 2-2 2H7c-1 0-2-1-2-2V6"/><path d="M8 6V4c0-1 1-2 2-2h4c1 0 2 1 2 2v2"/><line x1="10" y1="11" x2="10" y2="17"/><line x1="14" y1="11" x2="14" y2="17"/>',
-                'fa-spinner': '<path d="M21 12a9 9 0 1 1-6.219-8.56"/>',
-                'fa-circle-check': '<circle cx="12" cy="12" r="10"/><path d="m9 12 2 2 4-4"/>'
-            };
-            Object.assign(INLINE_SVG_PATHS, minimal);
-        }
+        let currentFinanceType = "income";
+        let editingNoteId = null;
 
-        function hydrateOfflineSvgIcons(root = document) {
-            const icons = root.querySelectorAll('i[class*="fa-"]');
-            icons.forEach(el => {
-                if (el.dataset.hydrated === '1') return;
-                let matchedKey = null;
-                for (const cls of el.classList) {
-                    if (INLINE_SVG_PATHS[cls]) { matchedKey = cls; break; }
-                }
-                if (matchedKey) {
-                    const isSpin = el.classList.contains('fa-spin') ? 'animate-spin' : '';
-                    el.innerHTML = `<svg viewBox="0 0 24 24" class="tr-svg-icon ${isSpin}" aria-hidden="true">${INLINE_SVG_PATHS[matchedKey]}</svg>`;
-                    el.classList.remove('fa-solid', 'fa-regular', 'fa-brands');
-                    el.dataset.hydrated = '1';
-                }
-            });
-        }
+        let shaMap = {
+            "entries.json": null,
+            "finances.json": null,
+            "notes.json": null
+        };
 
-        window.addEventListener('DOMContentLoaded', function () {
-            hydrateOfflineSvgIcons();
+        window.addEventListener('DOMContentLoaded', async function () {
             updateLiveTimestampClock();
             setInterval(updateLiveTimestampClock, 10000);
 
-            const codeInput = document.getElementById('sixCharCodeInput');
-            codeInput.value = "";
+            document.getElementById('sixCharCodeInput').value = "";
             updateCodeBadges("");
 
-            loadGithubConfigIntoUi();
-
-            const doLoad = async () => {
-                await loadBatchFromStorage();
-                updateAllOutputs();
-                await initGithubAutoLoad();
-            };
-            if ('requestIdleCallback' in window) requestIdleCallback(doLoad, { timeout: 1200 });
-            else setTimeout(doLoad, 50);
+            loadAllLocalData();
+            updateAllOutputs();
+            renderBatchQueue();
+            renderFinanceList();
+            renderNotesList();
 
             const savedKey = localStorage.getItem(STORAGE_KEY_API);
             if (savedKey) {
                 document.getElementById('apiKeyInput').value = savedKey;
                 loadGooglePlacesScript(savedKey);
             }
+
+            // Auto-pull all 3 files from GitHub via Vercel API
+            await syncAllPagesWithGithub(false);
         });
 
-       // ==========================================
-        // GITHUB REPO SYNC ENGINE
         // ==========================================
-        function getGithubConfig() {
-            try {
-                const raw = localStorage.getItem(STORAGE_KEY_GH_CONFIG);
-                if (raw) {
-                    const parsed = JSON.parse(raw);
-                    return {
-                        owner: parsed.owner !== undefined ? parsed.owner.trim() : "sbzr0",
-                        repo: parsed.repo !== undefined ? parsed.repo.trim() : "n",
-                        branch: (parsed.branch || "main").trim() || "main",
-                        path: (parsed.path || "entries.json").trim().replace(/^\/+/, '') || "entries.json",
-                        token: parsed.token !== undefined ? parsed.token.trim() : "",
-                        autoSync: parsed.autoSync !== false
-                    };
-                }
-            } catch (e) {}
+        // PAGE NAVIGATION (NFC / FINANCES / NOTES)
+        // ==========================================
+        function switchMainPage(page) {
+            triggerHaptic(20);
+            activeMainPage = page;
 
-            return {
-                owner: "sbzr0",
-                repo: "n",
-                branch: "main",
-                path: "entries.json",
-                token: "",
-                autoSync: true
-            };
-        }
+            const nfcSec = document.getElementById('pageNfcSection');
+            const finSec = document.getElementById('pageFinanceSection');
+            const notesSec = document.getElementById('pageNotesSection');
+            const stepper = document.getElementById('simpleModeStepperBar');
+            const layoutToggle = document.getElementById('layoutToggleWrapper');
 
-        function loadGithubConfigIntoUi() {
-            const cfg = getGithubConfig();
-            document.getElementById('ghOwnerInput').value = cfg.owner;
-            document.getElementById('ghRepoInput').value = cfg.repo;
-            document.getElementById('ghBranchInput').value = cfg.branch;
-            document.getElementById('ghPathInput').value = cfg.path;
-            document.getElementById('ghTokenInput').value = cfg.token;
-            document.getElementById('ghAutoSyncToggle').checked = cfg.autoSync;
+            const tabNfc = document.getElementById('navTabNfc');
+            const tabFin = document.getElementById('navTabFinance');
+            const tabNotes = document.getElementById('navTabNotes');
 
-            const targetDisplay = document.getElementById('githubTargetDisplay');
-            if (cfg.owner && cfg.repo) {
-                targetDisplay.textContent = `${cfg.owner}/${cfg.repo}/${cfg.path} (${cfg.branch})`;
-                setGithubUiState("Vercel Serverless Ready", true);
+            const activeClass = "py-2 rounded-xl text-xs font-bold flex items-center justify-center gap-1.5 transition bg-indigo-600 text-white shadow";
+            const inactiveClass = "py-2 rounded-xl text-xs font-bold flex items-center justify-center gap-1.5 transition bg-slate-950 text-slate-400 border border-slate-800";
+
+            tabNfc.className = page === 'nfc' ? activeClass : inactiveClass;
+            tabFin.className = page === 'finance' ? activeClass : inactiveClass;
+            tabNotes.className = page === 'notes' ? activeClass : inactiveClass;
+
+            nfcSec.classList.toggle('hidden', page !== 'nfc');
+            finSec.classList.toggle('hidden', page !== 'finance');
+            notesSec.classList.toggle('hidden', page !== 'notes');
+            layoutToggle.classList.toggle('hidden', page !== 'nfc');
+
+            if (page === 'nfc' && viewLayoutMode === 'simple') {
+                stepper.classList.remove('hidden');
             } else {
-                targetDisplay.textContent = "Not set";
-                setGithubUiState("Setup Required", false);
+                stepper.classList.add('hidden');
             }
+
+            window.scrollTo({ top: 0, behavior: 'smooth' });
         }
 
+        // ==========================================
+        // UNIFIED GITHUB CLOUD SYNC (entries, finances, notes)
+        // ==========================================
         function setGithubUiState(statusText, isSynced) {
-            const modalStatus = document.getElementById('githubModalStatus');
             const headerText = document.getElementById('githubTextHeader');
             const headerBadge = document.getElementById('githubBadgeHeader');
             const storageText = document.getElementById('storageStatusText');
 
-            if (modalStatus) {
-                modalStatus.textContent = statusText;
-                modalStatus.className = isSynced ? "font-mono font-bold text-emerald-400" : "font-mono font-bold text-amber-400";
-            }
-            if (headerText) headerText.textContent = isSynced ? "GitHub Synced" : statusText;
+            if (headerText) headerText.textContent = statusText;
             if (headerBadge) {
                 headerBadge.className = isSynced
                     ? "cursor-pointer text-[9px] font-mono font-semibold uppercase px-1.5 py-0.5 rounded bg-emerald-500/15 text-emerald-400 border border-emerald-500/30 flex items-center gap-1 flex-shrink-0"
                     : "cursor-pointer text-[9px] font-mono font-semibold uppercase px-1.5 py-0.5 rounded bg-amber-500/15 text-amber-300 border border-amber-500/30 flex items-center gap-1 flex-shrink-0";
             }
             if (storageText) {
-                const cfg = getGithubConfig();
-                storageText.textContent = isSynced
-                    ? `GitHub (${cfg.owner}/${cfg.repo}) • ${statusText}`
-                    : `Local DB • ${statusText}`;
+                storageText.textContent = `GitHub (sbzr0/n) • ${statusText}`;
             }
         }
 
-        function toggleGithubModal() {
-            triggerHaptic(15);
-            loadGithubConfigIntoUi();
-            document.getElementById('githubModal').classList.toggle('hidden');
-        }
-
-        async function saveGithubConfig() {
-            triggerHaptic(25);
-            const cfg = {
-                owner: document.getElementById('ghOwnerInput').value.trim(),
-                repo: document.getElementById('ghRepoInput').value.trim(),
-                branch: document.getElementById('ghBranchInput').value.trim() || "main",
-                path: document.getElementById('ghPathInput').value.trim().replace(/^\/+/, '') || "entries.json",
-                token: document.getElementById('ghTokenInput').value.trim(),
-                autoSync: document.getElementById('ghAutoSyncToggle').checked
-            };
-            localStorage.setItem(STORAGE_KEY_GH_CONFIG, JSON.stringify(cfg));
-            loadGithubConfigIntoUi();
-            toggleGithubModal();
-            await pullFromGithubRepo(true);
-        }
-
-        function clearGithubSettings() {
-            triggerHaptic(20);
-            localStorage.removeItem(STORAGE_KEY_GH_CONFIG);
-            lastKnownGithubSha = null;
-            loadGithubConfigIntoUi();
-            showToast("Cleared settings.");
-        }
-
-        function encodeUtf8Base64(str) {
-            const bytes = new TextEncoder().encode(str);
-            let binary = "";
-            for (let i = 0; i < bytes.byteLength; i++) {
-                binary += String.fromCharCode(bytes[i]);
+        async function pullFileFromVercel(filename) {
+            const res = await fetch(`/api/sync?file=${encodeURIComponent(filename)}&t=${Date.now()}`, { cache: "no-store" });
+            if (!res.ok) {
+                const err = await res.json().catch(() => ({}));
+                throw new Error(err.error || `HTTP ${res.status}`);
             }
-            return btoa(binary);
+            const data = await res.json();
+            if (data.sha) shaMap[filename] = data.sha;
+            return Array.isArray(data.records) ? data.records : [];
         }
 
-        function decodeUtf8Base64(b64) {
-            const binary = atob(b64.replace(/\s/g, ''));
-            const bytes = new Uint8Array(binary.length);
-            for (let i = 0; i < binary.length; i++) {
-                bytes[i] = binary.charCodeAt(i);
-            }
-            return new TextDecoder().decode(bytes);
+        async function pushFileToVercel(filename, records) {
+            const res = await fetch(`/api/sync?file=${encodeURIComponent(filename)}`, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({
+                    file: filename,
+                    records: records,
+                    sha: shaMap[filename]
+                })
+            });
+            const data = await res.json().catch(() => ({}));
+            if (!res.ok) throw new Error(data.error || `HTTP ${res.status}`);
+            if (data.sha) shaMap[filename] = data.sha;
+            return true;
         }
 
-        async function initGithubAutoLoad() {
-            await pullFromGithubRepo(true);
-        }
-
-        async function pullFromGithubRepo(silent = false) {
-            setGithubUiState("Loading...", false);
-
+        async function syncAllPagesWithGithub(showNotification = false) {
+            setGithubUiState("Syncing...", false);
             try {
-                const res = await fetch('/api/sync?t=' + Date.now(), { cache: "no-store" });
-                
-                if (res.status === 404) {
-                    setGithubUiState("File Not Created Yet", false);
-                    if (!silent) showToast("Database file not created yet. Sync an entry to create it!");
-                    return false;
-                }
-                
-                if (!res.ok) {
-                    const errData = await res.json().catch(() => ({}));
-                    throw new Error(errData.error || `HTTP ${res.status}`);
-                }
-
-                const data = await res.json();
-                lastKnownGithubSha = data.sha || null;
-
-                const remoteRecords = Array.isArray(data.records) ? data.records : (Array.isArray(data) ? data : []);
-
-                batchList = mergeOrderLists(remoteRecords, batchList).sort((a, b) => {
-                    const tA = Number(String(a.id).replace('ord_', '')) || 0;
-                    const tB = Number(String(b.id).replace('ord_', '')) || 0;
-                    return tB - tA;
-                });
-
-                await saveBatchToStorage(true);
-                renderBatchQueue();
-                setGithubUiState(`Synced (${batchList.length})`, true);
-                if (!silent) showToast(`Loaded ${remoteRecords.length} entries securely from GitHub!`);
-                return true;
-            } catch (err) {
-                setGithubUiState("Load Error", false);
-                if (!silent) showToast(`Load Failed: ${err.message}`);
-                return false;
-            }
-        }
-
-        async function pushToGithubRepo(notifyToast = false, replaceRemote = false) {
-            if (isGithubSyncing) return false;
-            isGithubSyncing = true;
-            setGithubUiState("Pushing...", false);
-
-            try {
-                const res = await fetch('/api/sync', {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ 
-                        records: batchList, 
-                        sha: lastKnownGithubSha 
-                    })
-                });
-
-                const data = await res.json();
-                if (!res.ok) throw new Error(data.error || `HTTP ${res.status}`);
-
-                if (data.sha) {
-                    lastKnownGithubSha = data.sha;
-                }
-
-                await saveBatchToStorage(true);
-                renderBatchQueue();
-                setGithubUiState(`Synced (${batchList.length})`, true);
-                if (notifyToast) showToast(`Synced ${batchList.length} entries to GitHub!`);
-                
-                isGithubSyncing = false;
-                return true;
-            } catch (err) {
-                isGithubSyncing = false;
+                await Promise.all([
+                    pullFromGithubRepo(true),
+                    pullFinancesFromGithub(true),
+                    pullNotesFromGithub(true)
+                ]);
+                setGithubUiState("All Synced", true);
+                if (showNotification) showToast("Synced NFC Queue, Finances & Notes with GitHub!");
+            } catch (e) {
                 setGithubUiState("Sync Error", false);
-                if (notifyToast) showToast(`Sync Failed: ${err.message}`);
-                return false;
+                if (showNotification) showToast(`Sync error: ${e.message}`);
             }
+        }
+
+        // --- NFC Entries Sync ---
+        async function pullFromGithubRepo(silent = false) {
+            try {
+                const remote = await pullFileFromVercel("entries.json");
+                batchList = mergeById(remote, batchList);
+                localStorage.setItem(STORAGE_KEY_BATCH, JSON.stringify(batchList));
+                renderBatchQueue();
+                setGithubUiState(`Synced (${batchList.length})`, true);
+                if (!silent) showToast(`Loaded ${remote.length} NFC entries from GitHub!`);
+            } catch (e) {
+                if (!silent) showToast(`Load Failed: ${e.message}`);
+            }
+        }
+
+        async function pushToGithubRepo(notifyToast = false) {
+            setGithubUiState("Saving...", false);
+            try {
+                await pushFileToVercel("entries.json", batchList);
+                setGithubUiState(`Synced (${batchList.length})`, true);
+                if (notifyToast) showToast("Synced NFC Queue to GitHub!");
+            } catch (e) {
+                setGithubUiState("Sync Error", false);
+                if (notifyToast) showToast(`Sync Failed: ${e.message}`);
+            }
+        }
+
+        // --- Finances Sync ---
+        async function pullFinancesFromGithub(silent = false) {
+            try {
+                const remote = await pullFileFromVercel("finances.json");
+                financeList = mergeById(remote, financeList);
+                localStorage.setItem(STORAGE_KEY_FINANCES, JSON.stringify(financeList));
+                renderFinanceList();
+                if (!silent) showToast(`Loaded ${remote.length} finance records from GitHub!`);
+            } catch (e) {
+                if (!silent) showToast(`Finance Load Failed: ${e.message}`);
+            }
+        }
+
+        async function pushFinancesToGithub(notifyToast = false) {
+            setGithubUiState("Saving...", false);
+            try {
+                await pushFileToVercel("finances.json", financeList);
+                setGithubUiState("Finances Synced", true);
+                if (notifyToast) showToast("Synced Finances to GitHub (finances.json)!");
+            } catch (e) {
+                setGithubUiState("Sync Error", false);
+                if (notifyToast) showToast(`Finance Sync Failed: ${e.message}`);
+            }
+        }
+
+        // --- Notes Sync ---
+        async function pullNotesFromGithub(silent = false) {
+            try {
+                const remote = await pullFileFromVercel("notes.json");
+                notesList = mergeById(remote, notesList);
+                localStorage.setItem(STORAGE_KEY_NOTES, JSON.stringify(notesList));
+                renderNotesList();
+                if (!silent) showToast(`Loaded ${remote.length} notes from GitHub!`);
+            } catch (e) {
+                if (!silent) showToast(`Notes Load Failed: ${e.message}`);
+            }
+        }
+
+        async function pushNotesToGithub(notifyToast = false) {
+            setGithubUiState("Saving...", false);
+            try {
+                await pushFileToVercel("notes.json", notesList);
+                setGithubUiState("Notes Synced", true);
+                if (notifyToast) showToast("Synced Notes to GitHub (notes.json)!");
+            } catch (e) {
+                setGithubUiState("Sync Error", false);
+                if (notifyToast) showToast(`Notes Sync Failed: ${e.message}`);
+            }
+        }
+
+        function mergeById(listA, listB) {
+            const map = new Map();
+            [...(listA || []), ...(listB || [])].forEach(item => {
+                if (item && item.id) map.set(item.id, item);
+            });
+            return Array.from(map.values()).sort((a, b) => (b.timestamp || 0) - (a.timestamp || 0));
+        }
+
+        function loadAllLocalData() {
+            try {
+                const b = JSON.parse(localStorage.getItem(STORAGE_KEY_BATCH) || "[]");
+                if (Array.isArray(b)) batchList = b;
+            } catch (e) {}
+            try {
+                const f = JSON.parse(localStorage.getItem(STORAGE_KEY_FINANCES) || "[]");
+                if (Array.isArray(f)) financeList = f;
+            } catch (e) {}
+            try {
+                const n = JSON.parse(localStorage.getItem(STORAGE_KEY_NOTES) || "[]");
+                if (Array.isArray(n)) notesList = n;
+            } catch (e) {}
         }
 
         // ==========================================
-        // UI & WORKFLOW FUNCTIONS
+        // FINANCES LOGIC (Income & Expenses)
+        // ==========================================
+        function setFinanceType(type) {
+            triggerHaptic(15);
+            currentFinanceType = type === 'expense' ? 'expense' : 'income';
+            const incBtn = document.getElementById('btnTypeIncome');
+            const expBtn = document.getElementById('btnTypeExpense');
+            if (currentFinanceType === 'income') {
+                incBtn.className = "py-2 rounded-lg text-xs font-bold transition bg-emerald-600 text-white shadow";
+                expBtn.className = "py-2 rounded-lg text-xs font-bold transition text-slate-400";
+            } else {
+                expBtn.className = "py-2 rounded-lg text-xs font-bold transition bg-rose-600 text-white shadow";
+                incBtn.className = "py-2 rounded-lg text-xs font-bold transition text-slate-400";
+            }
+        }
+
+        async function addFinanceRecord() {
+            triggerHaptic(30);
+            const amountVal = parseFloat(document.getElementById('finAmountInput').value);
+            const category = document.getElementById('finCategoryInput').value;
+            const desc = document.getElementById('finDescInput').value.trim();
+
+            if (!amountVal || amountVal <= 0) {
+                showToast("Enter a valid amount greater than 0.");
+                document.getElementById('finAmountInput').focus();
+                return;
+            }
+
+            const newEntry = {
+                id: "fin_" + Date.now(),
+                timestamp: Date.now(),
+                type: currentFinanceType,
+                amount: Number(amountVal.toFixed(2)),
+                category: category,
+                description: desc || category,
+                dateFormatted: formatDateTimeHuman(new Date())
+            };
+
+            financeList.unshift(newEntry);
+            localStorage.setItem(STORAGE_KEY_FINANCES, JSON.stringify(financeList));
+
+            document.getElementById('finAmountInput').value = "";
+            document.getElementById('finDescInput').value = "";
+
+            renderFinanceList();
+            showToast(`Added ${currentFinanceType === 'income' ? '+' : '-'}₹${newEntry.amount}! Syncing...`);
+            await pushFinancesToGithub(false);
+        }
+
+        async function deleteFinanceRecord(id) {
+            triggerHaptic(25);
+            financeList = financeList.filter(item => item.id !== id);
+            localStorage.setItem(STORAGE_KEY_FINANCES, JSON.stringify(financeList));
+            renderFinanceList();
+            showToast("Deleted transaction. Syncing...");
+            await pushFinancesToGithub(false);
+        }
+
+        function renderFinanceList() {
+            let totalInc = 0;
+            let totalExp = 0;
+
+            financeList.forEach(item => {
+                const amt = Number(item.amount) || 0;
+                if (item.type === 'income') totalInc += amt;
+                else totalExp += amt;
+            });
+
+            const net = totalInc - totalExp;
+            document.getElementById('finTotalIncome').textContent = `₹${totalInc.toLocaleString('en-IN')}`;
+            document.getElementById('finTotalExpense').textContent = `₹${totalExp.toLocaleString('en-IN')}`;
+            const netEl = document.getElementById('finNetBalance');
+            netEl.textContent = `${net >= 0 ? '' : '-'}₹${Math.abs(net).toLocaleString('en-IN')}`;
+            netEl.className = `font-mono text-xs font-extrabold mt-0.5 block ${net >= 0 ? 'text-emerald-400' : 'text-rose-400'}`;
+
+            document.getElementById('finCountBadge').textContent = `${financeList.length} entries`;
+
+            const container = document.getElementById('financeListContainer');
+            if (financeList.length === 0) {
+                container.innerHTML = `<div class="p-6 rounded-xl bg-slate-950/70 border border-slate-800 text-center text-xs text-slate-500">No transactions yet. Add your first income or expense above!</div>`;
+                return;
+            }
+
+            container.innerHTML = financeList.map(item => {
+                const isInc = item.type === 'income';
+                const sign = isInc ? '+' : '-';
+                const colorCls = isInc ? 'text-emerald-400' : 'text-rose-400';
+                const badgeBg = isInc ? 'bg-emerald-500/15 text-emerald-300 border-emerald-500/30' : 'bg-rose-500/15 text-rose-300 border-rose-500/30';
+
+                return `
+                    <div class="p-3 rounded-xl bg-slate-950 border border-slate-800 flex items-center justify-between gap-2">
+                        <div class="min-w-0 flex-1">
+                            <div class="flex items-center gap-1.5">
+                                <span class="text-[9px] font-mono uppercase px-1.5 py-0.5 rounded border ${badgeBg}">${escapeHtml(item.category)}</span>
+                                <span class="text-[10px] font-mono text-slate-500">${escapeHtml(item.dateFormatted)}</span>
+                            </div>
+                            <div class="text-xs font-semibold text-white truncate mt-1">${escapeHtml(item.description)}</div>
+                        </div>
+                        <div class="flex items-center gap-2 flex-shrink-0">
+                            <span class="font-mono text-sm font-extrabold ${colorCls}">${sign}₹${Number(item.amount).toLocaleString('en-IN')}</span>
+                            <button onclick="deleteFinanceRecord('${item.id}')" class="p-1.5 rounded-lg bg-slate-900 border border-slate-800 text-slate-500 active:text-rose-400 text-xs">
+                                <i class="fa-solid fa-trash-can"></i>
+                            </button>
+                        </div>
+                    </div>
+                `;
+            }).join('');
+        }
+
+        // ==========================================
+        // NOTES LOGIC (notes.json)
+        // ==========================================
+        async function saveNoteItem() {
+            triggerHaptic(30);
+            const title = document.getElementById('noteTitleInput').value.trim();
+            const body = document.getElementById('noteBodyInput').value.trim();
+
+            if (!title && !body) {
+                showToast("Write a title or note content first!");
+                return;
+            }
+
+            if (editingNoteId) {
+                const existing = notesList.find(n => n.id === editingNoteId);
+                if (existing) {
+                    existing.title = title || "Untitled Note";
+                    existing.body = body;
+                    existing.updatedAt = formatDateTimeHuman(new Date());
+                    existing.timestamp = Date.now();
+                }
+                editingNoteId = null;
+            } else {
+                notesList.unshift({
+                    id: "note_" + Date.now(),
+                    timestamp: Date.now(),
+                    title: title || "Untitled Note",
+                    body: body,
+                    updatedAt: formatDateTimeHuman(new Date())
+                });
+            }
+
+            localStorage.setItem(STORAGE_KEY_NOTES, JSON.stringify(notesList));
+            resetNoteForm();
+            renderNotesList();
+            showToast("Note saved! Syncing to GitHub...");
+            await pushNotesToGithub(false);
+        }
+
+        function editNoteItem(id) {
+            triggerHaptic(20);
+            const item = notesList.find(n => n.id === id);
+            if (!item) return;
+            editingNoteId = id;
+            document.getElementById('noteTitleInput').value = item.title;
+            document.getElementById('noteBodyInput').value = item.body;
+            document.getElementById('saveNoteBtnText').textContent = "Update Note & Sync";
+            document.getElementById('cancelNoteEditBtn').classList.remove('hidden');
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+        }
+
+        function resetNoteForm() {
+            editingNoteId = null;
+            document.getElementById('noteTitleInput').value = "";
+            document.getElementById('noteBodyInput').value = "";
+            document.getElementById('saveNoteBtnText').textContent = "Save Note & Sync";
+            document.getElementById('cancelNoteEditBtn').classList.add('hidden');
+        }
+
+        async function deleteNoteItem(id) {
+            triggerHaptic(25);
+            notesList = notesList.filter(n => n.id !== id);
+            localStorage.setItem(STORAGE_KEY_NOTES, JSON.stringify(notesList));
+            renderNotesList();
+            showToast("Note deleted. Syncing...");
+            await pushNotesToGithub(false);
+        }
+
+        function renderNotesList() {
+            document.getElementById('notesCountBadge').textContent = `${notesList.length} notes`;
+            const container = document.getElementById('notesListContainer');
+
+            if (notesList.length === 0) {
+                container.innerHTML = `<div class="p-6 rounded-xl bg-slate-950/70 border border-slate-800 text-center text-xs text-slate-500">No saved notes yet. Create one above!</div>`;
+                return;
+            }
+
+            container.innerHTML = notesList.map(note => `
+                <div class="p-3 rounded-xl bg-slate-950 border border-slate-800 space-y-1.5">
+                    <div class="flex items-start justify-between gap-2">
+                        <h4 class="text-xs font-bold text-amber-300 leading-snug">${escapeHtml(note.title)}</h4>
+                        <div class="flex items-center gap-1 flex-shrink-0">
+                            <button onclick="copyCustomUrl(${JSON.stringify(note.body)})" class="p-1.5 rounded-lg bg-slate-900 border border-slate-800 text-slate-400 text-[11px]" title="Copy Note">
+                                <i class="fa-regular fa-copy"></i>
+                            </button>
+                            <button onclick="editNoteItem('${note.id}')" class="p-1.5 rounded-lg bg-slate-900 border border-slate-800 text-indigo-300 text-[11px]" title="Edit Note">
+                                <i class="fa-solid fa-pen"></i>
+                            </button>
+                            <button onclick="deleteNoteItem('${note.id}')" class="p-1.5 rounded-lg bg-slate-900 border border-slate-800 text-slate-500 active:text-rose-400 text-[11px]" title="Delete Note">
+                                <i class="fa-solid fa-trash-can"></i>
+                            </button>
+                        </div>
+                    </div>
+                    <p class="text-xs text-slate-200 whitespace-pre-wrap leading-relaxed break-words">${escapeHtml(note.body)}</p>
+                    <div class="text-[10px] font-mono text-slate-500 pt-1 border-t border-slate-900">${escapeHtml(note.updatedAt || "")}</div>
+                </div>
+            `).join('');
+        }
+
+        // ==========================================
+        // NFC STUDIO FUNCTIONS
         // ==========================================
         function setViewLayoutMode(mode) {
             triggerHaptic(20);
@@ -951,15 +1162,7 @@
                         : "py-1.5 rounded-lg text-[10px] font-mono font-bold bg-slate-950 text-slate-400 border border-slate-800";
                 }
             }
-            const titleEl = document.getElementById('simpleStepTitle');
-            if (titleEl) titleEl.textContent = SIMPLE_STEP_TITLES[currentSimpleStep] || "";
-            const prevBtn = document.getElementById('btnPrevCard');
-            const nextBtn = document.getElementById('btnNextCard');
-            if (prevBtn) { prevBtn.disabled = currentSimpleStep <= 1; prevBtn.classList.toggle('opacity-40', currentSimpleStep <= 1); }
-            if (nextBtn) {
-                if (currentSimpleStep === 5) nextBtn.innerHTML = `<i class="fa-solid fa-rotate-left"></i><span>Back to Card 1</span>`;
-                else nextBtn.innerHTML = `<span>Next Card (${currentSimpleStep + 1}/5)</span><i class="fa-solid fa-arrow-right"></i>`;
-            }
+            document.getElementById('simpleStepTitle').textContent = SIMPLE_STEP_TITLES[currentSimpleStep] || "";
             window.scrollTo({ top: 0, behavior: 'smooth' });
         }
 
@@ -1000,9 +1203,6 @@
             const len = (codeStr || "").length;
             const badge = document.getElementById('codeLengthBadge');
             badge.textContent = `${len} / 6`;
-            badge.className = len === 6
-                ? "font-mono text-[11px] font-bold px-2 py-1 rounded-lg bg-emerald-500/20 text-emerald-300 border border-emerald-500/30 flex-shrink-0"
-                : "font-mono text-[11px] font-bold px-2 py-1 rounded-lg bg-amber-500/20 text-amber-300 border border-amber-500/30 flex-shrink-0";
             document.getElementById('stickyCodePreview').textContent = codeStr || "------";
         }
 
@@ -1031,22 +1231,15 @@
                     const lat = Number(pos.coords.latitude.toFixed(6));
                     const lng = Number(pos.coords.longitude.toFixed(6));
                     const accuracy = Math.round(pos.coords.accuracy || 0);
-                    const mapUrl = `https://www.google.com/maps?q=${lat},${lng}`;
+                    const mapUrl = `[https://www.google.com/maps?q=$](https://www.google.com/maps?q=$){lat},${lng}`;
                     let addressLabel = `${lat}, ${lng} (±${accuracy}m)`;
 
                     try {
-                        const controller = new AbortController();
-                        const timer = setTimeout(() => controller.abort(), 4000);
-                        const res = await fetch(
-                            `https://nominatim.openstreetmap.org/reverse?format=jsonv2&lat=${lat}&lon=${lng}`,
-                            { headers: { 'Accept-Language': 'en' }, signal: controller.signal }
-                        );
-                        clearTimeout(timer);
+                        const res = await fetch(`[https://nominatim.openstreetmap.org/reverse?format=jsonv2&lat=$](https://nominatim.openstreetmap.org/reverse?format=jsonv2&lat=$){lat}&lon=${lng}`);
                         if (res.ok) {
                             const data = await res.json();
                             if (data && data.display_name) {
-                                const parts = data.display_name.split(',').map(s => s.trim());
-                                addressLabel = parts.slice(0, 4).join(', ');
+                                addressLabel = data.display_name.split(',').slice(0, 4).join(', ');
                             }
                         }
                     } catch (err) {}
@@ -1057,10 +1250,10 @@
                         const item = batchList.find(o => o.id === targetOrderId);
                         if (item) {
                             item.location = locObj;
-                            await saveBatchToStorage();
+                            localStorage.setItem(STORAGE_KEY_BATCH, JSON.stringify(batchList));
                             renderBatchQueue();
-                            triggerHaptic([40, 30, 50]);
-                            showToast(`Tagged GPS for [${item.sixCharCode || item.businessName}]!`);
+                            await pushToGithubRepo(false);
+                            showToast("Tagged GPS location!");
                         }
                     } else {
                         currentState.location = locObj;
@@ -1069,18 +1262,15 @@
                             btnIcon.className = "fa-solid fa-location-dot text-emerald-400";
                             btnText.textContent = "Update GPS Location";
                         }
-                        triggerHaptic([40, 30, 50]);
                         showToast("Phone GPS Location tagged!");
                     }
                 },
-                (err) => {
+                () => {
                     if (!targetOrderId && btnIcon && btnText) {
                         btnIcon.className = "fa-solid fa-location-crosshairs text-rose-400";
                         btnText.textContent = "Add Location (Use Phone GPS)";
                     }
-                    let msg = "Could not get GPS location. Enable Location permissions.";
-                    if (err.code === 1) msg = "Location permission denied. Allow GPS access in browser settings.";
-                    showToast(msg);
+                    showToast("Allow GPS permission in browser settings.");
                 },
                 { enableHighAccuracy: true, timeout: 12000, maximumAge: 0 }
             );
@@ -1089,9 +1279,6 @@
         function renderCurrentGpsPreview() {
             const box = document.getElementById('gpsPreviewBox');
             const clearBtn = document.getElementById('clearGpsBtn');
-            const coordEl = document.getElementById('gpsCoordText');
-            const addrEl = document.getElementById('gpsAddressText');
-            const mapLink = document.getElementById('gpsMapLink');
             if (!currentState.location) {
                 box.classList.add('hidden');
                 clearBtn.classList.add('hidden');
@@ -1099,35 +1286,23 @@
             }
             box.classList.remove('hidden');
             clearBtn.classList.remove('hidden');
-            coordEl.textContent = `${currentState.location.lat}, ${currentState.location.lng} (±${currentState.location.accuracy}m)`;
-            addrEl.textContent = currentState.location.address || "";
-            mapLink.href = currentState.location.mapUrl;
+            document.getElementById('gpsCoordText').textContent = `${currentState.location.lat}, ${currentState.location.lng}`;
+            document.getElementById('gpsAddressText').textContent = currentState.location.address || "";
+            document.getElementById('gpsMapLink').href = currentState.location.mapUrl;
         }
 
         function clearCurrentGps() {
-            triggerHaptic();
             currentState.location = null;
             renderCurrentGpsPreview();
-            const btnIcon = document.getElementById('gpsBtnIcon');
-            const btnText = document.getElementById('gpsBtnText');
-            if (btnIcon) btnIcon.className = "fa-solid fa-location-crosshairs text-rose-400";
-            if (btnText) btnText.textContent = "Add Location (Use Phone GPS)";
         }
 
         function switchMode(mode) {
-            triggerHaptic(15);
-            const tabNoApi = document.getElementById('tabNoApi');
-            const tabLiveApi = document.getElementById('tabLiveApi');
             const panelNoApi = document.getElementById('panelNoApi');
             const panelLiveApi = document.getElementById('panelLiveApi');
             if (mode === 'no-api') {
-                tabNoApi.className = "px-2.5 py-1 rounded-lg text-[11px] font-semibold transition bg-indigo-600 text-white shadow";
-                tabLiveApi.className = "px-2.5 py-1 rounded-lg text-[11px] font-semibold transition text-slate-400";
                 panelNoApi.classList.remove('hidden');
                 panelLiveApi.classList.add('hidden');
             } else {
-                tabLiveApi.className = "px-2.5 py-1 rounded-lg text-[11px] font-semibold transition bg-indigo-600 text-white shadow";
-                tabNoApi.className = "px-2.5 py-1 rounded-lg text-[11px] font-semibold transition text-slate-400";
                 panelLiveApi.classList.remove('hidden');
                 panelNoApi.classList.add('hidden');
                 if (!localStorage.getItem(STORAGE_KEY_API)) toggleApiModal();
@@ -1135,12 +1310,9 @@
         }
 
         function clearSearchInputs() {
-            triggerHaptic();
             document.getElementById('manualBizQuery').value = "";
             document.getElementById('smartInput').value = "";
-            const mapsShareEl = document.getElementById('mapsShareLinkInput');
-            if (mapsShareEl) mapsShareEl.value = "";
-            document.getElementById('manualBizQuery').focus();
+            document.getElementById('mapsShareLinkInput').value = "";
         }
 
         function syncBizNameFromQuery(val) {
@@ -1158,225 +1330,83 @@
         function parseGoogleMapsUrlForDetails(rawText) {
             const text = (rawText || "").trim();
             if (!text) return null;
-            const result = { placeId: null, businessName: null, lat: null, lng: null, extractedUrl: null };
+            const result = { placeId: null, businessName: null, extractedUrl: null };
             const urlMatch = text.match(/https?:\/\/[^\s]+/i);
             if (urlMatch) result.extractedUrl = urlMatch[0];
-            const lines = text.split(/\r?\n/).map(l => l.trim()).filter(Boolean);
-            if (lines.length > 1 && !lines[0].startsWith('http')) result.businessName = lines[0];
             const pidMatch = text.match(/[?&]place_?id=([A-Za-z0-9_-]+)/i) || text.match(/\b(ChIJ[A-Za-z0-9_-]{10,})\b/);
             if (pidMatch && pidMatch[1]) result.placeId = pidMatch[1];
-            const placePathMatch = text.match(/\/maps\/place\/([^/@?]+)/i);
-            if (placePathMatch && placePathMatch[1]) {
-                try {
-                    const decodedName = decodeURIComponent(placePathMatch[1].replace(/\+/g, ' ')).trim();
-                    if (decodedName && !result.businessName) result.businessName = decodedName;
-                } catch (e) {}
-            }
-            const coordMatch = text.match(/@(-?\d+\.\d+),(-?\d+\.\d+)/);
-            if (coordMatch) { result.lat = parseFloat(coordMatch[1]); result.lng = parseFloat(coordMatch[2]); }
-            const qParamMatch = text.match(/[?&]q=([^&]+)/i);
-            if (qParamMatch && qParamMatch[1] && !result.businessName) {
-                try {
-                    const decodedQ = decodeURIComponent(qParamMatch[1].replace(/\+/g, ' ')).trim();
-                    if (decodedQ && !/^[-?\d.,\s]+$/.test(decodedQ)) result.businessName = decodedQ;
-                } catch (e) {}
-            }
             return result;
         }
 
         function handleMapsShareInputPreview(val) {
-            const badge = document.getElementById('mapsShareBadge');
-            const statusEl = document.getElementById('mapsShareStatusText');
             const parsed = parseGoogleMapsUrlForDetails(val);
-            if (!parsed) {
-                badge.textContent = "maps.app.goo.gl";
-                badge.className = "text-[10px] font-mono px-2 py-0.5 rounded bg-slate-800 text-slate-400";
-                return;
-            }
-            if (parsed.businessName) {
-                document.getElementById('bizNameInput').value = parsed.businessName;
-                document.getElementById('manualBizQuery').value = parsed.businessName;
-                updateCurrentBusinessMeta();
-            }
-            if (parsed.placeId) {
+            if (parsed && parsed.placeId) {
                 currentState.placeId = parsed.placeId;
                 document.getElementById('smartInput').value = parsed.placeId;
-                badge.textContent = "✓ Place ID Found";
-                badge.className = "text-[10px] font-mono px-2 py-0.5 rounded bg-emerald-500/20 text-emerald-300 border border-emerald-500/30";
-                statusEl.innerHTML = `Extracted Place ID <code class="text-emerald-400 font-mono">${escapeHtml(parsed.placeId)}</code> directly from link!`;
                 updateAllOutputs(false);
-                return;
             }
-            badge.textContent = "Link Ready";
-            badge.className = "text-[10px] font-mono px-2 py-0.5 rounded bg-amber-500/20 text-amber-300";
-            statusEl.textContent = "Tap 'Extract Review Link from Maps Share Link' below to resolve Place ID.";
         }
 
         async function resolveGoogleMapsShareLink() {
-            triggerHaptic(30);
             const rawVal = document.getElementById('mapsShareLinkInput').value.trim();
-            const statusEl = document.getElementById('mapsShareStatusText');
-            const badge = document.getElementById('mapsShareBadge');
-            const iconEl = document.getElementById('resolveMapsShareIcon');
-            const textEl = document.getElementById('resolveMapsShareText');
-
-            if (!rawVal) {
-                showToast("Paste a Google Maps share link in Step C first!");
-                document.getElementById('mapsShareLinkInput').focus();
+            if (!rawVal) { showToast("Paste a Maps share link first!"); return; }
+            const parsed = parseGoogleMapsUrlForDetails(rawVal);
+            if (parsed && parsed.placeId) {
+                handleSmartInput(parsed.placeId);
+                showToast("Extracted Place ID!");
                 return;
             }
-
-            const initialParsed = parseGoogleMapsUrlForDetails(rawVal);
-            if (initialParsed && initialParsed.placeId) {
-                handleSmartInput(initialParsed.placeId);
-                showToast("Extracted Place ID & generated Review Link!");
-                return;
-            }
-
-            iconEl.className = "fa-solid fa-spinner fa-spin";
-            textEl.textContent = "Resolving...";
-            statusEl.textContent = "Unshortening link & looking up Google Place ID...";
-
-            let expandedUrl = initialParsed?.extractedUrl || rawVal;
-            let discoveredBizName = initialParsed?.businessName || "";
-
-            if (/goo\.gl|maps\.app/i.test(expandedUrl)) {
-                try {
-                    const controller = new AbortController();
-                    const timer = setTimeout(() => controller.abort(), 3000);
-                    const r = await fetch(`https://unshorten.me/json/${encodeURIComponent(expandedUrl)}`, { signal: controller.signal });
-                    clearTimeout(timer);
-                    if (r.ok) {
-                        const d = await r.json();
-                        if (d && d.resolved_url) expandedUrl = d.resolved_url;
-                    }
-                } catch (e) {}
-
-                const expandedParsed = parseGoogleMapsUrlForDetails(expandedUrl);
-                if (expandedParsed) {
-                    if (expandedParsed.placeId) {
-                        currentState.placeId = expandedParsed.placeId;
-                        if (expandedParsed.businessName) {
-                            document.getElementById('bizNameInput').value = expandedParsed.businessName;
-                            document.getElementById('manualBizQuery').value = expandedParsed.businessName;
-                            updateCurrentBusinessMeta();
-                        }
-                        document.getElementById('smartInput').value = expandedParsed.placeId;
-                        handleSmartInput(expandedParsed.placeId);
-                        badge.textContent = "✓ Resolved";
-                        badge.className = "text-[10px] font-mono px-2 py-0.5 rounded bg-emerald-500/20 text-emerald-300";
-                        statusEl.innerHTML = `Resolved Place ID: <code class="text-emerald-400 font-mono">${escapeHtml(expandedParsed.placeId)}</code>`;
-                        iconEl.className = "fa-solid fa-location-arrow";
-                        textEl.textContent = "Extract Review Link from Maps Share Link";
-                        showToast("Review link extracted from Maps share link!");
-                        return;
-                    }
-                    if (expandedParsed.businessName && !discoveredBizName) discoveredBizName = expandedParsed.businessName;
-                }
-            }
-
-            if (discoveredBizName) {
-                document.getElementById('bizNameInput').value = discoveredBizName;
-                document.getElementById('manualBizQuery').value = discoveredBizName;
-                updateCurrentBusinessMeta();
-                copyTextFallback(discoveredBizName);
-                statusEl.innerHTML = `Extracted <strong class="text-white">${escapeHtml(discoveredBizName)}</strong> (copied). Tap <strong>Find Place ID</strong> above.`;
-                showToast(`Extracted "${discoveredBizName}"! Copied.`);
-            } else {
-                statusEl.textContent = "Could not auto-extract ChIJ ID. Copy the business name into Step A or use a full Google Maps link.";
-                showToast("Tip: Use Step A instead.");
-            }
-
-            iconEl.className = "fa-solid fa-location-arrow";
-            textEl.textContent = "Extract Review Link from Maps Share Link";
+            showToast("Use Step A (Find Place ID) for shortened links.");
         }
 
         function handleSmartInput(rawInput) {
             const input = rawInput.trim();
-            const badge = document.getElementById('parserBadge');
-            const hint = document.getElementById('parserHint');
-            if (!input) {
-                badge.textContent = "Ready";
-                badge.className = "text-[10px] font-mono px-2 py-0.5 rounded bg-slate-800 text-slate-400";
-                return;
-            }
+            if (!input) return;
             if (/^https?:\/\/(g\.page\/r\/[A-Za-z0-9_-]+)/i.test(input)) {
                 currentState.reviewUrl = input;
-                badge.textContent = "✓ Short Review URL";
-                badge.className = "text-[10px] font-mono px-2 py-0.5 rounded bg-emerald-500/20 text-emerald-300";
                 updateAllOutputs(true);
                 return;
             }
-            let extractedId = null;
-            const urlParamMatch = input.match(/[?&]place_?id=([A-Za-z0-9_-]+)/i);
-            if (urlParamMatch && urlParamMatch[1]) extractedId = urlParamMatch[1];
-            if (!extractedId) {
-                const colonMatch = input.match(/place_?id\s*[:=]\s*["']?([A-Za-z0-9_-]{15,})["']?/i);
-                if (colonMatch && colonMatch[1]) extractedId = colonMatch[1];
-            }
-            if (!extractedId) {
-                const chijMatch = input.match(/\b(ChIJ[A-Za-z0-9_-]{10,})\b/);
-                if (chijMatch && chijMatch[1]) extractedId = chijMatch[1];
-                else if (/^[A-Za-z0-9_-]{18,65}$/.test(input)) extractedId = input;
-            }
+            const chijMatch = input.match(/\b(ChIJ[A-Za-z0-9_-]{10,})\b/) || input.match(/[?&]place_?id=([A-Za-z0-9_-]+)/i);
+            const extractedId = chijMatch ? chijMatch[1] : (/^[A-Za-z0-9_-]{18,65}$/.test(input) ? input : null);
             if (extractedId) {
                 currentState.placeId = extractedId;
-                badge.textContent = "✓ Place ID Set";
-                badge.className = "text-[10px] font-mono px-2 py-0.5 rounded bg-emerald-500/20 text-emerald-300 border border-emerald-500/30";
-                hint.innerHTML = `Active Place ID: <code class="text-emerald-400 font-mono">${extractedId}</code>`;
                 updateAllOutputs(false);
-                triggerHaptic(30);
-            } else {
-                badge.textContent = "No Place ID";
-                badge.className = "text-[10px] font-mono px-2 py-0.5 rounded bg-amber-500/20 text-amber-300";
-                hint.innerHTML = `Tap <strong>"Find Place ID"</strong> above to copy the <code class="text-slate-200">ChIJ...</code> ID.`;
             }
         }
 
         function openOfficialPlaceFinder() {
-            triggerHaptic();
             const query = document.getElementById('manualBizQuery').value.trim();
-            if (query) { copyTextFallback(query); showToast(`Copied "${query}"! Paste in Place Finder.`); }
-            window.open("https://developers.google.com/maps/documentation/javascript/examples/places-placeid-finder", "_blank", "noopener,noreferrer");
+            if (query) copyTextFallback(query);
+            window.open("[https://developers.google.com/maps/documentation/javascript/examples/places-placeid-finder](https://developers.google.com/maps/documentation/javascript/examples/places-placeid-finder)", "_blank", "noopener,noreferrer");
         }
 
         function openGoogleMapsSearch() {
-            triggerHaptic();
             const query = document.getElementById('manualBizQuery').value.trim() || currentState.businessName || "Pune";
-            window.open(`https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(query)}`, "_blank", "noopener,noreferrer");
+            window.open(`[https://www.google.com/maps/search/?api=1&query=$](https://www.google.com/maps/search/?api=1&query=$){encodeURIComponent(query)}`, "_blank", "noopener,noreferrer");
         }
 
-        async function pasteFromClipboard(targetInputId = 'smartInput') {
-            triggerHaptic(30);
+        async function pasteFromClipboard(targetInputId) {
             const inputEl = document.getElementById(targetInputId);
             if (!inputEl) return;
-            if (navigator.clipboard && typeof navigator.clipboard.readText === 'function') {
+            if (navigator.clipboard && navigator.clipboard.readText) {
                 try {
-                    const clipText = await navigator.clipboard.readText();
-                    if (clipText && clipText.trim()) {
-                        const cleaned = clipText.trim();
-                        inputEl.value = cleaned;
-                        if (targetInputId === 'mapsShareLinkInput') {
-                            handleMapsShareInputPreview(cleaned);
-                        } else {
-                            handleSmartInput(cleaned);
-                        }
+                    const clipText = (await navigator.clipboard.readText()).trim();
+                    if (clipText) {
+                        inputEl.value = clipText;
+                        if (targetInputId === 'mapsShareLinkInput') handleMapsShareInputPreview(clipText);
+                        else handleSmartInput(clipText);
                         showToast("Pasted from clipboard!");
-                        return;
-                    } else {
-                        showToast("Clipboard is empty.");
                         return;
                     }
                 } catch (e) {}
             }
             inputEl.focus();
-            showToast("Allow Clipboard permission in browser bar, or long-press input to paste.");
+            showToast("Long-press input box to paste.");
         }
 
         function calculateNdefBytes(url) {
-            let stripped = url;
-            if (url.startsWith("https://")) stripped = url.slice(8);
-            else if (url.startsWith("http://")) stripped = url.slice(7);
+            let stripped = url.replace(/^https?:\/\//, '');
             const uriPayloadBytes = new TextEncoder().encode(stripped).length + 1;
             return { totalBytes: uriPayloadBytes + 6, uriBytes: uriPayloadBytes, headerBytes: 6 };
         }
@@ -1389,68 +1419,41 @@
             document.getElementById('testLinkAnchor').href = finalUrl;
             const ndef = calculateNdefBytes(finalUrl);
             currentState.byteSize = ndef.totalBytes;
-            const countBadge = document.getElementById('byteCountBadge');
-            const fitBadge = document.getElementById('ultralightFitBadge');
-            const progressBar = document.getElementById('byteProgressBar');
-            countBadge.textContent = `${ndef.totalBytes} / ${MIFARE_ULTRALIGHT_MAX_BYTES} B`;
-            document.getElementById('byteBreakdownText').textContent = `${ndef.uriBytes}B URI + ${ndef.headerBytes}B NDEF Header`;
-            const pct = Math.min(100, Math.round((ndef.totalBytes / MIFARE_ULTRALIGHT_MAX_BYTES) * 100));
-            progressBar.style.width = `${pct}%`;
-            const remaining = MIFARE_ULTRALIGHT_MAX_BYTES - ndef.totalBytes;
-            if (remaining >= 0) {
-                countBadge.className = "text-base font-mono font-extrabold text-emerald-400";
-                fitBadge.className = "block text-[10px] font-mono font-bold uppercase text-emerald-400";
-                fitBadge.textContent = `✓ FITS (${remaining}B FREE)`;
-                progressBar.className = "h-full rounded-full bg-gradient-to-r from-indigo-500 via-teal-400 to-emerald-400 transition-all duration-300";
-            } else {
-                countBadge.className = "text-base font-mono font-extrabold text-red-400";
-                fitBadge.className = "block text-[10px] font-mono font-bold uppercase text-red-400";
-                fitBadge.textContent = `⚠ OVERFLOW BY ${Math.abs(remaining)}B`;
-                progressBar.className = "h-full rounded-full bg-red-500 transition-all duration-300";
-            }
+            document.getElementById('byteCountBadge').textContent = `${ndef.totalBytes} / ${MIFARE_ULTRALIGHT_MAX_BYTES} B`;
         }
 
+        // Fixed NFC Tools Launcher (No Play Store Redirect)
         async function launchNfcToolsPro(customUrl) {
             triggerHaptic(40);
             const targetUrl = customUrl || currentState.reviewUrl;
-            
-            // 1. Copy the URL to the clipboard
             copyTextFallback(targetUrl);
             try {
                 if (navigator.clipboard && navigator.clipboard.writeText) {
                     await navigator.clipboard.writeText(targetUrl);
                 }
             } catch (e) {}
-            
+
             const method = document.getElementById('nfcLaunchMethod').value;
-            
-            // 2. Handle Android Share Sheet option
             if (method === "android_share" && navigator.share) {
                 try {
-                    await navigator.share({ title: "Write NFC Review Link", text: targetUrl, url: targetUrl });
+                    await navigator.share({ title: "NFC Review Link", text: targetUrl, url: targetUrl });
                     return;
                 } catch (err) {}
             }
-            
+
             showToast("Link copied! Opening NFC Tools...");
-            
-            // 3. Direct Navigation (Fixes the Play Store Redirect Loop)
-            if (method === "nfc_scheme") {
-                // Uses the custom scheme but stripped of "scan/" to avoid the "Bad URL" error
-                window.location.assign("nfc://"); 
+            if (method === "pro_intent") {
+                window.location.assign("intent://#Intent;package=com.wakdev.nfctools.pro;end");
             } else {
-                // The most basic, universal package intent. Because it uses window.location.assign 
-                // directly inside a user tap, Chrome won't block it and redirect to the Play Store.
                 window.location.assign("intent://#Intent;package=com.wakdev.wdnfc;end");
             }
         }
-        
+
         async function shareUrlToNfcTools(customUrl) {
-            triggerHaptic(35);
             const targetUrl = customUrl || currentState.reviewUrl;
             copyTextFallback(targetUrl);
             if (navigator.share) {
-                try { await navigator.share({ text: targetUrl }); showToast("Shared link to app!"); } catch (e) {}
+                try { await navigator.share({ text: targetUrl }); } catch (e) {}
             } else {
                 launchNfcToolsPro(targetUrl);
             }
@@ -1462,133 +1465,13 @@
             launchNfcToolsPro(urlToWrite);
         }
 
-        function openIndexedDB() {
-            if (dbPromise) return dbPromise;
-            dbPromise = new Promise((resolve) => {
-                if (!window.indexedDB) { resolve(null); return; }
-                const req = indexedDB.open(IDB_NAME, 1);
-                req.onupgradeneeded = (e) => {
-                    const db = e.target.result;
-                    if (!db.objectStoreNames.contains(IDB_STORE)) db.createObjectStore(IDB_STORE, { keyPath: "key" });
-                };
-                req.onsuccess = (e) => {
-                    const db = e.target.result;
-                    db.onversionchange = () => { try { db.close(); } catch (err) {} dbPromise = null; };
-                    resolve(db);
-                };
-                req.onerror = () => resolve(null);
-            });
-            return dbPromise;
-        }
-
-        async function readFromIndexedDB() {
-            const db = await openIndexedDB();
-            if (!db) return null;
-            return new Promise((resolve) => {
-                try {
-                    const tx = db.transaction(IDB_STORE, "readonly");
-                    const store = tx.objectStore(IDB_STORE);
-                    const getReq = store.get(STORAGE_KEY_BATCH);
-                    getReq.onsuccess = () => resolve(getReq.result ? getReq.result.records : null);
-                    getReq.onerror = () => resolve(null);
-                } catch (e) { resolve(null); }
-            });
-        }
-
-        async function writeToIndexedDB(records) {
-            const db = await openIndexedDB();
-            if (!db) return;
-            return new Promise((resolve) => {
-                try {
-                    const tx = db.transaction(IDB_STORE, "readwrite");
-                    tx.objectStore(IDB_STORE).put({ key: STORAGE_KEY_BATCH, records, updatedAt: Date.now() });
-                    tx.oncomplete = () => resolve(true);
-                    tx.onerror = () => resolve(false);
-                } catch (e) { resolve(false); }
-            });
-        }
-
-        async function loadBatchFromStorage() {
-            let loadedRecords = [];
-            try {
-                const snapEl = document.getElementById('embeddedBatchSnapshot');
-                if (snapEl && snapEl.textContent) {
-                    const parsedSnap = JSON.parse(snapEl.textContent);
-                    if (Array.isArray(parsedSnap) && parsedSnap.length > 0) loadedRecords = parsedSnap;
-                }
-            } catch (e) {}
-            try {
-                const rawLocal = localStorage.getItem(STORAGE_KEY_BATCH);
-                if (rawLocal) {
-                    const parsedLocal = JSON.parse(rawLocal);
-                    if (Array.isArray(parsedLocal) && parsedLocal.length > 0) {
-                        loadedRecords = mergeOrderLists(loadedRecords, parsedLocal.filter(r => r.id !== "ord_101"));
-                    }
-                }
-            } catch (e) {}
-            for (const legKey of LEGACY_KEYS) {
-                try {
-                    const rawLeg = localStorage.getItem(legKey);
-                    if (rawLeg) {
-                        const parsedLeg = JSON.parse(rawLeg);
-                        if (Array.isArray(parsedLeg) && parsedLeg.length > 0) {
-                            const normalized = parsedLeg
-                                .filter(r => r.id !== "ord_101" && r.id !== "ord_1" && r.id !== "ord_2")
-                                .map(r => ({
-                                    id: r.id || ("ord_" + Date.now() + Math.random()),
-                                    businessName: r.businessName || r.name || "Untitled Business",
-                                    phoneNumber: r.phoneNumber || r.phone || "",
-                                    sixCharCode: (r.sixCharCode || r.code || "").toUpperCase(),
-                                    placeId: r.placeId || "",
-                                    reviewUrl: r.reviewUrl || r.url || "",
-                                    bytes: r.bytes || 75,
-                                    status: r.status || "Programmed",
-                                    createdAt: r.createdAt || formatDateTimeHuman(new Date()),
-                                    location: r.location || null
-                                }));
-                            loadedRecords = mergeOrderLists(loadedRecords, normalized);
-                        }
-                    }
-                } catch (e) {}
-            }
-            try {
-                const idbRecords = await readFromIndexedDB();
-                if (Array.isArray(idbRecords) && idbRecords.length > 0) loadedRecords = mergeOrderLists(loadedRecords, idbRecords);
-            } catch (e) {}
-            batchList = loadedRecords;
-            await saveBatchToStorage(true);
-            renderBatchQueue();
-        }
-
-        function mergeOrderLists(listA, listB) {
-            const map = new Map();
-            [...(listA || []), ...(listB || [])].forEach(item => {
-                if (item && item.id) map.set(item.id, item);
-            });
-            return Array.from(map.values());
-        }
-
-        async function saveBatchToStorage(skipGithubAutoSync = false, replaceRemote = false) {
-            try { localStorage.setItem(STORAGE_KEY_BATCH, JSON.stringify(batchList)); } catch (e) {}
-            await writeToIndexedDB(batchList);
-            const snapEl = document.getElementById('embeddedBatchSnapshot');
-            if (snapEl) snapEl.textContent = JSON.stringify(batchList);
-
-            if (!skipGithubAutoSync) {
-                const cfg = getGithubConfig();
-                if (cfg.autoSync && cfg.owner && cfg.repo && cfg.token) {
-                    pushToGithubRepo(false, replaceRemote);
-                }
-            }
-        }
-
         async function saveToClientBatch(silent = false) {
             triggerHaptic(35);
             updateCurrentBusinessMeta();
             const code = document.getElementById('sixCharCodeInput').value.toUpperCase().replace(/[^A-Z0-9]/g, '').slice(0, 6);
-            const nowFormatted = formatDateTimeHuman(new Date());
             const newRecord = {
                 id: "ord_" + Date.now(),
+                timestamp: Date.now(),
                 businessName: currentState.businessName || "Untitled Business",
                 phoneNumber: currentState.phoneNumber || "",
                 sixCharCode: code || "------",
@@ -1596,35 +1479,35 @@
                 reviewUrl: currentState.reviewUrl,
                 bytes: currentState.byteSize,
                 status: "Programmed",
-                createdAt: nowFormatted,
+                createdAt: formatDateTimeHuman(new Date()),
                 location: currentState.location ? { ...currentState.location } : null
             };
             batchList.unshift(newRecord);
-            await saveBatchToStorage(false, false);
+            localStorage.setItem(STORAGE_KEY_BATCH, JSON.stringify(batchList));
             renderBatchQueue();
-            if (!silent) showToast(`Saved [${newRecord.sixCharCode}] ${newRecord.businessName}!`);
+            if (!silent) showToast(`Saved [${newRecord.sixCharCode}] & syncing to GitHub...`);
+            await pushToGithubRepo(false);
         }
 
         async function toggleOrderStatus(orderId) {
-            triggerHaptic(20);
             const item = batchList.find(o => o.id === orderId);
             if (item) {
                 item.status = item.status === "Programmed" ? "Pending" : "Programmed";
-                await saveBatchToStorage(false, true);
+                localStorage.setItem(STORAGE_KEY_BATCH, JSON.stringify(batchList));
                 renderBatchQueue();
+                await pushToGithubRepo(false);
             }
         }
 
         async function deleteOrder(orderId) {
-            triggerHaptic(25);
             batchList = batchList.filter(o => o.id !== orderId);
-            await saveBatchToStorage(false, true);
+            localStorage.setItem(STORAGE_KEY_BATCH, JSON.stringify(batchList));
             renderBatchQueue();
-            showToast("Removed record from queue.");
+            showToast("Removed record. Syncing...");
+            await pushToGithubRepo(false);
         }
 
         function loadOrderIntoEditor(orderId) {
-            triggerHaptic(25);
             const item = batchList.find(o => o.id === orderId);
             if (!item) return;
             currentState.businessName = item.businessName;
@@ -1656,14 +1539,12 @@
                     (item.businessName && item.businessName.toLowerCase().includes(filterQuery)) ||
                     (item.phoneNumber && item.phoneNumber.toLowerCase().includes(filterQuery)) ||
                     (item.sixCharCode && item.sixCharCode.toLowerCase().includes(filterQuery)) ||
-                    (item.createdAt && item.createdAt.toLowerCase().includes(filterQuery)) ||
-                    (item.location && item.location.address && item.location.address.toLowerCase().includes(filterQuery))
+                    (item.createdAt && item.createdAt.toLowerCase().includes(filterQuery))
                 );
             });
 
             if (filtered.length === 0) {
-                container.innerHTML = `<div class="p-6 rounded-xl bg-slate-950/70 border border-slate-800 text-center text-xs text-slate-500">No saved client entries yet. Fill in the details above and tap <strong>"Save to Order Queue"</strong> or <strong>"Load from GitHub"</strong>.</div>`;
-                hydrateOfflineSvgIcons(container);
+                container.innerHTML = `<div class="p-6 rounded-xl bg-slate-950/70 border border-slate-800 text-center text-xs text-slate-500">No client entries yet.</div>`;
                 return;
             }
 
@@ -1672,271 +1553,96 @@
                 const statusBadge = isDone
                     ? `<span class="px-2 py-0.5 rounded-md bg-emerald-500/15 text-emerald-400 border border-emerald-500/30 text-[10px] font-mono font-bold">✓ ENCODED</span>`
                     : `<span class="px-2 py-0.5 rounded-md bg-amber-500/15 text-amber-300 border border-amber-500/30 text-[10px] font-mono font-bold">⏳ PENDING</span>`;
-                const hasLocation = item.location && item.location.lat !== undefined;
-                const gpsHtml = hasLocation
-                    ? `<div class="flex items-center justify-between gap-1"><a href="${escapeHtml(item.location.mapUrl)}" target="_blank" rel="noopener noreferrer" class="text-[11px] font-mono font-semibold text-emerald-400 underline truncate"><i class="fa-solid fa-location-dot text-rose-400 mr-1"></i>${item.location.lat}, ${item.location.lng}</a><button onclick="capturePhoneGps('${item.id}')" class="text-[10px] text-slate-400 active:text-white px-1.5 py-0.5 rounded bg-slate-800" title="Refresh GPS"><i class="fa-solid fa-arrows-rotate"></i></button></div><div class="text-[10px] text-slate-400 truncate mt-0.5" title="${escapeHtml(item.location.address || '')}">${escapeHtml(item.location.address || '')}</div>`
-                    : `<button onclick="capturePhoneGps('${item.id}')" class="mt-0.5 w-full py-1 px-2 rounded-lg bg-indigo-500/15 active:bg-indigo-500/30 border border-indigo-500/30 text-[10px] font-semibold text-indigo-300 flex items-center justify-center gap-1"><i class="fa-solid fa-location-crosshairs text-rose-400"></i><span>Add GPS Location</span></button>`;
 
                 return `
                     <div class="p-3 rounded-2xl bg-slate-950/90 border border-slate-800/90 space-y-2">
-                        <div class="grid grid-cols-12 gap-2 items-stretch">
-                            <div class="col-span-7 p-2.5 rounded-xl bg-slate-900 border border-slate-800 flex flex-col justify-between min-w-0">
-                                <div class="flex items-center justify-between gap-1">
-                                    <span class="text-[9px] font-mono uppercase text-slate-400">1. Business</span>
-                                    <span class="text-[9px] font-mono text-emerald-400">${item.bytes || 75}/137B</span>
-                                </div>
-                                <div class="font-bold text-xs text-white truncate mt-1" title="${escapeHtml(item.businessName)}">${escapeHtml(item.businessName)}</div>
+                        <div class="grid grid-cols-12 gap-2">
+                            <div class="col-span-7 p-2.5 rounded-xl bg-slate-900 border border-slate-800 min-w-0">
+                                <span class="text-[9px] font-mono uppercase text-slate-400 block">1. Business</span>
+                                <div class="font-bold text-xs text-white truncate mt-0.5">${escapeHtml(item.businessName)}</div>
                             </div>
-                            <div class="col-span-5 p-2.5 rounded-xl bg-indigo-950/40 border-2 border-indigo-500/40 flex flex-col items-center justify-center text-center">
-                                <span class="text-[9px] font-mono uppercase text-indigo-300">3. 6-Char Code</span>
-                                <div class="font-mono font-extrabold text-base text-amber-400 tracking-widest mt-0.5">${escapeHtml(item.sixCharCode || "------")}</div>
+                            <div class="col-span-5 p-2.5 rounded-xl bg-indigo-950/40 border border-indigo-500/40 text-center">
+                                <span class="text-[9px] font-mono uppercase text-indigo-300 block">3. Code</span>
+                                <div class="font-mono font-extrabold text-sm text-amber-400 tracking-widest mt-0.5">${escapeHtml(item.sixCharCode || "------")}</div>
                             </div>
                         </div>
-                        <div class="p-2.5 rounded-xl bg-slate-900 border border-slate-800 flex items-center justify-between gap-2">
-                            <div class="min-w-0 flex-1">
-                                <span class="block text-[9px] font-mono uppercase text-slate-400">2. Phone Number</span>
-                                <div class="font-mono font-semibold text-xs text-slate-100 truncate mt-0.5">${escapeHtml(item.phoneNumber || "No phone saved")}</div>
-                            </div>
-                            <div class="flex items-center gap-1.5 flex-shrink-0">
-                                <button onclick="callPhoneForOrder('${item.id}')" class="py-1.5 px-3 rounded-lg bg-sky-500/15 active:bg-sky-500/30 border border-sky-500/30 text-[11px] text-sky-400 font-bold flex items-center justify-center gap-1.5" title="Call Client"><i class="fa-solid fa-phone"></i><span>Call</span></button>
-                                <button onclick="sendWhatsAppForOrder('${item.id}')" class="py-1.5 px-3 rounded-lg bg-emerald-500/15 active:bg-emerald-500/30 border border-emerald-500/30 text-[11px] text-emerald-400 font-bold flex items-center justify-center gap-1.5" title="WhatsApp Client"><i class="fa-brands fa-whatsapp"></i><span>WhatsApp</span></button>
-                            </div>
-                        </div>
-                        <div class="grid grid-cols-12 gap-2 items-stretch">
-                            <div class="col-span-7 p-2.5 rounded-xl bg-slate-900/90 border border-slate-800 flex flex-col justify-between min-w-0">
-                                <span class="text-[9px] font-mono uppercase text-slate-400">4. GPS Location Tag</span>
-                                ${gpsHtml}
-                            </div>
-                            <div class="col-span-5 p-2.5 rounded-xl bg-slate-900/90 border border-slate-800 flex flex-col justify-between min-w-0">
-                                <span class="text-[9px] font-mono uppercase text-slate-400">5. Date & Timing</span>
-                                <div class="font-mono text-[10px] font-semibold text-slate-200 mt-0.5 leading-snug break-words"><i class="fa-regular fa-calendar-check text-indigo-400 mr-1"></i>${escapeHtml(item.createdAt || "—")}</div>
-                            </div>
-                        </div>
-                        <div class="flex items-center justify-between gap-1.5 pt-1.5 border-t border-slate-800/80">
-                            <button onclick="toggleOrderStatus('${item.id}')" class="flex-shrink-0">${statusBadge}</button>
-                            <div class="flex items-center gap-1 flex-shrink-0">
-                                <button onclick="launchNfcToolsPro('${escapeHtml(item.reviewUrl)}')" class="px-2.5 py-1.5 rounded-lg bg-indigo-600/25 active:bg-indigo-600/40 border border-indigo-500/40 text-[11px] font-bold text-indigo-300 flex items-center gap-1"><i class="fa-solid fa-wifi rotate-90 text-[10px]"></i><span>Write</span></button>
-                                <button onclick="shareUrlToNfcTools('${escapeHtml(item.reviewUrl)}')" class="p-1.5 px-2 rounded-lg bg-slate-900 border border-slate-700 text-xs text-indigo-300" title="Share URL"><i class="fa-solid fa-share-nodes"></i></button>
-                                <button onclick="copyCustomUrl('${escapeHtml(item.reviewUrl)}')" class="p-1.5 px-2 rounded-lg bg-slate-900 border border-slate-700 text-xs text-slate-300" title="Copy Link"><i class="fa-regular fa-copy"></i></button>
-                                <button onclick="loadOrderIntoEditor('${item.id}')" class="p-1.5 px-2 rounded-lg bg-slate-900 border border-slate-700 text-xs text-slate-300" title="Edit"><i class="fa-solid fa-pen"></i></button>
-                                <button onclick="deleteOrder('${item.id}')" class="p-1.5 px-2 rounded-lg bg-slate-900 border border-slate-800 text-xs text-slate-500 active:text-red-400" title="Delete"><i class="fa-solid fa-trash-can"></i></button>
+                        <div class="flex items-center justify-between gap-1.5 pt-1 border-t border-slate-800/80">
+                            <button onclick="toggleOrderStatus('${item.id}')">${statusBadge}</button>
+                            <div class="flex items-center gap-1">
+                                <button onclick="launchNfcToolsPro('${escapeHtml(item.reviewUrl)}')" class="px-2.5 py-1.5 rounded-lg bg-indigo-600/25 border border-indigo-500/40 text-[11px] font-bold text-indigo-300">Write</button>
+                                <button onclick="copyCustomUrl('${escapeHtml(item.reviewUrl)}')" class="p-1.5 px-2 rounded-lg bg-slate-900 border border-slate-700 text-xs text-slate-300"><i class="fa-regular fa-copy"></i></button>
+                                <button onclick="loadOrderIntoEditor('${item.id}')" class="p-1.5 px-2 rounded-lg bg-slate-900 border border-slate-700 text-xs text-slate-300"><i class="fa-solid fa-pen"></i></button>
+                                <button onclick="deleteOrder('${item.id}')" class="p-1.5 px-2 rounded-lg bg-slate-900 border border-slate-800 text-xs text-slate-500 active:text-red-400"><i class="fa-solid fa-trash-can"></i></button>
                             </div>
                         </div>
                     </div>`;
             }).join('');
-
-            hydrateOfflineSvgIcons(container);
         }
 
         function exportBatchCsv() {
-            triggerHaptic();
-            if (batchList.length === 0) { showToast("Queue is empty. Save a card first!"); return; }
-            const headers = ["Business Name (Box 1)","Phone Number (Box 2)","6-Char Code (Box 3)","GPS Coordinates (Box 4)","GPS Address (Box 4)","Google Maps GPS Link","Date & Timing (Box 5)","Place ID","Direct Review URL","NDEF Bytes (Max 137)","Status"];
-            const rows = batchList.map(item => {
-                const coords = item.location ? `${item.location.lat}, ${item.location.lng}` : "";
-                const addr = item.location ? (item.location.address || "") : "";
-                const mapLink = item.location ? (item.location.mapUrl || "") : "";
-                return [
-                    `"${(item.businessName || "").replace(/"/g, '""')}"`,
-                    `"${(item.phoneNumber || "").replace(/"/g, '""')}"`,
-                    `"${(item.sixCharCode || "").replace(/"/g, '""')}"`,
-                    `"${coords}"`,
-                    `"${addr.replace(/"/g, '""')}"`,
-                    `"${mapLink}"`,
-                    `"${(item.createdAt || "").replace(/"/g, '""')}"`,
-                    `"${item.placeId || ""}"`,
-                    `"${item.reviewUrl || ""}"`,
-                    item.bytes || 0,
-                    `"${item.status || ""}"`
-                ];
-            });
-            const csvContent = [headers.join(","), ...rows.map(r => r.join(","))].join("\n");
-            const blob = new Blob([csvContent], { type: "text/csv;charset=utf-8;" });
-            const url = URL.createObjectURL(blob);
-            const link = document.createElement("a");
-            link.href = url;
-            link.download = `nfc_orders_${new Date().toISOString().slice(0,10)}.csv`;
-            link.click();
-            URL.revokeObjectURL(url);
-            showToast("Exported CSV with Date, Time & GPS!");
+            if (batchList.length === 0) { showToast("Queue is empty!"); return; }
+            const headers = ["Business Name","Phone","6-Char Code","Date","Place ID","Review URL","Status"];
+            const rows = batchList.map(i => [
+                `"${(i.businessName || "").replace(/"/g, '""')}"`,
+                `"${(i.phoneNumber || "").replace(/"/g, '""')}"`,
+                `"${i.sixCharCode || ""}"`,
+                `"${i.createdAt || ""}"`,
+                `"${i.placeId || ""}"`,
+                `"${i.reviewUrl || ""}"`,
+                `"${i.status || ""}"`
+            ]);
+            const csv = [headers.join(","), ...rows.map(r => r.join(","))].join("\n");
+            const blob = new Blob([csv], { type: "text/csv;charset=utf-8;" });
+            const a = document.createElement("a");
+            a.href = URL.createObjectURL(blob);
+            a.download = `nfc_orders_${new Date().toISOString().slice(0,10)}.csv`;
+            a.click();
         }
 
         function callPhoneCurrent() {
-            triggerHaptic();
-            const rawPhone = (document.getElementById('bizPhoneInput').value || "").trim();
-            const cleaned = rawPhone.replace(/[^0-9+]/g, '');
-            if (!cleaned) { showToast("Enter a phone number in Box 2 first."); document.getElementById('bizPhoneInput').focus(); return; }
+            const cleaned = (document.getElementById('bizPhoneInput').value || "").replace(/[^0-9+]/g, '');
+            if (!cleaned) { showToast("Enter a phone number first."); return; }
             window.location.href = `tel:${cleaned}`;
         }
-        function callPhoneForOrder(orderId) {
-            triggerHaptic();
-            const item = batchList.find(o => o.id === orderId);
-            if (!item || !item.phoneNumber) { showToast("No phone number saved."); return; }
-            const cleaned = item.phoneNumber.replace(/[^0-9+]/g, '');
-            if (!cleaned) { showToast("No valid phone number."); return; }
-            window.location.href = `tel:${cleaned}`;
-        }
+
         function openWhatsAppCurrent() {
-            triggerHaptic();
             const phone = (document.getElementById('bizPhoneInput').value || "").replace(/[^0-9]/g, '');
-            const biz = currentState.businessName || "Business";
-            const code = currentState.sixCharCode || "------";
-            const msg = `Hello *${biz}*,\nYour Google Review NFC Card (Code: *${code}*) is programmed!\n\nDirect Review Link:\n${currentState.reviewUrl}`;
-            const waUrl = phone ? `https://wa.me/${phone}?text=${encodeURIComponent(msg)}` : `https://wa.me/?text=${encodeURIComponent(msg)}`;
-            window.open(waUrl, "_blank", "noopener,noreferrer");
-        }
-        function sendWhatsAppForOrder(orderId) {
-            triggerHaptic();
-            const item = batchList.find(o => o.id === orderId);
-            if (!item) return;
-            const phone = (item.phoneNumber || "").replace(/[^0-9]/g, '');
-            const msg = `Hello *${item.businessName}*,\nYour Google Review NFC Card (Code: *${item.sixCharCode}*) is ready!\n\nDirect Review Link:\n${item.reviewUrl}`;
-            const waUrl = phone ? `https://wa.me/${phone}?text=${encodeURIComponent(msg)}` : `https://wa.me/?text=${encodeURIComponent(msg)}`;
-            window.open(waUrl, "_blank", "noopener,noreferrer");
+            const msg = `Hello *${currentState.businessName || "Business"}*,\nYour Google Review NFC Card (Code: *${currentState.sixCharCode || "------"}*) is ready!\n${currentState.reviewUrl}`;
+            window.open(phone ? `[https://wa.me/$](https://wa.me/$){phone}?text=${encodeURIComponent(msg)}` : `[https://wa.me/?text=$](https://wa.me/?text=$){encodeURIComponent(msg)}`, "_blank");
         }
 
         function toggleApiModal() { document.getElementById('apiModal').classList.toggle('hidden'); }
-
         function saveApiKeyAndLoad() {
             const key = document.getElementById('apiKeyInput').value.trim();
-            if (!key) { showToast("Enter a valid Google Maps API Key."); return; }
+            if (!key) return;
             localStorage.setItem(STORAGE_KEY_API, key);
             toggleApiModal();
-            switchMode('live-api');
             loadGooglePlacesScript(key);
         }
-
         function clearSavedApiKey() {
             localStorage.removeItem(STORAGE_KEY_API);
             document.getElementById('apiKeyInput').value = "";
-            const keyIcon = document.getElementById('apiKeyIcon');
-            if (keyIcon) keyIcon.className = "fa-solid fa-key text-indigo-400";
             toggleApiModal();
-            switchMode('no-api');
-            showToast("Removed API Key.");
         }
-
         function loadGooglePlacesScript(apiKey) {
-            if (window.google && window.google.maps && window.google.maps.places) {
-                initPlacesAutocomplete();
-                return;
-            }
-            const existingScript = document.getElementById('googleMapsScript');
-            if (existingScript) {
-                if (window.google?.maps?.places) initPlacesAutocomplete();
-                return;
-            }
-            const script = document.createElement('script');
-            script.id = 'googleMapsScript';
-            script.src = `https://maps.googleapis.com/maps/api/js?key=${encodeURIComponent(apiKey)}&libraries=places`;
-            script.async = true;
-            script.onload = () => {
-                initPlacesAutocomplete();
-                const keyIcon = document.getElementById('apiKeyIcon');
-                if (keyIcon) keyIcon.className = "fa-solid fa-key text-emerald-400";
-                const dot = document.getElementById('liveApiDot');
-                if (dot) dot.className = "w-2 h-2 rounded-full bg-emerald-400";
-                showToast("Live Places Autocomplete active!");
-            };
-            document.head.appendChild(script);
-        }
-
-        function initPlacesAutocomplete() {
-            const input = document.getElementById('placesAutocompleteInput');
-            if (!input || !window.google?.maps?.places) return;
-            if (input.dataset.autocompleteInit === '1') return;
-            input.dataset.autocompleteInit = '1';
-            const autocomplete = new google.maps.places.Autocomplete(input, {
-                fields: ["place_id", "name", "formatted_phone_number", "international_phone_number"]
-            });
-            autocomplete.addListener("place_changed", () => {
-                const place = autocomplete.getPlace();
-                if (!place.place_id) { showToast("No Place ID found for that entry."); return; }
-                currentState.placeId = place.place_id;
-                if (place.name) { currentState.businessName = place.name; document.getElementById('bizNameInput').value = place.name; }
-                const phone = place.international_phone_number || place.formatted_phone_number || "";
-                if (phone) { currentState.phoneNumber = phone; document.getElementById('bizPhoneInput').value = phone; }
-                document.getElementById('smartInput').value = place.place_id;
-                handleSmartInput(place.place_id);
-                showToast(`Selected "${place.name || 'Business'}"!`);
-            });
-        }
-
-        function downloadHtmlWithEmbeddedData() {
-            triggerHaptic(35);
-            const snapEl = document.getElementById('embeddedBatchSnapshot');
-            if (snapEl) snapEl.textContent = JSON.stringify(batchList);
-            const fullHtml = "<!DOCTYPE html>\n" + document.documentElement.outerHTML;
-            const blob = new Blob([fullHtml], { type: "text/html;charset=utf-8" });
-            const url = URL.createObjectURL(blob);
-            const a = document.createElement("a");
-            a.href = url;
-            a.download = `TapReview_Database_${new Date().toISOString().slice(0,10)}.html`;
-            a.click();
-            URL.revokeObjectURL(url);
-            showToast(`Saved HTML w/ ${batchList.length} Entries!`);
-        }
-
-        function downloadDatabaseFile() {
-            triggerHaptic(30);
-            const dbPayload = {
-                databaseVersion: 2,
-                exportedAt: new Date().toISOString(),
-                totalRecords: batchList.length,
-                records: batchList
-            };
-            const blob = new Blob([JSON.stringify(dbPayload, null, 2)], { type: "application/json;charset=utf-8" });
-            const url = URL.createObjectURL(blob);
-            const a = document.createElement("a");
-            a.href = url;
-            a.download = `entries.json`;
-            a.click();
-            URL.revokeObjectURL(url);
-            showToast(`Saved entries.json (${batchList.length} records)!`);
-        }
-
-        function importBackupFile(event) {
-            const file = event.target.files && event.target.files[0];
-            if (!file) return;
-            const reader = new FileReader();
-            reader.onload = async (e) => {
-                try {
-                    const content = String(e.target.result || "");
-                    let extractedRecords = null;
-                    if (content.includes('id="embeddedBatchSnapshot"')) {
-                        const match = content.match(/<script[^>]*id=["']embeddedBatchSnapshot["'][^>]*>([\s\S]*?)<\/script>/i);
-                        if (match && match[1]) extractedRecords = JSON.parse(match[1].trim());
-                    } else {
-                        const parsed = JSON.parse(content);
-                        if (Array.isArray(parsed)) extractedRecords = parsed;
-                        else if (parsed && Array.isArray(parsed.records)) extractedRecords = parsed.records;
-                    }
-                    if (Array.isArray(extractedRecords)) {
-                        batchList = mergeOrderLists(extractedRecords, batchList);
-                        await saveBatchToStorage();
-                        renderBatchQueue();
-                        showToast(`Restored ${extractedRecords.length} entries!`);
-                    } else {
-                        showToast("Could not find valid records in file.");
-                    }
-                } catch (err) {
-                    showToast("Invalid database or backup file format.");
-                }
-            };
-            reader.readAsText(file);
+            if (window.google?.maps?.places) return;
+            const s = document.createElement('script');
+            s.src = `[https://maps.googleapis.com/maps/api/js?key=$](https://maps.googleapis.com/maps/api/js?key=$){encodeURIComponent(apiKey)}&libraries=places`;
+            s.async = true;
+            document.head.appendChild(s);
         }
 
         function copyReviewLink() {
-            triggerHaptic(25);
             copyTextFallback(currentState.reviewUrl);
-            const btnText = document.getElementById('copyBtnText');
-            if (btnText) { btnText.textContent = "Copied!"; setTimeout(() => { btnText.textContent = "Copy Review Link"; }, 1800); }
             showToast("Review link copied!");
         }
-        function copyCustomUrl(url) { triggerHaptic(25); copyTextFallback(url); showToast("Link copied!"); }
+        function copyCustomUrl(text) {
+            copyTextFallback(text);
+            showToast("Copied to clipboard!");
+        }
         function copyTextFallback(text) {
             if (!text) return;
-            if (navigator.clipboard && typeof navigator.clipboard.writeText === 'function') {
+            if (navigator.clipboard && navigator.clipboard.writeText) {
                 navigator.clipboard.writeText(text).catch(() => {});
             }
             try {
