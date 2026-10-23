@@ -2329,16 +2329,25 @@
             const phone = (document.getElementById('bizPhoneInput').value || "").replace(/[^0-9]/g, '');
             const biz = currentState.businessName || "Business";
             const code = currentState.sixCharCode || "------";
-            const msg = `Hello *${biz}*,\nYour Google Review NFC Card (Code: *${code}*) is programmed!\n\nDirect Review Link:\n${currentState.reviewUrl}`;
+            const dateTime = formatDateTimeHuman(new Date()); 
+
+            const msg = `Your Google Review NFC Card is programmed!\n\n*To:* ${biz}\n*Date:* ${dateTime}\n*NFC Code:* ${code}\n\n*Direct Review Link:*\n${currentState.reviewUrl}\n\nThank you for buying from us! For any queries, please call 9822846779.`;
+            
             const waUrl = phone ? `https://wa.me/${phone}?text=${encodeURIComponent(msg)}` : `https://wa.me/?text=${encodeURIComponent(msg)}`;
             window.open(waUrl, "_blank", "noopener,noreferrer");
         }
+
         function sendWhatsAppForOrder(orderId) {
             triggerHaptic();
             const item = batchList.find(o => o.id === orderId);
             if (!item) return;
             const phone = (item.phoneNumber || "").replace(/[^0-9]/g, '');
-            const msg = `Hello *${item.businessName}*,\nYour Google Review NFC Card (Code: *${item.sixCharCode}*) is ready!\n\nDirect Review Link:\n${item.reviewUrl}`;
+            const biz = item.businessName || "Business";
+            const code = item.sixCharCode || "------";
+            const dateTime = item.createdAt || formatDateTimeHuman(new Date()); 
+
+            const msg = `Your Google Review NFC Card is ready!\n\n*To:* ${biz}\n*Date:* ${dateTime}\n*NFC Code:* ${code}\n\n*Direct Review Link:*\n${item.reviewUrl}\n\nThank you for buying from us! For any queries, please call 9822846779.`;
+            
             const waUrl = phone ? `https://wa.me/${phone}?text=${encodeURIComponent(msg)}` : `https://wa.me/?text=${encodeURIComponent(msg)}`;
             window.open(waUrl, "_blank", "noopener,noreferrer");
         }
