@@ -1,6 +1,6 @@
 {
   "databaseVersion": 3,
-  "updatedAt": "2026-10-23T07:35:46.208Z",
+  "updatedAt": "2026-10-23T09:22:14.342Z",
   "totalRecords": 0,
   "records": [],
   "finances": [
@@ -24,6 +24,13 @@
     }
   ],
   "notes": [
+    {
+      "id": "note_1792747322973",
+      "title": "Test nite 1",
+      "body": "Bruh wtffffff",
+      "createdAt": "23 Oct 2026, 02:52 pm",
+      "updatedAt": "23 Oct 2026, 02:52 pm"
+    },
     {
       "id": "ord_1792503653970",
       "businessName": "shawarma king",
