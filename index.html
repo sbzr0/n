@@ -831,12 +831,16 @@
                 if (matchedKey) {
                     const isSpin = el.classList.contains('fa-spin') ? 'animate-spin' : '';
                     el.innerHTML = `<svg viewBox="0 0 24 24" class="tr-svg-icon ${isSpin}" aria-hidden="true">${INLINE_SVG_PATHS[matchedKey]}</svg>`;
-                    el.classList.remove('fa-solid', 'fa-regular', 'fa-brands');
+                    
+                    // Strip all FontAwesome classes to prevent phantom Unicode boxes
+                    Array.from(el.classList).forEach(cls => {
+                        if (cls.startsWith('fa-')) el.classList.remove(cls);
+                    });
+                    
                     el.dataset.hydrated = '1';
                 }
             });
         }
-
         window.addEventListener('DOMContentLoaded', function () {
             hydrateOfflineSvgIcons();
             updateLiveTimestampClock();
