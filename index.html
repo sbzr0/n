@@ -824,18 +824,22 @@
             const icons = root.querySelectorAll('i[class*="fa-"]');
             icons.forEach(el => {
                 if (el.dataset.hydrated === '1') return;
+                
                 let matchedKey = null;
                 for (const cls of el.classList) {
                     if (INLINE_SVG_PATHS[cls]) { matchedKey = cls; break; }
                 }
+                
                 if (matchedKey) {
                     const isSpin = el.classList.contains('fa-spin') ? 'animate-spin' : '';
+                    
+                    // 1. Inject the SVG
                     el.innerHTML = `<svg viewBox="0 0 24 24" class="tr-svg-icon ${isSpin}" aria-hidden="true">${INLINE_SVG_PATHS[matchedKey]}</svg>`;
                     
-                    // Strip all FontAwesome classes to prevent phantom Unicode boxes
-                    Array.from(el.classList).forEach(cls => {
-                        if (cls.startsWith('fa-')) el.classList.remove(cls);
-                    });
+                    // 2. Remove ALL FontAwesome classes (fa-solid, fa-wallet, fa-spin, etc.)
+                    // This prevents the ::before pseudo-element from rendering the empty box
+                    const classesToRemove = Array.from(el.classList).filter(cls => cls.startsWith('fa-'));
+                    el.classList.remove(...classesToRemove);
                     
                     el.dataset.hydrated = '1';
                 }
