@@ -1,8 +1,27 @@
 {
   "databaseVersion": 3,
-  "updatedAt": "2026-10-23T09:22:14.342Z",
-  "totalRecords": 0,
-  "records": [],
+  "updatedAt": "2026-10-23T11:23:40.041Z",
+  "totalRecords": 1,
+  "records": [
+    {
+      "id": "ord_1792754619677",
+      "businessName": "Miya kebab",
+      "phoneNumber": "22333333655",
+      "sixCharCode": "RT5555",
+      "placeId": "ChIJuTh28KO_wjsRuw7byEc6rvI",
+      "reviewUrl": "https://search.google.com/local/writereview?placeid=ChIJuTh28KO_wjsRuw7byEc6rvI",
+      "bytes": 78,
+      "status": "Programmed",
+      "createdAt": "23 Oct 2026, 04:53 pm",
+      "location": {
+        "lat": 18.542354,
+        "lng": 73.836157,
+        "accuracy": 13,
+        "address": "Mandalay Lines, Pune, Pune City Subdistrict, Pune District",
+        "mapUrl": "https://www.google.com/maps?q=18.542354,73.836157"
+      }
+    }
+  ],
   "finances": [
     {
       "id": "ord_1792503653970",
@@ -30,24 +49,6 @@
       "body": "Bruh wtffffff",
       "createdAt": "23 Oct 2026, 02:52 pm",
       "updatedAt": "23 Oct 2026, 02:52 pm"
-    },
-    {
-      "id": "ord_1792503653970",
-      "businessName": "shawarma king",
-      "phoneNumber": "74487788445",
-      "sixCharCode": "FE8F88",
-      "placeId": "ChIJmWA7P1e_wjsR95e0zjTK-2A",
-      "reviewUrl": "https://search.google.com/local/writereview?placeid=ChIJmWA7P1e_wjsR95e0zjTK-2A",
-      "bytes": 78,
-      "status": "Programmed",
-      "createdAt": "20 Oct 2026, 07:10 pm",
-      "location": {
-        "lat": 18.54246,
-        "lng": 73.836298,
-        "accuracy": 146,
-        "address": "Mandalay Lines, Pune, Pune City Subdistrict, Pune District",
-        "mapUrl": "https://www.google.com/maps?q=18.54246,73.836298"
-      }
     }
   ]
 }
