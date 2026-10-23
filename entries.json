@@ -1,4 +1,9 @@
 {
+  "databaseVersion": 3,
+  "updatedAt": "2026-10-23T07:22:05.827Z",
+  "totalRecords": 1,
+  "totalFinances": 0,
+  "totalNotes": 0,
   "records": [
     {
       "id": "ord_1792503653970",
@@ -18,5 +23,7 @@
         "mapUrl": "https://www.google.com/maps?q=18.54246,73.836298"
       }
     }
-  ]
+  ],
+  "finances": [],
+  "notes": []
 }
