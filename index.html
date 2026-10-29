@@ -242,33 +242,6 @@
                         Instant Place ID extraction from <code class="text-slate-300">ChIJ...</code>, <code class="text-slate-300">?placeid=</code>, <code class="text-slate-300">!1sChIJ...</code>, or <code class="text-slate-300">g.page/r/...</code> URLs.
                     </p>
                 </div>
-
-                <div class="p-3 rounded-xl bg-slate-950/90 border border-amber-500/30 space-y-2.5">
-                    <div class="flex items-center justify-between">
-                        <label for="mapsShareLinkInput" class="text-[11px] font-semibold uppercase tracking-wider text-amber-400 flex items-center gap-1.5">
-                            <i class="fa-solid fa-map-location-dot"></i>
-                            <span>Step C: Google Maps Share Link</span>
-                        </label>
-                        <span id="mapsShareBadge" class="text-[10px] font-mono px-2 py-0.5 rounded bg-slate-800 text-slate-400">maps.app.goo.gl</span>
-                    </div>
-                    <div class="flex gap-2">
-                        <input id="mapsShareLinkInput" type="text"
-                            placeholder="Paste https://maps.app.goo.gl/... or Maps share text"
-                            oninput="handleMapsShareInputPreview(this.value)"
-                            class="flex-1 px-3 py-2.5 bg-slate-900 border border-slate-700 rounded-xl text-xs font-mono text-white placeholder-slate-500 focus:outline-none focus:border-amber-500">
-                        <button type="button" onclick="pasteFromClipboard('mapsShareLinkInput')" class="px-3.5 py-2.5 rounded-xl bg-slate-800 active:bg-slate-700 border border-slate-700 text-amber-300 text-xs font-bold transition flex items-center gap-1.5 flex-shrink-0">
-                            <i class="fa-regular fa-paste"></i>
-                            <span>Paste</span>
-                        </button>
-                    </div>
-                    <button id="resolveMapsShareBtn" type="button" onclick="resolveGoogleMapsShareLink()" class="w-full py-2.5 px-3 rounded-xl bg-amber-500/20 active:bg-amber-500/30 border border-amber-500/40 text-amber-300 text-xs font-bold transition flex items-center justify-center gap-2">
-                        <i id="resolveMapsShareIcon" class="fa-solid fa-location-arrow"></i>
-                        <span id="resolveMapsShareText">Extract Review Link from Maps Share Link</span>
-                    </button>
-                    <p id="mapsShareStatusText" class="text-[11px] text-slate-400 leading-tight">
-                        Share any place from Google Maps or scan QR &rarr; Auto-extracts Place ID, Box 1 &amp; Review URL.
-                    </p>
-                </div>
             </div>
 
             <div id="panelLiveApi" class="hidden space-y-3">
@@ -312,14 +285,10 @@
                     oninput="handleSixCharInput(this)"
                     class="code-big-input w-full py-3 px-3 bg-slate-950 border-2 border-indigo-500/60 focus:border-emerald-400 rounded-2xl text-center font-mono text-3xl font-extrabold text-amber-400 placeholder-slate-800 focus:outline-none shadow-inner">
             </div>
-            <div class="grid grid-cols-2 gap-2 pt-0.5">
-                <button type="button" onclick="generateRandomSixCode()" class="py-2.5 px-3 rounded-xl bg-indigo-600/20 active:bg-indigo-600/35 border border-indigo-500/30 text-xs font-bold text-indigo-300 flex items-center justify-center gap-1.5 transition">
-                    <i class="fa-solid fa-dice text-indigo-400"></i>
-                    <span>Auto Generate</span>
-                </button>
-                <button type="button" onclick="clearSixCode()" class="py-2.5 px-3 rounded-xl bg-slate-800 active:bg-slate-700 border border-slate-700 text-xs font-bold text-slate-200 flex items-center justify-center gap-1.5 transition">
+            <div class="pt-0.5">
+                <button type="button" onclick="clearSixCode()" class="w-full py-3 px-4 rounded-xl bg-slate-800 active:bg-slate-700 border border-slate-700 text-xs font-bold text-slate-200 flex items-center justify-center gap-2 transition">
                     <i class="fa-solid fa-eraser text-amber-400"></i>
-                    <span>Clear Code</span>
+                    <span>Clear 6-Character Code</span>
                 </button>
             </div>
         </section>
@@ -740,7 +709,7 @@
                     </div>
                     <div>
                         <h3 class="text-xs font-bold text-white leading-none">Blank NFC Card Inventory</h3>
-                        <p class="text-[10px] text-slate-400 mt-0.5">Auto-deducts when saving orders or card sales</p>
+                        <p class="text-[10px] text-slate-400 mt-0.5">Low stock alert at 2 tags • Auto-deducts on save</p>
                     </div>
                 </div>
                 <span id="finStockCountBadge" class="px-2.5 py-1 rounded-xl font-mono text-xs font-extrabold bg-emerald-500/15 text-emerald-300 border border-emerald-500/30">78 tags in stock</span>
@@ -975,7 +944,7 @@
             <div class="p-3.5 rounded-2xl bg-slate-950 border border-slate-800 text-center space-y-1">
                 <span class="text-[10px] font-mono uppercase text-slate-400">Remaining Blank Tags</span>
                 <div id="modalStockBigCount" class="font-mono text-3xl font-extrabold text-emerald-400">78</div>
-                <span class="text-[11px] text-slate-400 block">MIFARE Ultralight (137B) Cards</span>
+                <span class="text-[11px] text-slate-400 block">MIFARE Ultralight (137B) Cards • Low Alert: &le; 2</span>
             </div>
 
             <div>
@@ -1119,6 +1088,7 @@
         const UPI_ID_DEFAULT = "arnavv4l@fam";
         const UPI_PAYEE_NAME = "Arnavv Ghate";
         const FOLLOWUP_DAYS_THRESHOLD = 30;
+        const LOW_STOCK_LIMIT = 2;
 
         const STORAGE_KEY_BATCH = "tapreview_ultralight_batch_v2";
         const STORAGE_KEY_FINANCE = "tapreview_finances_v1";
@@ -1255,7 +1225,7 @@
         });
 
         // ==========================================
-        // BLANK NFC CARD INVENTORY SYSTEM
+        // BLANK NFC CARD INVENTORY SYSTEM (LOW LIMIT = 2)
         // ==========================================
         function loadInventoryFromStorage() {
             try {
@@ -1293,7 +1263,7 @@
             if (directInput && document.activeElement !== directInput) directInput.value = count;
             if (autoToggle) autoToggle.checked = inventoryState.autoDeduct !== false;
 
-            const isLow = count <= 10;
+            const isLow = count <= LOW_STOCK_LIMIT;
             if (headerBadge) {
                 headerBadge.className = isLow
                     ? "cursor-pointer text-[9px] font-mono font-bold px-1.5 py-0.5 rounded bg-rose-500/20 text-rose-300 border border-rose-500/40 flex items-center gap-1 flex-shrink-0 active:scale-95 transition"
@@ -1303,6 +1273,11 @@
                 finBadge.className = isLow
                     ? "px-2.5 py-1 rounded-xl font-mono text-xs font-extrabold bg-rose-500/20 text-rose-300 border border-rose-500/40"
                     : "px-2.5 py-1 rounded-xl font-mono text-xs font-extrabold bg-emerald-500/15 text-emerald-300 border border-emerald-500/30";
+            }
+            if (modalBig) {
+                modalBig.className = isLow
+                    ? "font-mono text-3xl font-extrabold text-rose-400"
+                    : "font-mono text-3xl font-extrabold text-emerald-400";
             }
         }
 
@@ -1564,6 +1539,14 @@
         // INPUT-FREE BUSINESS LOOKUP (CAMERA QR SCANNER)
         // & INSTANT PLACE ID EXTRACTION
         // ==========================================
+        function cleanExtractedBusinessName(raw) {
+            if (!raw) return "";
+            let str = String(raw);
+            try { str = decodeURIComponent(str.replace(/\+/g, ' ')); } catch (e) {}
+            try { str = decodeURIComponent(str); } catch (e) {}
+            return str.replace(/\+/g, ' ').replace(/\s+/g, ' ').trim();
+        }
+
         async function openQrScannerModal() {
             triggerHaptic(25);
             const modal = document.getElementById('qrScannerModal');
@@ -1690,7 +1673,6 @@
             }
 
             document.getElementById('smartInput').value = cleaned;
-            document.getElementById('mapsShareLinkInput').value = cleaned;
 
             // Step 1: Parse directly for Place ID and Business Name
             const directParsed = parseGoogleMapsUrlForDetails(cleaned);
@@ -1759,8 +1741,8 @@
         }
 
         function populateBox1AndQuery(bizName) {
-            if (!bizName) return;
-            const cleanName = bizName.trim();
+            const cleanName = cleanExtractedBusinessName(bizName);
+            if (!cleanName) return;
             document.getElementById('bizNameInput').value = cleanName;
             document.getElementById('manualBizQuery').value = cleanName;
             currentState.businessName = cleanName;
@@ -2487,20 +2469,6 @@
             updateDynamicUpiQr();
         }
 
-        function generateRandomSixCode() {
-            triggerHaptic(20);
-            const chars = "ABCDEFGHJKLMNPQRSTUVWXYZ23456789";
-            let out = "";
-            for (let i = 0; i < 6; i++) {
-                out += chars.charAt(Math.floor(Math.random() * chars.length));
-            }
-            const inputEl = document.getElementById('sixCharCodeInput');
-            inputEl.value = out;
-            currentState.sixCharCode = out;
-            updateCodeBadges(out);
-            updateDynamicUpiQr();
-        }
-
         function updateCodeBadges(codeStr) {
             const len = (codeStr || "").length;
             const badge = document.getElementById('codeLengthBadge');
@@ -2644,8 +2612,6 @@
             triggerHaptic();
             document.getElementById('manualBizQuery').value = "";
             document.getElementById('smartInput').value = "";
-            const mapsShareEl = document.getElementById('mapsShareLinkInput');
-            if (mapsShareEl) mapsShareEl.value = "";
             document.getElementById('manualBizQuery').focus();
         }
 
@@ -2670,7 +2636,9 @@
             const urlMatch = text.match(/https?:\/\/[^\s]+/i);
             if (urlMatch) result.extractedUrl = urlMatch[0];
             const lines = text.split(/\r?\n/).map(l => l.trim()).filter(Boolean);
-            if (lines.length > 1 && !lines[0].startsWith('http')) result.businessName = lines[0];
+            if (lines.length > 1 && !lines[0].startsWith('http')) {
+                result.businessName = cleanExtractedBusinessName(lines[0]);
+            }
 
             const pidMatch =
                 text.match(/[?&]place_?id=([A-Za-z0-9_-]+)/i) ||
@@ -2680,72 +2648,27 @@
 
             const placePathMatch = text.match(/\/maps\/place\/([^/@?]+)/i);
             if (placePathMatch && placePathMatch[1]) {
-                try {
-                    const decodedName = decodeURIComponent(placePathMatch[1].replace(/\+/g, ' ')).trim();
-                    if (decodedName && !result.businessName) result.businessName = decodedName;
-                } catch (e) {}
+                const decodedName = cleanExtractedBusinessName(placePathMatch[1]);
+                if (decodedName && !result.businessName) result.businessName = decodedName;
             }
             const coordMatch = text.match(/@(-?\d+\.\d+),(-?\d+\.\d+)/);
             if (coordMatch) { result.lat = parseFloat(coordMatch[1]); result.lng = parseFloat(coordMatch[2]); }
-            const qParamMatch = text.match(/[?&]q=([^&]+)/i);
+            const qParamMatch = text.match(/[?&](?:q|query)=([^&]+)/i);
             if (qParamMatch && qParamMatch[1] && !result.businessName) {
-                try {
-                    const decodedQ = decodeURIComponent(qParamMatch[1].replace(/\+/g, ' ')).trim();
-                    if (decodedQ && !/^[-?\d.,\s]+$/.test(decodedQ)) result.businessName = decodedQ;
-                } catch (e) {}
+                const decodedQ = cleanExtractedBusinessName(qParamMatch[1]);
+                if (decodedQ && !/^[-?\d.,\s]+$/.test(decodedQ)) result.businessName = decodedQ;
             }
             return result;
         }
 
-        function handleMapsShareInputPreview(val) {
-            const badge = document.getElementById('mapsShareBadge');
-            const statusEl = document.getElementById('mapsShareStatusText');
-            const parsed = parseGoogleMapsUrlForDetails(val);
-            if (!parsed) {
-                badge.textContent = "maps.app.goo.gl";
-                badge.className = "text-[10px] font-mono px-2 py-0.5 rounded bg-slate-800 text-slate-400";
-                return;
-            }
-            if (parsed.businessName) {
-                populateBox1AndQuery(parsed.businessName);
-            }
-            if (parsed.placeId) {
-                applyExtractedPlaceIdAndPopulate(parsed.placeId, parsed.businessName);
-                badge.textContent = "✓ Place ID Found";
-                badge.className = "text-[10px] font-mono px-2 py-0.5 rounded bg-emerald-500/20 text-emerald-300 border border-emerald-500/30";
-                statusEl.innerHTML = `Extracted Place ID <code class="text-emerald-400 font-mono">${escapeHtml(parsed.placeId)}</code> &amp; populated Box 1 + NFC Link!`;
-                return;
-            }
-            badge.textContent = "Link Ready";
-            badge.className = "text-[10px] font-mono px-2 py-0.5 rounded bg-amber-500/20 text-amber-300";
-            statusEl.textContent = "Tap 'Extract Review Link from Maps Share Link' below to resolve Place ID.";
-        }
-
-        async function resolveGoogleMapsShareLink() {
-            triggerHaptic(30);
-            const rawVal = document.getElementById('mapsShareLinkInput').value.trim();
-            const statusEl = document.getElementById('mapsShareStatusText');
-            const badge = document.getElementById('mapsShareBadge');
-            const iconEl = document.getElementById('resolveMapsShareIcon');
-            const textEl = document.getElementById('resolveMapsShareText');
-
-            if (!rawVal) {
-                showToast("Paste a Google Maps share link in Step C first!");
-                document.getElementById('mapsShareLinkInput').focus();
-                return;
-            }
-
-            const initialParsed = parseGoogleMapsUrlForDetails(rawVal);
+        async function resolveShortMapsLink(rawUrl) {
+            const initialParsed = parseGoogleMapsUrlForDetails(rawUrl);
             if (initialParsed && initialParsed.placeId) {
                 applyExtractedPlaceIdAndPopulate(initialParsed.placeId, initialParsed.businessName);
                 return;
             }
 
-            iconEl.className = "fa-solid fa-spinner fa-spin";
-            textEl.textContent = "Resolving...";
-            statusEl.textContent = "Unshortening link & extracting Google Place ID...";
-
-            let expandedUrl = initialParsed?.extractedUrl || rawVal;
+            let expandedUrl = initialParsed?.extractedUrl || rawUrl;
             let discoveredBizName = initialParsed?.businessName || "";
 
             if (/goo\.gl|maps\.app|g\.page|bit\.ly/i.test(expandedUrl)) {
@@ -2764,11 +2687,6 @@
                 if (expandedParsed) {
                     if (expandedParsed.placeId) {
                         applyExtractedPlaceIdAndPopulate(expandedParsed.placeId, expandedParsed.businessName || discoveredBizName);
-                        badge.textContent = "✓ Resolved";
-                        badge.className = "text-[10px] font-mono px-2 py-0.5 rounded bg-emerald-500/20 text-emerald-300";
-                        statusEl.innerHTML = `Resolved Place ID: <code class="text-emerald-400 font-mono">${escapeHtml(expandedParsed.placeId)}</code>`;
-                        iconEl.className = "fa-solid fa-location-arrow";
-                        textEl.textContent = "Extract Review Link from Maps Share Link";
                         return;
                     }
                     if (expandedParsed.businessName && !discoveredBizName) discoveredBizName = expandedParsed.businessName;
@@ -2778,15 +2696,8 @@
             if (discoveredBizName) {
                 populateBox1AndQuery(discoveredBizName);
                 copyTextFallback(discoveredBizName);
-                statusEl.innerHTML = `Auto-filled Box 1 with <strong class="text-white">${escapeHtml(discoveredBizName)}</strong>. Tap <strong>Find Place ID</strong> above.`;
                 showToast(`Populated Box 1: "${discoveredBizName}"!`);
-            } else {
-                statusEl.textContent = "Could not auto-extract ChIJ ID. Copy the business name into Step A or scan QR.";
-                showToast("Tip: Use Step A or Scan QR.");
             }
-
-            iconEl.className = "fa-solid fa-location-arrow";
-            textEl.textContent = "Extract Review Link from Maps Share Link";
         }
 
         // Instant Place ID & Business Name Extraction on any URL / ID input
@@ -2833,8 +2744,7 @@
                 updateAllOutputs(false);
                 triggerHaptic(30);
             } else if (/goo\.gl|maps\.app/i.test(input)) {
-                document.getElementById('mapsShareLinkInput').value = input;
-                resolveGoogleMapsShareLink();
+                resolveShortMapsLink(input);
             } else {
                 badge.textContent = "No Place ID";
                 badge.className = "text-[10px] font-mono px-2 py-0.5 rounded bg-amber-500/20 text-amber-300";
@@ -2865,11 +2775,7 @@
                     if (clipText && clipText.trim()) {
                         const cleaned = clipText.trim();
                         inputEl.value = cleaned;
-                        if (targetInputId === 'mapsShareLinkInput') {
-                            handleMapsShareInputPreview(cleaned);
-                        } else {
-                            handleSmartInput(cleaned);
-                        }
+                        handleSmartInput(cleaned);
                         showToast("Pasted & extracted Place ID!");
                         return;
                     } else {
@@ -3484,13 +3390,17 @@
                 const place = autocomplete.getPlace();
                 if (!place.place_id) { showToast("No Place ID found for that entry."); return; }
                 currentState.placeId = place.place_id;
-                if (place.name) { currentState.businessName = place.name; document.getElementById('bizNameInput').value = place.name; }
+                if (place.name) {
+                    const cleanName = cleanExtractedBusinessName(place.name);
+                    currentState.businessName = cleanName;
+                    document.getElementById('bizNameInput').value = cleanName;
+                }
                 const phone = place.international_phone_number || place.formatted_phone_number || "";
                 if (phone) { currentState.phoneNumber = phone; document.getElementById('bizPhoneInput').value = phone; }
                 document.getElementById('smartInput').value = place.place_id;
                 handleSmartInput(place.place_id);
                 updateDynamicUpiQr();
-                showToast(`Selected "${place.name || 'Business'}"!`);
+                showToast(`Selected "${currentState.businessName || 'Business'}"!`);
             });
         }
 
