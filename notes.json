@@ -1,16 +1,8 @@
 {
   "databaseVersion": 3,
-  "updatedAt": "2026-10-23T11:23:43.867Z",
-  "totalRecords": 1,
-  "records": [
-    {
-      "id": "note_1792747322973",
-      "title": "Test nite 1",
-      "body": "Bruh wtffffff",
-      "createdAt": "23 Oct 2026, 02:52 pm",
-      "updatedAt": "23 Oct 2026, 02:52 pm"
-    }
-  ],
+  "updatedAt": "2026-10-29T15:52:00.630Z",
+  "totalRecords": 0,
+  "records": [],
   "finances": [],
   "notes": []
 }
