@@ -1,18 +1,8 @@
 {
   "databaseVersion": 3,
-  "updatedAt": "2026-10-29T15:42:37.299Z",
-  "totalRecords": 2,
+  "updatedAt": "2026-10-29T15:43:42.222Z",
+  "totalRecords": 1,
   "records": [
-    {
-      "id": "fin_1793288556610",
-      "type": "income",
-      "amount": 1598,
-      "category": "NFC Card Sale",
-      "paymentMode": "UPI",
-      "description": "The+Third+Space #R4456Y • 2 Cards [UPI (arnavv4l@fam)]",
-      "createdAt": "29 Oct 2026, 09:12 pm",
-      "createdTimestamp": 1793288556611
-    },
     {
       "id": "ord_1792503653970",
       "businessName": "shawarma king",
