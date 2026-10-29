@@ -9,6 +9,8 @@
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@500;600;700;800&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/qrious/4.0.2/qrious.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/jsqr@1.4.0/dist/jsQR.min.js"></script>
 
     <script>
         tailwind.config = {
@@ -61,23 +63,41 @@
             flex-shrink: 0;
         }
         .bottom-safe-bar { padding-bottom: calc(0.65rem + var(--safe-bottom)); }
+        @keyframes scanLaser {
+            0%, 100% { top: 10%; opacity: 0.85; }
+            50% { top: 88%; opacity: 1; }
+        }
+        .scan-laser-line {
+            position: absolute;
+            left: 8%;
+            right: 8%;
+            height: 2px;
+            background: linear-gradient(90deg, transparent, #10b981, #6366f1, transparent);
+            box-shadow: 0 0 12px #10b981;
+            animation: scanLaser 2.2s ease-in-out infinite;
+        }
     </style>
 </head>
 <body class="min-h-screen flex flex-col antialiased selection:bg-indigo-500 selection:text-white">
 
     <header class="border-b border-slate-800/90 bg-slate-950/95 backdrop-blur-md sticky top-0 z-40">
-        <div class="w-full max-w-[430px] mx-auto px-3 py-2.5 flex items-center justify-between gap-2">
+        <div class="w-full max-w-[430px] mx-auto px-3 py-2.5 flex items-center justify-between gap-1.5">
             <div class="flex items-center space-x-2 min-w-0">
                 <div class="w-8 h-8 rounded-xl bg-gradient-to-br from-indigo-500 to-emerald-500 flex items-center justify-center shadow-md shadow-indigo-500/20 flex-shrink-0">
                     <i class="fa-solid fa-wifi rotate-90 text-white text-xs"></i>
                 </div>
                 <div class="min-w-0">
-                    <div class="flex items-center space-x-1.5">
+                    <div class="flex items-center space-x-1">
                         <h1 class="font-extrabold text-sm tracking-tight text-white truncate">TapReview</h1>
                         <span id="githubBadgeHeader" onclick="toggleGithubModal()" class="cursor-pointer text-[9px] font-mono font-semibold uppercase px-1.5 py-0.5 rounded bg-emerald-500/15 text-emerald-400 border border-emerald-500/30 flex items-center gap-1 flex-shrink-0">
                             <i class="fa-brands fa-github text-[10px]"></i>
-                            <span id="githubTextHeader">GitHub Sync</span>
+                            <span id="githubTextHeader">Sync</span>
                         </span>
+                        <!-- INVENTORY COUNTER MINI WIDGET IN HEADER -->
+                        <button type="button" id="headerStockBadge" onclick="toggleInventoryModal()" title="Manage Blank NFC Card Stock" class="cursor-pointer text-[9px] font-mono font-bold px-1.5 py-0.5 rounded bg-indigo-500/15 text-indigo-300 border border-indigo-500/30 flex items-center gap-1 flex-shrink-0 active:scale-95 transition">
+                            <i class="fa-solid fa-layer-group text-[9px] text-amber-400"></i>
+                            <span id="headerStockText">78 tags in stock</span>
+                        </button>
                     </div>
                     <p id="liveClockHeader" class="text-[10px] text-slate-400 leading-none mt-1 font-mono truncate">137B Ultralight Studio</p>
                 </div>
@@ -85,8 +105,8 @@
 
             <div class="flex items-center space-x-1.5 flex-shrink-0">
                 <div id="layoutToggleWrapper" class="inline-flex rounded-xl bg-slate-900 p-0.5 border border-slate-700/80">
-                    <button id="btnNormalMode" onclick="setViewLayoutMode('normal')" class="px-2.5 py-1.5 rounded-lg text-[11px] font-bold transition bg-indigo-600 text-white shadow">Normal</button>
-                    <button id="btnSimpleMode" onclick="setViewLayoutMode('simple')" class="px-2.5 py-1.5 rounded-lg text-[11px] font-bold transition text-slate-400">Simple</button>
+                    <button id="btnNormalMode" onclick="setViewLayoutMode('normal')" class="px-2 py-1.5 rounded-lg text-[10px] font-bold transition bg-indigo-600 text-white shadow">Normal</button>
+                    <button id="btnSimpleMode" onclick="setViewLayoutMode('simple')" class="px-2 py-1.5 rounded-lg text-[10px] font-bold transition text-slate-400">Simple</button>
                 </div>
                 <button onclick="toggleApiModal()" title="Google Places API Key" class="flex items-center justify-center w-8 h-8 rounded-xl bg-slate-900 active:bg-slate-800 border border-slate-700/80 text-xs font-semibold text-slate-200 transition">
                     <i id="apiKeyIcon" class="fa-solid fa-key text-indigo-400"></i>
@@ -115,15 +135,16 @@
         <div id="simpleModeStepperBar" class="hidden border-t border-slate-800/80 bg-slate-900/95 px-3 py-2">
             <div class="w-full max-w-[430px] mx-auto space-y-2">
                 <div class="flex items-center justify-between text-[10px] font-mono">
-                    <span id="simpleStepTitle" class="font-bold text-indigo-300 truncate">CARD 1 OF 5 • FIND BUSINESS</span>
+                    <span id="simpleStepTitle" class="font-bold text-indigo-300 truncate">CARD 1 OF 6 • FIND BUSINESS</span>
                     <span class="text-slate-400 flex-shrink-0">20:9 Card View</span>
                 </div>
-                <div class="grid grid-cols-5 gap-1">
-                    <button onclick="goToSimpleCard(1)" id="stepDot1" class="py-1.5 rounded-lg text-[10px] font-mono font-bold bg-indigo-600 text-white border border-indigo-400">1. Link</button>
-                    <button onclick="goToSimpleCard(2)" id="stepDot2" class="py-1.5 rounded-lg text-[10px] font-mono font-bold bg-slate-950 text-slate-400 border border-slate-800">2. Code</button>
-                    <button onclick="goToSimpleCard(3)" id="stepDot3" class="py-1.5 rounded-lg text-[10px] font-mono font-bold bg-slate-950 text-slate-400 border border-slate-800">3. Info</button>
-                    <button onclick="goToSimpleCard(4)" id="stepDot4" class="py-1.5 rounded-lg text-[10px] font-mono font-bold bg-slate-950 text-slate-400 border border-slate-800">4. Write</button>
-                    <button onclick="goToSimpleCard(5)" id="stepDot5" class="py-1.5 rounded-lg text-[10px] font-mono font-bold bg-slate-950 text-slate-400 border border-slate-800">5. Queue</button>
+                <div class="grid grid-cols-6 gap-1">
+                    <button onclick="goToSimpleCard(1)" id="stepDot1" class="py-1.5 rounded-lg text-[9px] font-mono font-bold bg-indigo-600 text-white border border-indigo-400">1.Link</button>
+                    <button onclick="goToSimpleCard(2)" id="stepDot2" class="py-1.5 rounded-lg text-[9px] font-mono font-bold bg-slate-950 text-slate-400 border border-slate-800">2.Code</button>
+                    <button onclick="goToSimpleCard(3)" id="stepDot3" class="py-1.5 rounded-lg text-[9px] font-mono font-bold bg-slate-950 text-slate-400 border border-slate-800">3.Info</button>
+                    <button onclick="goToSimpleCard(4)" id="stepDot4" class="py-1.5 rounded-lg text-[9px] font-mono font-bold bg-slate-950 text-slate-400 border border-slate-800">4.Write</button>
+                    <button onclick="goToSimpleCard(5)" id="stepDot5" class="py-1.5 rounded-lg text-[9px] font-mono font-bold bg-slate-950 text-slate-400 border border-slate-800">5.Pay</button>
+                    <button onclick="goToSimpleCard(6)" id="stepDot6" class="py-1.5 rounded-lg text-[9px] font-mono font-bold bg-slate-950 text-slate-400 border border-slate-800">6.Queue</button>
                 </div>
             </div>
         </div>
@@ -134,16 +155,39 @@
     <!-- ========================================== -->
     <main id="pageNfcSection" class="flex-grow w-full max-w-[430px] mx-auto px-3 pt-3.5 space-y-3.5">
 
+        <!-- SECTION 1: FIND BUSINESS & INPUT-FREE QR SCANNER -->
         <section id="cardSection1" class="step-card-transition bg-slate-900/95 border border-slate-800 rounded-2xl p-3.5 shadow-xl space-y-3">
             <div class="flex items-center justify-between gap-2">
                 <div class="flex items-center gap-2 min-w-0">
                     <span class="w-6 h-6 rounded-lg bg-indigo-500/20 border border-indigo-500/30 text-indigo-400 text-xs font-bold flex items-center justify-center flex-shrink-0">1</span>
                     <h2 class="text-sm font-bold text-white truncate">Find Business & Link</h2>
                 </div>
-                <div class="inline-flex rounded-xl bg-slate-950 p-0.5 border border-slate-800 flex-shrink-0">
-                    <button id="tabNoApi" onclick="switchMode('no-api')" class="px-2.5 py-1 rounded-lg text-[11px] font-semibold transition bg-indigo-600 text-white shadow">Quick Lookup</button>
-                    <button id="tabLiveApi" onclick="switchMode('live-api')" class="px-2.5 py-1 rounded-lg text-[11px] font-semibold transition text-slate-400">Live API</button>
+                <div class="flex items-center gap-1.5 flex-shrink-0">
+                    <button type="button" onclick="openQrScannerModal()" title="Scan Business Google Maps QR Standee" class="px-2.5 py-1 rounded-xl bg-emerald-500/20 active:bg-emerald-500/35 border border-emerald-500/40 text-emerald-300 text-[11px] font-bold flex items-center gap-1.5 shadow">
+                        <i class="fa-solid fa-camera"></i>
+                        <span>Scan QR</span>
+                    </button>
+                    <div class="inline-flex rounded-xl bg-slate-950 p-0.5 border border-slate-800">
+                        <button id="tabNoApi" onclick="switchMode('no-api')" class="px-2 py-1 rounded-lg text-[10px] font-semibold transition bg-indigo-600 text-white shadow">Quick</button>
+                        <button id="tabLiveApi" onclick="switchMode('live-api')" class="px-2 py-1 rounded-lg text-[10px] font-semibold transition text-slate-400">API</button>
+                    </div>
                 </div>
+            </div>
+
+            <!-- INPUT-FREE BUSINESS LOOKUP BANNER -->
+            <div class="p-3 rounded-xl bg-gradient-to-r from-emerald-950/60 via-slate-950 to-indigo-950/60 border border-emerald-500/40 flex items-center justify-between gap-2.5">
+                <div class="min-w-0 space-y-0.5">
+                    <div class="text-[11px] font-extrabold uppercase tracking-wider text-emerald-300 flex items-center gap-1.5">
+                        <i class="fa-solid fa-qrcode"></i>
+                        <span>Input-Free Standee Lookup</span>
+                    </div>
+                    <p id="qrAutoPopulateStatus" class="text-[11px] text-slate-300 leading-snug">
+                        Scan client's existing Google Maps QR standee to auto-fill Box 1, Place ID &amp; NFC Link.
+                    </p>
+                </div>
+                <button type="button" onclick="openQrScannerModal()" class="w-11 h-11 rounded-2xl bg-emerald-600 active:bg-emerald-500 text-white shadow-lg shadow-emerald-600/30 flex items-center justify-center flex-shrink-0">
+                    <i class="fa-solid fa-camera text-base"></i>
+                </button>
             </div>
 
             <div id="panelNoApi" class="space-y-3">
@@ -154,11 +198,16 @@
                             <i class="fa-solid fa-rotate-left mr-0.5"></i>Reset
                         </button>
                     </div>
-                    <div class="relative">
-                        <i class="fa-solid fa-store absolute left-3.5 top-3.5 text-slate-500 text-sm"></i>
-                        <input id="manualBizQuery" type="text" placeholder="e.g. Vaishali Restaurant FC Road Pune"
-                            oninput="syncBizNameFromQuery(this.value)"
-                            class="w-full pl-9 pr-3 py-2.5 bg-slate-900 border border-slate-700 rounded-xl text-sm text-white placeholder-slate-500 focus:outline-none focus:border-indigo-500">
+                    <div class="flex gap-2">
+                        <div class="relative flex-1">
+                            <i class="fa-solid fa-store absolute left-3.5 top-3.5 text-slate-500 text-sm"></i>
+                            <input id="manualBizQuery" type="text" placeholder="e.g. Vaishali Restaurant FC Road Pune"
+                                oninput="syncBizNameFromQuery(this.value)"
+                                class="w-full pl-9 pr-3 py-2.5 bg-slate-900 border border-slate-700 rounded-xl text-sm text-white placeholder-slate-500 focus:outline-none focus:border-indigo-500">
+                        </div>
+                        <button type="button" onclick="openQrScannerModal()" title="Scan Google Maps QR Code" class="px-3.5 py-2.5 rounded-xl bg-slate-900 active:bg-slate-800 border border-emerald-500/40 text-emerald-400 text-sm flex items-center justify-center flex-shrink-0">
+                            <i class="fa-solid fa-camera"></i>
+                        </button>
                     </div>
                     <div class="grid grid-cols-2 gap-2">
                         <button onclick="openOfficialPlaceFinder()" class="py-2.5 px-3 bg-indigo-600/20 active:bg-indigo-600/30 text-indigo-300 border border-indigo-500/30 rounded-xl text-xs font-semibold transition flex items-center justify-center gap-1.5">
@@ -174,7 +223,7 @@
 
                 <div class="p-3 rounded-xl bg-slate-950/90 border border-slate-800/90 space-y-2">
                     <div class="flex items-center justify-between">
-                        <label for="smartInput" class="text-[11px] font-semibold uppercase tracking-wider text-emerald-400">Step B: Paste Place ID or Link</label>
+                        <label for="smartInput" class="text-[11px] font-semibold uppercase tracking-wider text-emerald-400">Step B: Paste / Scan Place ID or Link</label>
                         <span id="parserBadge" class="text-[10px] font-mono px-2 py-0.5 rounded bg-slate-800 text-slate-400">Ready</span>
                     </div>
                     <div class="flex gap-2">
@@ -190,7 +239,7 @@
                         </button>
                     </div>
                     <p id="parserHint" class="text-[11px] text-slate-400 leading-tight">
-                        Accepts <code class="text-slate-300">ChIJ...</code> IDs, <code class="text-slate-300">?placeid=</code> URLs, or short <code class="text-slate-300">g.page/r/...</code> review links.
+                        Instant Place ID extraction from <code class="text-slate-300">ChIJ...</code>, <code class="text-slate-300">?placeid=</code>, <code class="text-slate-300">!1sChIJ...</code>, or <code class="text-slate-300">g.page/r/...</code> URLs.
                     </p>
                 </div>
 
@@ -217,7 +266,7 @@
                         <span id="resolveMapsShareText">Extract Review Link from Maps Share Link</span>
                     </button>
                     <p id="mapsShareStatusText" class="text-[11px] text-slate-400 leading-tight">
-                        Share any place from the Google Maps app &rarr; Copy Link &rarr; Paste here to resolve its Place ID &amp; Review URL.
+                        Share any place from Google Maps or scan QR &rarr; Auto-extracts Place ID, Box 1 &amp; Review URL.
                     </p>
                 </div>
             </div>
@@ -244,6 +293,7 @@
             </div>
         </section>
 
+        <!-- SECTION 2: 6-CHARACTER CODE -->
         <section id="cardSection2" class="step-card-transition bg-slate-900/95 border-2 border-indigo-500/40 rounded-2xl p-3.5 shadow-xl space-y-3">
             <div class="flex items-center justify-between gap-2">
                 <div class="flex items-center gap-2 min-w-0">
@@ -262,14 +312,19 @@
                     oninput="handleSixCharInput(this)"
                     class="code-big-input w-full py-3 px-3 bg-slate-950 border-2 border-indigo-500/60 focus:border-emerald-400 rounded-2xl text-center font-mono text-3xl font-extrabold text-amber-400 placeholder-slate-800 focus:outline-none shadow-inner">
             </div>
-            <div class="pt-0.5">
-                <button type="button" onclick="clearSixCode()" class="w-full py-3 px-4 rounded-xl bg-slate-800 active:bg-slate-700 border border-slate-700 text-xs font-bold text-slate-200 flex items-center justify-center gap-2 transition">
+            <div class="grid grid-cols-2 gap-2 pt-0.5">
+                <button type="button" onclick="generateRandomSixCode()" class="py-2.5 px-3 rounded-xl bg-indigo-600/20 active:bg-indigo-600/35 border border-indigo-500/30 text-xs font-bold text-indigo-300 flex items-center justify-center gap-1.5 transition">
+                    <i class="fa-solid fa-dice text-indigo-400"></i>
+                    <span>Auto Generate</span>
+                </button>
+                <button type="button" onclick="clearSixCode()" class="py-2.5 px-3 rounded-xl bg-slate-800 active:bg-slate-700 border border-slate-700 text-xs font-bold text-slate-200 flex items-center justify-center gap-1.5 transition">
                     <i class="fa-solid fa-eraser text-amber-400"></i>
-                    <span>Clear 6-Character Code</span>
+                    <span>Clear Code</span>
                 </button>
             </div>
         </section>
 
+        <!-- SECTION 3: RECORDS FILL BOX -->
         <section id="cardSection3" class="step-card-transition bg-slate-900/95 border border-slate-800 rounded-2xl p-3.5 shadow-xl space-y-3.5">
             <div class="flex items-center justify-between gap-2">
                 <div class="flex items-center gap-2 min-w-0">
@@ -282,10 +337,16 @@
             </div>
             <div class="space-y-3">
                 <div>
-                    <label for="bizNameInput" class="flex items-center gap-1.5 text-xs font-semibold text-slate-300 mb-1.5">
-                        <i class="fa-solid fa-building text-indigo-400"></i>
-                        <span>Business Name (Box 1)</span>
-                    </label>
+                    <div class="flex items-center justify-between mb-1.5">
+                        <label for="bizNameInput" class="flex items-center gap-1.5 text-xs font-semibold text-slate-300">
+                            <i class="fa-solid fa-building text-indigo-400"></i>
+                            <span>Business Name (Box 1)</span>
+                        </label>
+                        <button type="button" onclick="openQrScannerModal()" class="text-[10px] font-bold text-emerald-400 flex items-center gap-1">
+                            <i class="fa-solid fa-camera"></i>
+                            <span>Scan QR to Fill</span>
+                        </button>
+                    </div>
                     <input id="bizNameInput" type="text" placeholder="Enter Business Name"
                         oninput="updateCurrentBusinessMeta()"
                         class="w-full px-3.5 py-3 bg-slate-950 border border-slate-700 rounded-xl text-sm font-medium text-white placeholder-slate-500 focus:outline-none focus:border-indigo-500">
@@ -337,6 +398,7 @@
             </div>
         </section>
 
+        <!-- SECTION 4: NXP MIFARE ULTRALIGHT (137B) -->
         <section id="cardSection4" class="step-card-transition bg-slate-900/95 border border-slate-800 rounded-2xl p-3.5 shadow-xl space-y-3.5">
             <div class="flex items-center justify-between gap-2">
                 <div class="flex items-center gap-2 min-w-0">
@@ -408,11 +470,149 @@
             </div>
         </section>
 
-        <section id="cardSection5" class="step-card-transition bg-slate-900/95 border border-slate-800 rounded-2xl p-3.5 shadow-xl space-y-3.5">
+        <!-- ======================================================= -->
+        <!-- SECTION 5: DYNAMIC UPI QR & INSTANT PAYMENT COLLECTOR   -->
+        <!-- (Placed right before Client Card Order Queue)           -->
+        <!-- ======================================================= -->
+        <section id="cardSection5" class="step-card-transition bg-slate-900/95 border-2 border-emerald-500/40 rounded-2xl p-3.5 shadow-xl space-y-3.5">
+            <div class="flex items-center justify-between gap-2">
+                <div class="flex items-center gap-2 min-w-0">
+                    <span class="w-6 h-6 rounded-lg bg-emerald-500/20 border border-emerald-500/40 text-emerald-400 text-xs font-bold flex items-center justify-center flex-shrink-0">5</span>
+                    <div class="min-w-0">
+                        <h2 class="text-sm font-bold text-white truncate">Instant Payment • UPI &amp; Cash</h2>
+                        <p class="text-[10px] font-mono text-emerald-400 truncate">UPI ID: <span id="upiIdLabel">arnavv4l@fam</span></p>
+                    </div>
+                </div>
+                <div class="text-right flex-shrink-0">
+                    <span class="block text-[9px] font-mono uppercase text-slate-400">Today's Sales</span>
+                    <span id="quickPayTodayBadge" class="text-xs font-mono font-extrabold text-emerald-400">₹0</span>
+                </div>
+            </div>
+
+            <!-- 1. BOX TO INPUT RS + PRESET CHIPS -->
+            <div class="p-3 rounded-xl bg-slate-950/90 border border-slate-800 space-y-2.5">
+                <div class="flex items-center justify-between">
+                    <label for="quickPayAmountInput" class="text-[11px] font-semibold uppercase tracking-wider text-emerald-400 flex items-center gap-1.5">
+                        <i class="fa-solid fa-indian-rupee-sign"></i>
+                        <span>1. Enter Amount (Rs)</span>
+                    </label>
+                    <span id="quickPayClientTag" class="text-[10px] font-mono text-slate-400 truncate max-w-[160px]">Client: Direct Walk-in</span>
+                </div>
+
+                <div class="relative flex items-center">
+                    <span class="absolute left-3.5 font-mono text-xl font-extrabold text-emerald-400">₹</span>
+                    <input id="quickPayAmountInput" type="number" inputmode="decimal" step="any" placeholder="499" value="499"
+                        oninput="updateDynamicUpiQr()"
+                        class="w-full pl-9 pr-20 py-3 bg-slate-900 border-2 border-emerald-500/50 focus:border-emerald-400 rounded-xl font-mono text-2xl font-extrabold text-white placeholder-slate-700 focus:outline-none">
+                    <button type="button" onclick="clearQuickPayAmount()" class="absolute right-2.5 px-2.5 py-1 rounded-lg bg-slate-800 text-[10px] font-mono text-slate-300 active:text-white">
+                        Clear
+                    </button>
+                </div>
+
+                <!-- Quick Price Pills & Multiplier -->
+                <div class="grid grid-cols-5 gap-1.5">
+                    <button type="button" onclick="setQuickPayPreset(299)" class="py-1.5 rounded-lg bg-slate-900 active:bg-emerald-600/30 border border-slate-800 text-[11px] font-mono font-bold text-slate-300">₹299</button>
+                    <button type="button" onclick="setQuickPayPreset(399)" class="py-1.5 rounded-lg bg-slate-900 active:bg-emerald-600/30 border border-slate-800 text-[11px] font-mono font-bold text-slate-300">₹399</button>
+                    <button type="button" onclick="setQuickPayPreset(499)" class="py-1.5 rounded-lg bg-emerald-500/15 active:bg-emerald-600/30 border border-emerald-500/30 text-[11px] font-mono font-bold text-emerald-300">₹499</button>
+                    <button type="button" onclick="setQuickPayPreset(799)" class="py-1.5 rounded-lg bg-slate-900 active:bg-emerald-600/30 border border-slate-800 text-[11px] font-mono font-bold text-slate-300">₹799</button>
+                    <button type="button" onclick="setQuickPayPreset(999)" class="py-1.5 rounded-lg bg-slate-900 active:bg-emerald-600/30 border border-slate-800 text-[11px] font-mono font-bold text-slate-300">₹999</button>
+                </div>
+
+                <div class="flex items-center justify-between gap-2 pt-1 border-t border-slate-900">
+                    <span class="text-[10px] font-mono uppercase text-slate-400">Cards Sold Qty:</span>
+                    <div class="inline-flex rounded-lg bg-slate-900 p-0.5 border border-slate-800 gap-1">
+                        <button type="button" onclick="setQuickPayQty(1)" id="qtyBtn1" class="px-2.5 py-1 rounded-md text-[10px] font-mono font-bold bg-indigo-600 text-white">1 Card</button>
+                        <button type="button" onclick="setQuickPayQty(2)" id="qtyBtn2" class="px-2.5 py-1 rounded-md text-[10px] font-mono font-bold text-slate-400">2 Cards</button>
+                        <button type="button" onclick="setQuickPayQty(3)" id="qtyBtn3" class="px-2.5 py-1 rounded-md text-[10px] font-mono font-bold text-slate-400">3 Cards</button>
+                        <button type="button" onclick="setQuickPayQty(5)" id="qtyBtn5" class="px-2.5 py-1 rounded-md text-[10px] font-mono font-bold text-slate-400">5 Cards</button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 2. CASH OR UPI SELECTOR -->
+            <div class="space-y-2.5">
+                <div class="flex items-center justify-between">
+                    <span class="text-[11px] font-semibold uppercase tracking-wider text-indigo-300">2. Select Payment Mode</span>
+                    <button type="button" onclick="copyTextFallback('arnavv4l@fam'); showToast('Copied UPI ID: arnavv4l@fam');" class="text-[10px] font-mono text-emerald-400 underline flex items-center gap-1">
+                        <i class="fa-regular fa-copy"></i>
+                        <span>Copy arnavv4l@fam</span>
+                    </button>
+                </div>
+
+                <div class="grid grid-cols-2 gap-2">
+                    <button type="button" id="modeBtnUpi" onclick="setQuickPaymentMethod('UPI')" class="py-3 px-3 rounded-xl bg-emerald-600 text-white font-bold text-xs shadow-lg shadow-emerald-600/20 border border-emerald-400 flex items-center justify-center gap-2 transition">
+                        <i class="fa-solid fa-qrcode text-sm"></i>
+                        <span>UPI QR Code</span>
+                    </button>
+                    <button type="button" id="modeBtnCash" onclick="setQuickPaymentMethod('Cash')" class="py-3 px-3 rounded-xl bg-slate-950 text-slate-400 font-bold text-xs border border-slate-800 flex items-center justify-center gap-2 transition">
+                        <i class="fa-solid fa-money-bill-wave text-sm text-amber-400"></i>
+                        <span>Cash Payment</span>
+                    </button>
+                </div>
+
+                <!-- DYNAMIC UPI QR PANEL -->
+                <div id="upiQrDisplayPanel" class="p-3.5 rounded-2xl bg-slate-950 border border-emerald-500/30 flex flex-col items-center text-center space-y-2.5">
+                    <div class="w-full flex items-center justify-between text-[10px] font-mono">
+                        <span class="px-2 py-0.5 rounded bg-emerald-500/15 text-emerald-300 border border-emerald-500/30 font-bold">SCAN WITH ANY UPI APP</span>
+                        <span id="qrAmountPill" class="px-2 py-0.5 rounded bg-indigo-500/20 text-indigo-300 border border-indigo-500/30 font-extrabold">₹499</span>
+                    </div>
+
+                    <div onclick="openFullscreenUpiModal()" class="cursor-pointer p-3 bg-white rounded-2xl shadow-xl border-4 border-emerald-500/40 relative group">
+                        <canvas id="upiQrCanvas" width="190" height="190" class="w-[180px] h-[180px] block mx-auto"></canvas>
+                        <div class="mt-1.5 text-[10px] font-mono font-extrabold text-slate-900 tracking-tight">arnavv4l@fam</div>
+                    </div>
+
+                    <div class="w-full grid grid-cols-2 gap-2 pt-1">
+                        <button type="button" onclick="openFullscreenUpiModal()" class="py-2 px-2.5 rounded-xl bg-slate-900 active:bg-slate-800 border border-slate-700 text-[11px] font-bold text-slate-200 flex items-center justify-center gap-1.5">
+                            <i class="fa-solid fa-expand text-indigo-400"></i>
+                            <span>Fullscreen QR</span>
+                        </button>
+                        <button type="button" onclick="shareUpiPaymentOnWhatsApp()" class="py-2 px-2.5 rounded-xl bg-emerald-500/15 active:bg-emerald-500/25 border border-emerald-500/30 text-[11px] font-bold text-emerald-300 flex items-center justify-center gap-1.5">
+                            <i class="fa-brands fa-whatsapp text-sm"></i>
+                            <span>Send Pay Link</span>
+                        </button>
+                    </div>
+                </div>
+
+                <!-- CASH COLLECTION PANEL (WITH CHANGE CALCULATOR) -->
+                <div id="cashDisplayPanel" class="hidden p-3.5 rounded-2xl bg-slate-950 border border-amber-500/30 space-y-3">
+                    <div class="flex items-center justify-between">
+                        <span class="text-xs font-bold text-amber-300 flex items-center gap-1.5">
+                            <i class="fa-solid fa-hand-holding-dollar"></i>
+                            <span>Cash Collection Mode</span>
+                        </span>
+                        <span id="cashToCollectBadge" class="font-mono text-sm font-extrabold text-emerald-400">Collect ₹499</span>
+                    </div>
+                    <div class="grid grid-cols-2 gap-2 items-center">
+                        <div>
+                            <label class="block text-[10px] font-mono uppercase text-slate-400 mb-1">Cash Given by Client (₹)</label>
+                            <input id="cashGivenInput" type="number" inputmode="decimal" placeholder="500"
+                                oninput="updateCashChangeCalc()"
+                                class="w-full px-3 py-2 bg-slate-900 border border-slate-700 rounded-xl text-sm font-mono font-bold text-white focus:outline-none focus:border-amber-500">
+                        </div>
+                        <div class="p-2.5 rounded-xl bg-slate-900 border border-slate-800 text-center">
+                            <span class="block text-[9px] font-mono uppercase text-slate-400">Return Change</span>
+                            <span id="cashChangeOutput" class="font-mono text-base font-extrabold text-amber-400 mt-0.5 block">₹0</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 3. DONE BUTTON (LOGS TO INCOME TAB + DEDUCTS STOCK IF ENABLED) -->
+            <button type="button" onclick="completeQuickPaymentAndAddIncome()" class="w-full py-3.5 px-4 rounded-2xl bg-gradient-to-r from-emerald-600 via-teal-500 to-indigo-600 active:scale-[0.99] text-white font-extrabold text-sm shadow-lg shadow-emerald-600/25 transition flex items-center justify-center gap-2">
+                <i class="fa-solid fa-circle-check text-base"></i>
+                <span id="quickPayDoneBtnText">3. Done • Add ₹499 (UPI) to Income</span>
+            </button>
+        </section>
+
+        <!-- ======================================================= -->
+        <!-- SECTION 6: CLIENT CARD ORDER QUEUE (+ 30-DAY FOLLOW-UP) -->
+        <!-- ======================================================= -->
+        <section id="cardSection6" class="step-card-transition bg-slate-900/95 border border-slate-800 rounded-2xl p-3.5 shadow-xl space-y-3.5">
             <div class="flex items-center justify-between gap-2">
                 <div class="min-w-0">
                     <div class="flex items-center gap-1.5">
-                        <span class="w-6 h-6 rounded-lg bg-indigo-500/20 border border-indigo-500/30 text-indigo-400 text-xs font-bold flex items-center justify-center flex-shrink-0">5</span>
+                        <span class="w-6 h-6 rounded-lg bg-indigo-500/20 border border-indigo-500/30 text-indigo-400 text-xs font-bold flex items-center justify-center flex-shrink-0">6</span>
                         <h2 class="text-sm font-bold text-white truncate">Client Card Order Queue</h2>
                         <span id="batchCountBadge" class="px-2 py-0.5 text-[11px] font-mono font-bold rounded-full bg-indigo-500/15 text-indigo-300 border border-indigo-500/30 flex-shrink-0">0</span>
                     </div>
@@ -422,6 +622,30 @@
                     <i class="fa-solid fa-file-csv text-sm"></i>
                     <span>Export CSV</span>
                 </button>
+            </div>
+
+            <!-- AUTOMATED SCHEDULE FLAG: NEXT FOLLOW-UP FILTER TABS -->
+            <div class="p-2 rounded-xl bg-slate-950 border border-slate-800 space-y-2">
+                <div class="grid grid-cols-3 gap-1.5">
+                    <button type="button" id="queueTabAll" onclick="setQueueFilterTab('all')" class="py-2 px-2 rounded-lg text-[11px] font-bold bg-indigo-600 text-white shadow flex items-center justify-center gap-1">
+                        <span>All Orders</span>
+                        <span id="tabCountAll" class="text-[10px] font-mono opacity-80">(0)</span>
+                    </button>
+                    <button type="button" id="queueTabFollowup" onclick="setQueueFilterTab('followup')" class="py-2 px-2 rounded-lg text-[11px] font-bold bg-slate-900 text-amber-300 border border-amber-500/30 flex items-center justify-center gap-1">
+                        <i class="fa-solid fa-bell text-[10px]"></i>
+                        <span>Next Follow-up</span>
+                        <span id="tabCountFollowup" class="px-1.5 py-0.2 rounded-full bg-amber-500/20 text-amber-300 text-[10px] font-mono">0</span>
+                    </button>
+                    <button type="button" id="queueTabPending" onclick="setQueueFilterTab('pending')" class="py-2 px-2 rounded-lg text-[11px] font-bold bg-slate-900 text-slate-400 border border-slate-800 flex items-center justify-center gap-1">
+                        <span>Pending</span>
+                        <span id="tabCountPending" class="text-[10px] font-mono opacity-80">(0)</span>
+                    </button>
+                </div>
+                <div id="followupFilterBanner" class="hidden p-2.5 rounded-lg bg-amber-500/10 border border-amber-500/30 text-[11px] text-amber-200 flex items-center justify-between gap-2">
+                    <div class="leading-snug">
+                        <strong class="text-amber-300">30-Day Follow-up Flag:</strong> Tap any client below to send the 1-month review &amp; upsell WhatsApp check-in.
+                    </div>
+                </div>
             </div>
 
             <div class="p-3 rounded-xl bg-slate-950/90 border border-slate-800/90 space-y-2.5">
@@ -489,7 +713,7 @@
     </main>
 
     <!-- ========================================== -->
-    <!-- PAGE 2: FINANCE (INCOME & EXPENSES)        -->
+    <!-- PAGE 2: FINANCE (INCOME, EXPENSES & STOCK) -->
     <!-- ========================================== -->
     <main id="pageFinanceSection" class="hidden flex-grow w-full max-w-[430px] mx-auto px-3 pt-3.5 space-y-3.5">
         <section class="grid grid-cols-3 gap-2">
@@ -504,6 +728,29 @@
             <div class="p-3 rounded-2xl bg-slate-900/95 border border-indigo-500/40 shadow-lg">
                 <span class="text-[10px] font-mono uppercase text-slate-400 block">Net Profit</span>
                 <span id="finNetBalance" class="font-mono font-extrabold text-sm text-indigo-300 mt-1 block truncate">₹0</span>
+            </div>
+        </section>
+
+        <!-- BLANK NFC CARD INVENTORY WIDGET ON FINANCE PAGE -->
+        <section class="bg-slate-900/95 border border-amber-500/30 rounded-2xl p-3.5 shadow-xl space-y-2.5">
+            <div class="flex items-center justify-between">
+                <div class="flex items-center gap-2">
+                    <div class="w-7 h-7 rounded-lg bg-amber-500/15 border border-amber-500/30 flex items-center justify-center text-amber-400">
+                        <i class="fa-solid fa-layer-group text-xs"></i>
+                    </div>
+                    <div>
+                        <h3 class="text-xs font-bold text-white leading-none">Blank NFC Card Inventory</h3>
+                        <p class="text-[10px] text-slate-400 mt-0.5">Auto-deducts when saving orders or card sales</p>
+                    </div>
+                </div>
+                <span id="finStockCountBadge" class="px-2.5 py-1 rounded-xl font-mono text-xs font-extrabold bg-emerald-500/15 text-emerald-300 border border-emerald-500/30">78 tags in stock</span>
+            </div>
+
+            <div class="grid grid-cols-4 gap-1.5 pt-1">
+                <button type="button" onclick="adjustInventoryStock(-1)" class="py-2 rounded-xl bg-slate-950 active:bg-slate-800 border border-slate-800 text-xs font-mono font-bold text-rose-400">-1 Tag</button>
+                <button type="button" onclick="adjustInventoryStock(1)" class="py-2 rounded-xl bg-slate-950 active:bg-slate-800 border border-slate-800 text-xs font-mono font-bold text-emerald-400">+1 Tag</button>
+                <button type="button" onclick="adjustInventoryStock(25)" class="py-2 rounded-xl bg-slate-950 active:bg-slate-800 border border-slate-800 text-xs font-mono font-bold text-indigo-300">+25 Pack</button>
+                <button type="button" onclick="toggleInventoryModal()" class="py-2 rounded-xl bg-amber-500/15 active:bg-amber-500/30 border border-amber-500/30 text-xs font-bold text-amber-300">Set Stock</button>
             </div>
         </section>
 
@@ -626,6 +873,7 @@
         </section>
     </main>
 
+    <!-- STICKY BOTTOM ACTION BAR -->
     <div class="fixed bottom-0 inset-x-0 z-40 bg-slate-950/95 backdrop-blur-md border-t border-slate-800/90 px-3 pt-2 bottom-safe-bar">
         <div class="w-full max-w-[430px] mx-auto flex items-stretch gap-1.5">
             <div class="px-2 py-1.5 rounded-xl bg-slate-900 border border-slate-800 flex-shrink-0 flex flex-col justify-center text-center min-w-[60px]">
@@ -640,6 +888,118 @@
                 <i class="fa-brands fa-github text-emerald-400"></i>
                 <span class="whitespace-nowrap">Sync GitHub</span>
             </button>
+        </div>
+    </div>
+
+    <!-- ========================================== -->
+    <!-- CAMERA QR SCANNER MODAL (STANDEE LOOKUP)   -->
+    <!-- ========================================== -->
+    <div id="qrScannerModal" class="fixed inset-0 z-50 hidden bg-black/90 backdrop-blur-md flex items-center justify-center p-4">
+        <div class="bg-slate-900 border border-slate-700 rounded-2xl max-w-md w-full p-4 shadow-2xl space-y-3">
+            <div class="flex items-center justify-between">
+                <h3 class="text-sm font-bold text-white flex items-center gap-2">
+                    <i class="fa-solid fa-camera text-emerald-400"></i>
+                    <span>Scan Google Maps QR Standee</span>
+                </h3>
+                <button type="button" onclick="closeQrScannerModal()" class="text-slate-400 hover:text-white p-1">
+                    <i class="fa-solid fa-xmark text-lg"></i>
+                </button>
+            </div>
+
+            <div class="relative w-full aspect-square max-h-[300px] bg-slate-950 rounded-2xl overflow-hidden border-2 border-emerald-500/40 flex items-center justify-center">
+                <video id="qrVideoElement" class="w-full h-full object-cover" playsinline muted></video>
+                <canvas id="qrScanCanvas" class="hidden"></canvas>
+                <div class="scan-laser-line"></div>
+                <div class="absolute inset-6 border-2 border-dashed border-white/30 rounded-2xl pointer-events-none"></div>
+                <div id="qrCameraOverlayMsg" class="absolute bottom-3 inset-x-3 px-3 py-1.5 rounded-xl bg-slate-950/85 text-[11px] font-mono text-emerald-300 text-center">
+                    Point camera at Google Maps QR code...
+                </div>
+            </div>
+
+            <div class="grid grid-cols-2 gap-2">
+                <button type="button" onclick="switchScannerCamera()" class="py-2.5 px-3 rounded-xl bg-slate-800 active:bg-slate-700 border border-slate-700 text-xs font-bold text-slate-200 flex items-center justify-center gap-1.5">
+                    <i class="fa-solid fa-camera-rotate text-indigo-400"></i>
+                    <span>Flip Camera</span>
+                </button>
+                <button type="button" onclick="document.getElementById('qrImageUploadInput').click()" class="py-2.5 px-3 rounded-xl bg-indigo-600/20 active:bg-indigo-600/35 border border-indigo-500/40 text-xs font-bold text-indigo-300 flex items-center justify-center gap-1.5">
+                    <i class="fa-solid fa-image"></i>
+                    <span>Scan from Photo</span>
+                </button>
+                <input id="qrImageUploadInput" type="file" accept="image/*" class="hidden" onchange="scanQrFromUploadedImage(event)">
+            </div>
+
+            <p class="text-[11px] text-slate-400 leading-snug text-center">
+                Automatically extracts the Place ID &amp; Business Name and populates Box 1 + the 137B NFC Review Link.
+            </p>
+        </div>
+    </div>
+
+    <!-- ========================================== -->
+    <!-- FULLSCREEN UPI QR MODAL                    -->
+    <!-- ========================================== -->
+    <div id="fullscreenUpiModal" class="fixed inset-0 z-50 hidden bg-black/90 backdrop-blur-md flex items-center justify-center p-4" onclick="closeFullscreenUpiModal()">
+        <div class="bg-slate-900 border-2 border-emerald-500/50 rounded-3xl max-w-sm w-full p-5 shadow-2xl text-center space-y-3" onclick="event.stopPropagation()">
+            <div class="flex items-center justify-between">
+                <span class="text-xs font-mono uppercase font-bold text-emerald-400">TapReview • UPI Payment</span>
+                <button type="button" onclick="closeFullscreenUpiModal()" class="text-slate-400 hover:text-white p-1">
+                    <i class="fa-solid fa-xmark text-lg"></i>
+                </button>
+            </div>
+            <div id="fullscreenUpiAmount" class="font-mono text-3xl font-extrabold text-white">₹499</div>
+            <div id="fullscreenUpiBiz" class="text-xs font-semibold text-slate-300 truncate">NFC Review Card</div>
+            <div class="p-4 bg-white rounded-2xl inline-block shadow-2xl border-4 border-emerald-500">
+                <canvas id="fullscreenUpiCanvas" width="240" height="240" class="w-[230px] h-[230px] block mx-auto"></canvas>
+            </div>
+            <div class="font-mono text-xs font-bold text-emerald-400">UPI ID: arnavv4l@fam</div>
+            <button type="button" onclick="closeFullscreenUpiModal(); completeQuickPaymentAndAddIncome();" class="w-full py-3 rounded-xl bg-emerald-600 active:bg-emerald-500 text-white font-extrabold text-xs shadow-lg">
+                <i class="fa-solid fa-circle-check mr-1.5"></i>Payment Received • Add to Income
+            </button>
+        </div>
+    </div>
+
+    <!-- ========================================== -->
+    <!-- BLANK NFC INVENTORY MANAGER MODAL          -->
+    <!-- ========================================== -->
+    <div id="inventoryModal" class="fixed inset-0 z-50 hidden bg-black/80 backdrop-blur-sm flex items-center justify-center p-4">
+        <div class="bg-slate-900 border border-slate-700 rounded-2xl max-w-sm w-full p-5 shadow-2xl space-y-4">
+            <div class="flex items-center justify-between">
+                <h3 class="text-sm font-bold text-white flex items-center gap-2">
+                    <i class="fa-solid fa-layer-group text-amber-400"></i>
+                    <span>Blank NFC Card Inventory</span>
+                </h3>
+                <button type="button" onclick="toggleInventoryModal()" class="text-slate-400 hover:text-white p-1">
+                    <i class="fa-solid fa-xmark text-lg"></i>
+                </button>
+            </div>
+
+            <div class="p-3.5 rounded-2xl bg-slate-950 border border-slate-800 text-center space-y-1">
+                <span class="text-[10px] font-mono uppercase text-slate-400">Remaining Blank Tags</span>
+                <div id="modalStockBigCount" class="font-mono text-3xl font-extrabold text-emerald-400">78</div>
+                <span class="text-[11px] text-slate-400 block">MIFARE Ultralight (137B) Cards</span>
+            </div>
+
+            <div>
+                <label class="block text-[11px] font-semibold text-slate-300 mb-1.5">Set Exact Stock Count</label>
+                <div class="flex gap-2">
+                    <input id="inventoryDirectInput" type="number" inputmode="numeric" value="78"
+                        class="flex-1 px-3.5 py-2.5 bg-slate-950 border border-slate-700 rounded-xl text-sm font-mono font-bold text-white focus:outline-none focus:border-amber-500">
+                    <button type="button" onclick="saveDirectInventoryInput()" class="px-4 py-2.5 rounded-xl bg-amber-500 active:bg-amber-400 text-slate-950 font-extrabold text-xs">
+                        Update
+                    </button>
+                </div>
+            </div>
+
+            <div class="grid grid-cols-4 gap-1.5">
+                <button type="button" onclick="adjustInventoryStock(-5)" class="py-2 rounded-xl bg-slate-950 border border-slate-800 text-xs font-mono font-bold text-rose-400">-5</button>
+                <button type="button" onclick="adjustInventoryStock(-1)" class="py-2 rounded-xl bg-slate-950 border border-slate-800 text-xs font-mono font-bold text-rose-300">-1</button>
+                <button type="button" onclick="adjustInventoryStock(10)" class="py-2 rounded-xl bg-slate-950 border border-slate-800 text-xs font-mono font-bold text-emerald-300">+10</button>
+                <button type="button" onclick="adjustInventoryStock(50)" class="py-2 rounded-xl bg-slate-950 border border-slate-800 text-xs font-mono font-bold text-emerald-400">+50</button>
+            </div>
+
+            <label class="flex items-center justify-between p-2.5 rounded-xl bg-slate-950 border border-slate-800 cursor-pointer">
+                <span class="text-xs font-semibold text-slate-200">Auto-deduct 1 card on Queue Save</span>
+                <input id="autoDeductStockToggle" type="checkbox" checked onchange="saveInventorySettings()" class="w-4 h-4 accent-emerald-500 rounded">
+            </label>
         </div>
     </div>
 
@@ -756,9 +1116,14 @@
         // ==========================================
         const REVIEW_BASE_URL = "https://search.google.com/local/writereview?placeid=";
         const MIFARE_ULTRALIGHT_MAX_BYTES = 137;
+        const UPI_ID_DEFAULT = "arnavv4l@fam";
+        const UPI_PAYEE_NAME = "Arnavv Ghate";
+        const FOLLOWUP_DAYS_THRESHOLD = 30;
+
         const STORAGE_KEY_BATCH = "tapreview_ultralight_batch_v2";
         const STORAGE_KEY_FINANCE = "tapreview_finances_v1";
         const STORAGE_KEY_NOTES = "tapreview_notes_v1";
+        const STORAGE_KEY_INVENTORY = "tapreview_nfc_inventory_v1";
         const LEGACY_KEYS = ["tapreview_ultralight_v2", "tapreview_batch_orders_v1"];
         const STORAGE_KEY_API = "tapreview_google_api_key";
         const STORAGE_KEY_GH_CONFIG = "tapreview_github_sync_config_v1";
@@ -769,11 +1134,12 @@
         let viewLayoutMode = "normal";
         let currentSimpleStep = 1;
         const SIMPLE_STEP_TITLES = {
-            1: "CARD 1 OF 5 • FIND BUSINESS & LINK",
-            2: "CARD 2 OF 5 • 6-CHARACTER CODE",
-            3: "CARD 3 OF 5 • RECORDS FILL BOX",
-            4: "CARD 4 OF 5 • 137B NFC TOOLS WRITER",
-            5: "CARD 5 OF 5 • ORDER BATCH QUEUE"
+            1: "CARD 1 OF 6 • FIND BUSINESS & QR SCAN",
+            2: "CARD 2 OF 6 • 6-CHARACTER CODE",
+            3: "CARD 3 OF 6 • RECORDS FILL BOX",
+            4: "CARD 4 OF 6 • 137B NFC TOOLS WRITER",
+            5: "CARD 5 OF 6 • DYNAMIC UPI & CASH PAY",
+            6: "CARD 6 OF 6 • ORDER QUEUE & FOLLOW-UP"
         };
 
         let currentState = {
@@ -785,6 +1151,19 @@
             byteSize: 75,
             location: null
         };
+
+        let inventoryState = {
+            stock: 78,
+            autoDeduct: true
+        };
+
+        let quickPayState = {
+            method: "UPI",
+            unitPrice: 499,
+            qty: 1
+        };
+
+        let activeQueueFilterTab = "all"; // 'all' | 'followup' | 'pending'
 
         let batchList = [];
         let financeList = [];
@@ -798,6 +1177,11 @@
             "finances.json": null,
             "notes.json": null
         };
+
+        // Camera QR Scanner state
+        let qrVideoStream = null;
+        let qrScanInterval = null;
+        let qrFacingMode = "environment";
 
         const INLINE_SVG_PATHS = window.__INLINE_SVG_PATHS || {};
         if (Object.keys(INLINE_SVG_PATHS).length === 0) {
@@ -824,27 +1208,20 @@
             const icons = root.querySelectorAll('i[class*="fa-"]');
             icons.forEach(el => {
                 if (el.dataset.hydrated === '1') return;
-                
                 let matchedKey = null;
                 for (const cls of el.classList) {
                     if (INLINE_SVG_PATHS[cls]) { matchedKey = cls; break; }
                 }
-                
                 if (matchedKey) {
                     const isSpin = el.classList.contains('fa-spin') ? 'animate-spin' : '';
-                    
-                    // 1. Inject the SVG
                     el.innerHTML = `<svg viewBox="0 0 24 24" class="tr-svg-icon ${isSpin}" aria-hidden="true">${INLINE_SVG_PATHS[matchedKey]}</svg>`;
-                    
-                    // 2. Remove ALL FontAwesome classes (fa-solid, fa-wallet, fa-spin, etc.)
-                    // This prevents the ::before pseudo-element from rendering the empty box
                     const classesToRemove = Array.from(el.classList).filter(cls => cls.startsWith('fa-'));
                     el.classList.remove(...classesToRemove);
-                    
                     el.dataset.hydrated = '1';
                 }
             });
         }
+
         window.addEventListener('DOMContentLoaded', function () {
             hydrateOfflineSvgIcons();
             updateLiveTimestampClock();
@@ -854,7 +1231,9 @@
             codeInput.value = "";
             updateCodeBadges("");
 
+            loadInventoryFromStorage();
             loadGithubConfigIntoUi();
+            updateDynamicUpiQr();
 
             const doLoad = async () => {
                 await loadBatchFromStorage();
@@ -862,6 +1241,7 @@
                 updateAllOutputs();
                 renderFinanceList();
                 renderNotesList();
+                updateQuickPayTodayTotal();
                 await syncAllWithGithub(false, 'pull');
             };
             if ('requestIdleCallback' in window) requestIdleCallback(doLoad, { timeout: 1200 });
@@ -873,6 +1253,534 @@
                 loadGooglePlacesScript(savedKey);
             }
         });
+
+        // ==========================================
+        // BLANK NFC CARD INVENTORY SYSTEM
+        // ==========================================
+        function loadInventoryFromStorage() {
+            try {
+                const raw = localStorage.getItem(STORAGE_KEY_INVENTORY);
+                if (raw) {
+                    const parsed = JSON.parse(raw);
+                    if (typeof parsed.stock === 'number') inventoryState.stock = Math.max(0, parsed.stock);
+                    if (typeof parsed.autoDeduct === 'boolean') inventoryState.autoDeduct = parsed.autoDeduct;
+                }
+            } catch (e) {}
+            renderInventoryWidgets();
+        }
+
+        function saveInventoryToStorage() {
+            try {
+                localStorage.setItem(STORAGE_KEY_INVENTORY, JSON.stringify(inventoryState));
+            } catch (e) {}
+            renderInventoryWidgets();
+        }
+
+        function renderInventoryWidgets() {
+            const count = Math.max(0, Number(inventoryState.stock) || 0);
+            const label = `${count} tag${count === 1 ? '' : 's'} in stock`;
+
+            const headerText = document.getElementById('headerStockText');
+            const headerBadge = document.getElementById('headerStockBadge');
+            const finBadge = document.getElementById('finStockCountBadge');
+            const modalBig = document.getElementById('modalStockBigCount');
+            const directInput = document.getElementById('inventoryDirectInput');
+            const autoToggle = document.getElementById('autoDeductStockToggle');
+
+            if (headerText) headerText.textContent = label;
+            if (finBadge) finBadge.textContent = label;
+            if (modalBig) modalBig.textContent = String(count);
+            if (directInput && document.activeElement !== directInput) directInput.value = count;
+            if (autoToggle) autoToggle.checked = inventoryState.autoDeduct !== false;
+
+            const isLow = count <= 10;
+            if (headerBadge) {
+                headerBadge.className = isLow
+                    ? "cursor-pointer text-[9px] font-mono font-bold px-1.5 py-0.5 rounded bg-rose-500/20 text-rose-300 border border-rose-500/40 flex items-center gap-1 flex-shrink-0 active:scale-95 transition"
+                    : "cursor-pointer text-[9px] font-mono font-bold px-1.5 py-0.5 rounded bg-indigo-500/15 text-indigo-300 border border-indigo-500/30 flex items-center gap-1 flex-shrink-0 active:scale-95 transition";
+            }
+            if (finBadge) {
+                finBadge.className = isLow
+                    ? "px-2.5 py-1 rounded-xl font-mono text-xs font-extrabold bg-rose-500/20 text-rose-300 border border-rose-500/40"
+                    : "px-2.5 py-1 rounded-xl font-mono text-xs font-extrabold bg-emerald-500/15 text-emerald-300 border border-emerald-500/30";
+            }
+        }
+
+        function toggleInventoryModal() {
+            triggerHaptic(15);
+            renderInventoryWidgets();
+            document.getElementById('inventoryModal').classList.toggle('hidden');
+        }
+
+        function adjustInventoryStock(delta, silent = false) {
+            triggerHaptic(20);
+            inventoryState.stock = Math.max(0, (Number(inventoryState.stock) || 0) + delta);
+            saveInventoryToStorage();
+            if (!silent) {
+                showToast(`NFC Stock updated: ${inventoryState.stock} tags in stock`);
+            }
+        }
+
+        function saveDirectInventoryInput() {
+            triggerHaptic(25);
+            const val = parseInt(document.getElementById('inventoryDirectInput').value, 10);
+            if (isNaN(val) || val < 0) {
+                showToast("Enter a valid stock number (0 or more).");
+                return;
+            }
+            inventoryState.stock = val;
+            saveInventoryToStorage();
+            toggleInventoryModal();
+            showToast(`Inventory set to ${val} tags in stock!`);
+        }
+
+        function saveInventorySettings() {
+            inventoryState.autoDeduct = document.getElementById('autoDeductStockToggle').checked;
+            saveInventoryToStorage();
+        }
+
+        // ==========================================
+        // DYNAMIC UPI QR & PAYMENT SECTION (SECTION 5)
+        // ==========================================
+        function buildUpiUri(amount, bizName, code) {
+            const cleanAmt = Number(amount) > 0 ? Number(amount).toFixed(2) : "";
+            const noteParts = ["TapReview NFC"];
+            if (bizName) noteParts.push(bizName.slice(0, 22));
+            if (code) noteParts.push("#" + code);
+            const tn = noteParts.join(" ");
+            let uri = `upi://pay?pa=${encodeURIComponent(UPI_ID_DEFAULT)}&pn=${encodeURIComponent(UPI_PAYEE_NAME)}&cu=INR&tn=${encodeURIComponent(tn)}`;
+            if (cleanAmt) uri += `&am=${encodeURIComponent(cleanAmt)}`;
+            return uri;
+        }
+
+        function setQuickPayPreset(unitAmount) {
+            triggerHaptic(15);
+            quickPayState.unitPrice = unitAmount;
+            const total = unitAmount * (quickPayState.qty || 1);
+            document.getElementById('quickPayAmountInput').value = total;
+            updateDynamicUpiQr();
+        }
+
+        function setQuickPayQty(qty) {
+            triggerHaptic(15);
+            quickPayState.qty = qty;
+            [1, 2, 3, 5].forEach(n => {
+                const btn = document.getElementById(`qtyBtn${n}`);
+                if (btn) {
+                    btn.className = n === qty
+                        ? "px-2.5 py-1 rounded-md text-[10px] font-mono font-bold bg-indigo-600 text-white shadow"
+                        : "px-2.5 py-1 rounded-md text-[10px] font-mono font-bold text-slate-400";
+                }
+            });
+            const currentVal = parseFloat(document.getElementById('quickPayAmountInput').value) || quickPayState.unitPrice || 499;
+            if (quickPayState.unitPrice > 0) {
+                document.getElementById('quickPayAmountInput').value = quickPayState.unitPrice * qty;
+            } else {
+                document.getElementById('quickPayAmountInput').value = currentVal;
+            }
+            updateDynamicUpiQr();
+        }
+
+        function clearQuickPayAmount() {
+            triggerHaptic(15);
+            document.getElementById('quickPayAmountInput').value = "";
+            document.getElementById('quickPayAmountInput').focus();
+            updateDynamicUpiQr();
+        }
+
+        function setQuickPaymentMethod(method) {
+            triggerHaptic(20);
+            quickPayState.method = method === 'Cash' ? 'Cash' : 'UPI';
+            const btnUpi = document.getElementById('modeBtnUpi');
+            const btnCash = document.getElementById('modeBtnCash');
+            const upiPanel = document.getElementById('upiQrDisplayPanel');
+            const cashPanel = document.getElementById('cashDisplayPanel');
+
+            if (quickPayState.method === 'UPI') {
+                btnUpi.className = "py-3 px-3 rounded-xl bg-emerald-600 text-white font-bold text-xs shadow-lg shadow-emerald-600/20 border border-emerald-400 flex items-center justify-center gap-2 transition";
+                btnCash.className = "py-3 px-3 rounded-xl bg-slate-950 text-slate-400 font-bold text-xs border border-slate-800 flex items-center justify-center gap-2 transition";
+                upiPanel.classList.remove('hidden');
+                cashPanel.classList.add('hidden');
+            } else {
+                btnCash.className = "py-3 px-3 rounded-xl bg-amber-500 text-slate-950 font-extrabold text-xs shadow-lg shadow-amber-500/20 border border-amber-300 flex items-center justify-center gap-2 transition";
+                btnUpi.className = "py-3 px-3 rounded-xl bg-slate-950 text-slate-400 font-bold text-xs border border-slate-800 flex items-center justify-center gap-2 transition";
+                cashPanel.classList.remove('hidden');
+                upiPanel.classList.add('hidden');
+                updateCashChangeCalc();
+            }
+            updateDynamicUpiQr();
+        }
+
+        function updateDynamicUpiQr() {
+            const rawAmt = parseFloat(document.getElementById('quickPayAmountInput')?.value || "0");
+            const validAmt = !isNaN(rawAmt) && rawAmt > 0 ? rawAmt : 0;
+            const biz = currentState.businessName || document.getElementById('bizNameInput')?.value.trim() || "";
+            const code = currentState.sixCharCode || document.getElementById('sixCharCodeInput')?.value.trim() || "";
+
+            const clientTag = document.getElementById('quickPayClientTag');
+            if (clientTag) {
+                clientTag.textContent = biz ? `Client: ${biz}` : "Client: Direct Walk-in";
+            }
+
+            const amtDisplay = validAmt > 0 ? `₹${validAmt.toLocaleString('en-IN')}` : "Any Amount";
+            const qrPill = document.getElementById('qrAmountPill');
+            if (qrPill) qrPill.textContent = amtDisplay;
+
+            const cashBadge = document.getElementById('cashToCollectBadge');
+            if (cashBadge) cashBadge.textContent = `Collect ${amtDisplay}`;
+
+            const doneBtnText = document.getElementById('quickPayDoneBtnText');
+            if (doneBtnText) {
+                const qtyLabel = quickPayState.qty > 1 ? ` • ${quickPayState.qty} Cards` : "";
+                doneBtnText.textContent = `3. Done • Add ${validAmt > 0 ? '₹' + validAmt.toLocaleString('en-IN') : '₹0'} (${quickPayState.method}${qtyLabel}) to Income`;
+            }
+
+            const upiUri = buildUpiUri(validAmt, biz, code);
+
+            const canvas = document.getElementById('upiQrCanvas');
+            if (canvas && window.QRious) {
+                new QRious({
+                    element: canvas,
+                    value: upiUri,
+                    size: 190,
+                    level: 'M',
+                    background: '#ffffff',
+                    foreground: '#020617'
+                });
+            }
+
+            const fullCanvas = document.getElementById('fullscreenUpiCanvas');
+            if (fullCanvas && window.QRious) {
+                new QRious({
+                    element: fullCanvas,
+                    value: upiUri,
+                    size: 240,
+                    level: 'M',
+                    background: '#ffffff',
+                    foreground: '#020617'
+                });
+            }
+
+            updateCashChangeCalc();
+        }
+
+        function updateCashChangeCalc() {
+            const rawAmt = parseFloat(document.getElementById('quickPayAmountInput')?.value || "0") || 0;
+            const given = parseFloat(document.getElementById('cashGivenInput')?.value || "0") || 0;
+            const out = document.getElementById('cashChangeOutput');
+            if (!out) return;
+            if (given <= 0) {
+                out.textContent = "₹0";
+                out.className = "font-mono text-base font-extrabold text-slate-400 mt-0.5 block";
+                return;
+            }
+            const diff = given - rawAmt;
+            if (diff >= 0) {
+                out.textContent = `₹${diff.toLocaleString('en-IN')}`;
+                out.className = "font-mono text-base font-extrabold text-emerald-400 mt-0.5 block";
+            } else {
+                out.textContent = `Short ₹${Math.abs(diff).toLocaleString('en-IN')}`;
+                out.className = "font-mono text-base font-extrabold text-rose-400 mt-0.5 block";
+            }
+        }
+
+        function openFullscreenUpiModal() {
+            triggerHaptic(20);
+            updateDynamicUpiQr();
+            const rawAmt = parseFloat(document.getElementById('quickPayAmountInput')?.value || "0") || 0;
+            const biz = currentState.businessName || document.getElementById('bizNameInput')?.value.trim() || "TapReview NFC Card";
+            document.getElementById('fullscreenUpiAmount').textContent = rawAmt > 0 ? `₹${rawAmt.toLocaleString('en-IN')}` : "Scan & Pay";
+            document.getElementById('fullscreenUpiBiz').textContent = biz;
+            document.getElementById('fullscreenUpiModal').classList.remove('hidden');
+        }
+
+        function closeFullscreenUpiModal() {
+            document.getElementById('fullscreenUpiModal').classList.add('hidden');
+        }
+
+        function shareUpiPaymentOnWhatsApp() {
+            triggerHaptic(25);
+            const rawAmt = parseFloat(document.getElementById('quickPayAmountInput')?.value || "0") || 0;
+            const phone = (document.getElementById('bizPhoneInput')?.value || "").replace(/[^0-9]/g, '');
+            const biz = currentState.businessName || document.getElementById('bizNameInput')?.value.trim() || "there";
+            const upiUri = buildUpiUri(rawAmt, biz, currentState.sixCharCode);
+            const msg = `Hi ${biz}, here are the payment details for your TapReview NFC Card:\n\n*Amount:* ₹${rawAmt > 0 ? rawAmt : '499'}\n*UPI ID:* ${UPI_ID_DEFAULT}\n*UPI Pay Link:* ${upiUri}\n\nThank you!`;
+            const waUrl = phone ? `https://wa.me/${phone}?text=${encodeURIComponent(msg)}` : `https://wa.me/?text=${encodeURIComponent(msg)}`;
+            window.open(waUrl, "_blank", "noopener,noreferrer");
+        }
+
+        async function completeQuickPaymentAndAddIncome() {
+            triggerHaptic([35, 30, 50]);
+            updateCurrentBusinessMeta();
+            const amountEl = document.getElementById('quickPayAmountInput');
+            const amount = parseFloat(amountEl.value);
+
+            if (!amount || amount <= 0) {
+                showToast("Enter a valid Rupee amount in Box 1 first!");
+                amountEl.focus();
+                return;
+            }
+
+            const biz = currentState.businessName || "Walk-in Client";
+            const code = currentState.sixCharCode ? ` #${currentState.sixCharCode}` : "";
+            const qty = quickPayState.qty || 1;
+            const modeLabel = quickPayState.method === 'UPI' ? `UPI (${UPI_ID_DEFAULT})` : "Cash";
+            const desc = `${biz}${code} • ${qty} Card${qty > 1 ? 's' : ''} [${modeLabel}]`;
+
+            const newFinanceEntry = {
+                id: "fin_" + Date.now(),
+                type: "income",
+                amount: Number(amount.toFixed(2)),
+                category: "NFC Card Sale",
+                paymentMode: quickPayState.method,
+                description: desc,
+                createdAt: formatDateTimeHuman(new Date()),
+                createdTimestamp: Date.now()
+            };
+
+            financeList.unshift(newFinanceEntry);
+            localStorage.setItem(STORAGE_KEY_FINANCE, JSON.stringify(financeList));
+
+            renderFinanceList();
+            updateQuickPayTodayTotal();
+
+            showToast(`Added +₹${newFinanceEntry.amount} (${quickPayState.method}) to Income!`);
+            await pushFinancesToGithub(false);
+        }
+
+        function updateQuickPayTodayTotal() {
+            const todayPrefix = formatDateTimeHuman(new Date()).split(',')[0];
+            let todaySum = 0;
+            financeList.forEach(item => {
+                if (item.type === 'income' && item.createdAt && item.createdAt.startsWith(todayPrefix)) {
+                    todaySum += Number(item.amount) || 0;
+                }
+            });
+            const badge = document.getElementById('quickPayTodayBadge');
+            if (badge) badge.textContent = `₹${todaySum.toLocaleString('en-IN')}`;
+        }
+
+        // ==========================================
+        // INPUT-FREE BUSINESS LOOKUP (CAMERA QR SCANNER)
+        // & INSTANT PLACE ID EXTRACTION
+        // ==========================================
+        async function openQrScannerModal() {
+            triggerHaptic(25);
+            const modal = document.getElementById('qrScannerModal');
+            modal.classList.remove('hidden');
+            await startCameraQrStream();
+        }
+
+        function closeQrScannerModal() {
+            stopCameraQrStream();
+            document.getElementById('qrScannerModal').classList.add('hidden');
+        }
+
+        async function switchScannerCamera() {
+            triggerHaptic(20);
+            qrFacingMode = qrFacingMode === "environment" ? "user" : "environment";
+            await startCameraQrStream();
+        }
+
+        async function startCameraQrStream() {
+            stopCameraQrStream();
+            const video = document.getElementById('qrVideoElement');
+            const msgEl = document.getElementById('qrCameraOverlayMsg');
+            if (msgEl) msgEl.textContent = "Starting camera...";
+
+            if (!navigator.mediaDevices || !navigator.mediaDevices.getUserMedia) {
+                if (msgEl) msgEl.textContent = "Camera blocked. Tap 'Scan from Photo' below.";
+                return;
+            }
+
+            try {
+                qrVideoStream = await navigator.mediaDevices.getUserMedia({
+                    video: { facingMode: { ideal: qrFacingMode }, width: { ideal: 720 }, height: { ideal: 720 } },
+                    audio: false
+                });
+                video.srcObject = qrVideoStream;
+                await video.play();
+                if (msgEl) msgEl.textContent = "Scanning for Google Maps / Review QR code...";
+
+                const canvas = document.getElementById('qrScanCanvas');
+                const ctx = canvas.getContext('2d', { willReadFrequently: true });
+
+                qrScanInterval = setInterval(async () => {
+                    if (video.readyState !== video.HAVE_ENOUGH_DATA) return;
+                    canvas.width = video.videoWidth;
+                    canvas.height = video.videoHeight;
+                    ctx.drawImage(video, 0, 0, canvas.width, canvas.height);
+
+                    // 1. Try native BarcodeDetector first if available
+                    if ('BarcodeDetector' in window) {
+                        try {
+                            const detector = new BarcodeDetector({ formats: ['qr_code'] });
+                            const barcodes = await detector.detect(canvas);
+                            if (barcodes && barcodes.length > 0 && barcodes[0].rawValue) {
+                                handleScannedQrPayload(barcodes[0].rawValue);
+                                return;
+                            }
+                        } catch (e) {}
+                    }
+
+                    // 2. Fallback to jsQR
+                    if (window.jsQR) {
+                        const imageData = ctx.getImageData(0, 0, canvas.width, canvas.height);
+                        const code = window.jsQR(imageData.data, imageData.width, imageData.height, {
+                            inversionAttempts: "dontInvert"
+                        });
+                        if (code && code.data) {
+                            handleScannedQrPayload(code.data);
+                        }
+                    }
+                }, 220);
+            } catch (err) {
+                if (msgEl) msgEl.textContent = "Allow camera permission or use 'Scan from Photo'.";
+            }
+        }
+
+        function stopCameraQrStream() {
+            if (qrScanInterval) {
+                clearInterval(qrScanInterval);
+                qrScanInterval = null;
+            }
+            if (qrVideoStream) {
+                qrVideoStream.getTracks().forEach(t => t.stop());
+                qrVideoStream = null;
+            }
+        }
+
+        function scanQrFromUploadedImage(event) {
+            const file = event.target.files && event.target.files[0];
+            if (!file) return;
+            const img = new Image();
+            const reader = new FileReader();
+            reader.onload = (e) => {
+                img.onload = () => {
+                    const canvas = document.getElementById('qrScanCanvas');
+                    const ctx = canvas.getContext('2d');
+                    canvas.width = img.width;
+                    canvas.height = img.height;
+                    ctx.drawImage(img, 0, 0);
+                    if (window.jsQR) {
+                        const imageData = ctx.getImageData(0, 0, canvas.width, canvas.height);
+                        const code = window.jsQR(imageData.data, imageData.width, imageData.height);
+                        if (code && code.data) {
+                            handleScannedQrPayload(code.data);
+                            return;
+                        }
+                    }
+                    showToast("No QR code detected in that image. Try closer photo.");
+                };
+                img.src = e.target.result;
+            };
+            reader.readAsDataURL(file);
+        }
+
+        async function handleScannedQrPayload(rawQrText) {
+            triggerHaptic([40, 30, 60]);
+            closeQrScannerModal();
+
+            const cleaned = (rawQrText || "").trim();
+            if (!cleaned) return;
+
+            const bannerStatus = document.getElementById('qrAutoPopulateStatus');
+            if (bannerStatus) {
+                bannerStatus.innerHTML = `<i class="fa-solid fa-spinner fa-spin text-emerald-400 mr-1"></i>Scanned QR! Extracting Place ID &amp; Business Name...`;
+            }
+
+            document.getElementById('smartInput').value = cleaned;
+            document.getElementById('mapsShareLinkInput').value = cleaned;
+
+            // Step 1: Parse directly for Place ID and Business Name
+            const directParsed = parseGoogleMapsUrlForDetails(cleaned);
+            if (directParsed && directParsed.businessName) {
+                populateBox1AndQuery(directParsed.businessName);
+            }
+
+            if (directParsed && directParsed.placeId) {
+                applyExtractedPlaceIdAndPopulate(directParsed.placeId, directParsed.businessName);
+                return;
+            }
+
+            // Step 2: If it's a g.page/r/... review shortlink or shortened URL, resolve it
+            if (/^https?:\/\/(g\.page\/r\/[A-Za-z0-9_-]+)/i.test(cleaned)) {
+                currentState.reviewUrl = cleaned;
+                updateAllOutputs(true);
+            }
+
+            const targetUrl = directParsed?.extractedUrl || cleaned;
+            if (/^https?:\/\//i.test(targetUrl)) {
+                try {
+                    const controller = new AbortController();
+                    const timer = setTimeout(() => controller.abort(), 4500);
+                    const r = await fetch(`https://unshorten.me/json/${encodeURIComponent(targetUrl)}`, { signal: controller.signal });
+                    clearTimeout(timer);
+                    if (r.ok) {
+                        const d = await r.json();
+                        if (d && d.resolved_url) {
+                            const expandedParsed = parseGoogleMapsUrlForDetails(d.resolved_url);
+                            if (expandedParsed) {
+                                if (expandedParsed.businessName) {
+                                    populateBox1AndQuery(expandedParsed.businessName);
+                                }
+                                if (expandedParsed.placeId) {
+                                    applyExtractedPlaceIdAndPopulate(expandedParsed.placeId, expandedParsed.businessName);
+                                    return;
+                                }
+                            }
+                        }
+                    }
+                } catch (e) {}
+            }
+
+            // Step 3: If Google Places JS SDK is loaded and we got a business name from the QR URL, query its Place ID automatically
+            const knownBiz = currentState.businessName || directParsed?.businessName || "";
+            if (knownBiz && window.google?.maps?.places) {
+                try {
+                    const dummy = document.createElement('div');
+                    const service = new google.maps.places.PlacesService(dummy);
+                    service.findPlaceFromQuery({
+                        query: knownBiz,
+                        fields: ['place_id', 'name']
+                    }, (results, status) => {
+                        if (status === google.maps.places.PlacesServiceStatus.OK && results && results[0]?.place_id) {
+                            applyExtractedPlaceIdAndPopulate(results[0].place_id, results[0].name || knownBiz);
+                        }
+                    });
+                } catch (e) {}
+            }
+
+            handleSmartInput(cleaned);
+            if (bannerStatus) {
+                bannerStatus.innerHTML = `<span class="text-emerald-400 font-bold">✓ QR Scanned:</span> ${escapeHtml(knownBiz || cleaned.slice(0, 42))}`;
+            }
+            showToast(knownBiz ? `Scanned "${knownBiz}"!` : "QR Link scanned & applied to NFC payload!");
+        }
+
+        function populateBox1AndQuery(bizName) {
+            if (!bizName) return;
+            const cleanName = bizName.trim();
+            document.getElementById('bizNameInput').value = cleanName;
+            document.getElementById('manualBizQuery').value = cleanName;
+            currentState.businessName = cleanName;
+            updateDynamicUpiQr();
+        }
+
+        function applyExtractedPlaceIdAndPopulate(placeId, bizName = "") {
+            currentState.placeId = placeId;
+            if (bizName) populateBox1AndQuery(bizName);
+            document.getElementById('smartInput').value = placeId;
+            handleSmartInput(placeId);
+            updateAllOutputs(false);
+            updateDynamicUpiQr();
+
+            const bannerStatus = document.getElementById('qrAutoPopulateStatus');
+            if (bannerStatus) {
+                bannerStatus.innerHTML = `<span class="text-emerald-400 font-bold">✓ Auto-Populated:</span> ${escapeHtml(currentState.businessName || 'Business')} (<code class="font-mono text-indigo-300">${escapeHtml(placeId.slice(0, 14))}...</code>)`;
+            }
+            showToast(`Extracted Place ID & populated Box 1 + NFC Link!`);
+        }
 
         // ==========================================
         // TOP PAGE SWITCHER (NFC / FINANCE / NOTES)
@@ -907,13 +1815,16 @@
             tabFin.className = page === 'finance' ? activeCls : idleCls;
             tabNotes.className = page === 'notes' ? activeCls : idleCls;
 
-            if (page === 'finance') renderFinanceList();
+            if (page === 'finance') {
+                renderFinanceList();
+                renderInventoryWidgets();
+            }
             if (page === 'notes') renderNotesList();
             window.scrollTo({ top: 0, behavior: 'smooth' });
         }
 
         // ==========================================
-        // GITHUB REPO SYNC ENGINE (Entries, Finance, Notes)
+        // GITHUB REPO SYNC ENGINE (Entries, Finance, Notes, Stock)
         // ==========================================
         function getGithubConfig() {
             try {
@@ -963,7 +1874,7 @@
                 modalStatus.textContent = statusText;
                 modalStatus.className = isSynced ? "font-mono font-bold text-emerald-400" : "font-mono font-bold text-amber-400";
             }
-            if (headerText) headerText.textContent = isSynced ? "GitHub Synced" : statusText;
+            if (headerText) headerText.textContent = isSynced ? "Synced" : statusText;
             if (headerBadge) {
                 headerBadge.className = isSynced
                     ? "cursor-pointer text-[9px] font-mono font-semibold uppercase px-1.5 py-0.5 rounded bg-emerald-500/15 text-emerald-400 border border-emerald-500/30 flex items-center gap-1 flex-shrink-0"
@@ -1036,11 +1947,16 @@
                     });
                 }
 
-                // Also support single-file fallback if finances/notes were stored inside entries.json
+                if (typeof data.inventoryStock === 'number') {
+                    inventoryState.stock = data.inventoryStock;
+                    saveInventoryToStorage();
+                }
+
                 if (Array.isArray(data.finances) && data.finances.length > 0 && financeList.length === 0) {
                     financeList = mergeOrderLists(data.finances, financeList);
                     localStorage.setItem(STORAGE_KEY_FINANCE, JSON.stringify(financeList));
                     renderFinanceList();
+                    updateQuickPayTodayTotal();
                 }
                 if (Array.isArray(data.notes) && data.notes.length > 0 && notesList.length === 0) {
                     notesList = mergeOrderLists(data.notes, notesList);
@@ -1054,7 +1970,7 @@
                 if (!silent) showToast(`Loaded ${remoteRecords.length} NFC entries from GitHub!`);
                 return true;
             } catch (err) {
-                setGithubUiState("Load Error", false);
+                setGithubUiState("Local Ready", false);
                 if (!silent) showToast(`Load Failed: ${err.message}`);
                 return false;
             }
@@ -1071,6 +1987,7 @@
                         records: batchList,
                         finances: financeList,
                         notes: notesList,
+                        inventoryStock: inventoryState.stock,
                         sha: shaCache["entries.json"]
                     })
                 });
@@ -1082,13 +1999,12 @@
                 if (notifyToast) showToast(`Synced ${batchList.length} NFC entries to GitHub!`);
                 return true;
             } catch (err) {
-                setGithubUiState("Sync Error", false);
+                setGithubUiState("Local Saved", false);
                 if (notifyToast) showToast(`Sync Failed: ${err.message}`);
                 return false;
             }
         }
 
-        // --- FINANCES SYNC (finances.json) ---
         async function pullFinancesFromGithub(silent = false) {
             try {
                 const res = await fetch('/api/sync?file=finances.json&t=' + Date.now(), { cache: "no-store" });
@@ -1104,6 +2020,7 @@
                     });
                     localStorage.setItem(STORAGE_KEY_FINANCE, JSON.stringify(financeList));
                     renderFinanceList();
+                    updateQuickPayTodayTotal();
                 }
                 if (!silent) showToast(`Loaded ${financeList.length} transactions from GitHub!`);
                 return true;
@@ -1136,7 +2053,6 @@
             }
         }
 
-        // --- NOTES SYNC (notes.json) ---
         async function pullNotesFromGithub(silent = false) {
             try {
                 const res = await fetch('/api/sync?file=notes.json&t=' + Date.now(), { cache: "no-store" });
@@ -1237,7 +2153,8 @@
                 amount: Number(amount.toFixed(2)),
                 category: catEl.value || "Other",
                 description: descEl.value.trim() || catEl.value,
-                createdAt: formatDateTimeHuman(new Date())
+                createdAt: formatDateTimeHuman(new Date()),
+                createdTimestamp: Date.now()
             };
 
             financeList.unshift(newEntry);
@@ -1247,6 +2164,7 @@
             descEl.value = "";
 
             renderFinanceList();
+            updateQuickPayTodayTotal();
             showToast(`Saved ${currentFinanceType === 'income' ? '+' : '-'}₹${newEntry.amount}! Syncing...`);
             await pushFinancesToGithub(false);
         }
@@ -1256,6 +2174,7 @@
             financeList = financeList.filter(f => f.id !== id);
             localStorage.setItem(STORAGE_KEY_FINANCE, JSON.stringify(financeList));
             renderFinanceList();
+            updateQuickPayTodayTotal();
             showToast("Deleted transaction. Syncing...");
             await pushFinancesToGithub(false);
         }
@@ -1289,6 +2208,7 @@
                 return (
                     (item.description && item.description.toLowerCase().includes(filter)) ||
                     (item.category && item.category.toLowerCase().includes(filter)) ||
+                    (item.paymentMode && item.paymentMode.toLowerCase().includes(filter)) ||
                     (item.createdAt && item.createdAt.toLowerCase().includes(filter))
                 );
             });
@@ -1302,11 +2222,15 @@
                 const isInc = item.type === 'income';
                 const amtColor = isInc ? 'text-emerald-400' : 'text-rose-400';
                 const sign = isInc ? '+' : '-';
+                const modePill = item.paymentMode
+                    ? `<span class="text-[9px] font-mono uppercase px-1.5 py-0.5 rounded ${item.paymentMode === 'UPI' ? 'bg-emerald-500/15 text-emerald-300 border border-emerald-500/30' : 'bg-amber-500/15 text-amber-300 border border-amber-500/30'}">${escapeHtml(item.paymentMode)}</span>`
+                    : '';
                 return `
                     <div class="p-3 rounded-xl bg-slate-950 border border-slate-800 flex items-center justify-between gap-2">
                         <div class="min-w-0 flex-1">
-                            <div class="flex items-center gap-1.5">
+                            <div class="flex items-center gap-1.5 flex-wrap">
                                 <span class="text-[9px] font-mono uppercase px-1.5 py-0.5 rounded bg-slate-900 border border-slate-700 text-slate-300">${escapeHtml(item.category)}</span>
+                                ${modePill}
                                 <span class="text-[10px] font-mono text-slate-500">${escapeHtml(item.createdAt)}</span>
                             </div>
                             <div class="text-xs font-semibold text-white truncate mt-1">${escapeHtml(item.description)}</div>
@@ -1327,10 +2251,11 @@
         function exportFinanceCsv() {
             triggerHaptic();
             if (financeList.length === 0) { showToast("No finance entries to export!"); return; }
-            const headers = ["Type", "Amount (INR)", "Category", "Description", "Date & Time"];
+            const headers = ["Type", "Amount (INR)", "Payment Mode", "Category", "Description", "Date & Time"];
             const rows = financeList.map(f => [
                 `"${f.type}"`,
                 f.amount || 0,
+                `"${(f.paymentMode || "").replace(/"/g, '""')}"`,
                 `"${(f.category || "").replace(/"/g, '""')}"`,
                 `"${(f.description || "").replace(/"/g, '""')}"`,
                 `"${(f.createdAt || "").replace(/"/g, '""')}"`
@@ -1483,17 +2408,17 @@
             const navFooter = document.getElementById('simpleModeNavFooter');
 
             if (viewLayoutMode === 'simple') {
-                btnSimple.className = "px-2.5 py-1.5 rounded-lg text-[11px] font-bold transition bg-indigo-600 text-white shadow";
-                btnNormal.className = "px-2.5 py-1.5 rounded-lg text-[11px] font-bold transition text-slate-400";
+                btnSimple.className = "px-2 py-1.5 rounded-lg text-[10px] font-bold transition bg-indigo-600 text-white shadow";
+                btnNormal.className = "px-2 py-1.5 rounded-lg text-[10px] font-bold transition text-slate-400";
                 if (activeAppPage === 'nfc') stepperBar.classList.remove('hidden');
                 navFooter.classList.remove('hidden');
                 goToSimpleCard(currentSimpleStep);
             } else {
-                btnNormal.className = "px-2.5 py-1.5 rounded-lg text-[11px] font-bold transition bg-indigo-600 text-white shadow";
-                btnSimple.className = "px-2.5 py-1.5 rounded-lg text-[11px] font-bold transition text-slate-400";
+                btnNormal.className = "px-2 py-1.5 rounded-lg text-[10px] font-bold transition bg-indigo-600 text-white shadow";
+                btnSimple.className = "px-2 py-1.5 rounded-lg text-[10px] font-bold transition text-slate-400";
                 stepperBar.classList.add('hidden');
                 navFooter.classList.add('hidden');
-                for (let i = 1; i <= 5; i++) {
+                for (let i = 1; i <= 6; i++) {
                     const sec = document.getElementById(`cardSection${i}`);
                     if (sec) sec.classList.remove('hidden');
                 }
@@ -1502,8 +2427,8 @@
 
         function goToSimpleCard(stepNum) {
             triggerHaptic(15);
-            currentSimpleStep = Math.max(1, Math.min(5, stepNum));
-            for (let i = 1; i <= 5; i++) {
+            currentSimpleStep = Math.max(1, Math.min(6, stepNum));
+            for (let i = 1; i <= 6; i++) {
                 const sec = document.getElementById(`cardSection${i}`);
                 const dot = document.getElementById(`stepDot${i}`);
                 if (sec) {
@@ -1512,8 +2437,8 @@
                 }
                 if (dot) {
                     dot.className = i === currentSimpleStep
-                        ? "py-1.5 rounded-lg text-[10px] font-mono font-bold bg-indigo-600 text-white border border-indigo-400 shadow"
-                        : "py-1.5 rounded-lg text-[10px] font-mono font-bold bg-slate-950 text-slate-400 border border-slate-800";
+                        ? "py-1.5 rounded-lg text-[9px] font-mono font-bold bg-indigo-600 text-white border border-indigo-400 shadow"
+                        : "py-1.5 rounded-lg text-[9px] font-mono font-bold bg-slate-950 text-slate-400 border border-slate-800";
                 }
             }
             const titleEl = document.getElementById('simpleStepTitle');
@@ -1522,14 +2447,14 @@
             const nextBtn = document.getElementById('btnNextCard');
             if (prevBtn) { prevBtn.disabled = currentSimpleStep <= 1; prevBtn.classList.toggle('opacity-40', currentSimpleStep <= 1); }
             if (nextBtn) {
-                if (currentSimpleStep === 5) nextBtn.innerHTML = `<i class="fa-solid fa-rotate-left"></i><span>Back to Card 1</span>`;
-                else nextBtn.innerHTML = `<span>Next Card (${currentSimpleStep + 1}/5)</span><i class="fa-solid fa-arrow-right"></i>`;
+                if (currentSimpleStep === 6) nextBtn.innerHTML = `<i class="fa-solid fa-rotate-left"></i><span>Back to Card 1</span>`;
+                else nextBtn.innerHTML = `<span>Next Card (${currentSimpleStep + 1}/6)</span><i class="fa-solid fa-arrow-right"></i>`;
             }
             window.scrollTo({ top: 0, behavior: 'smooth' });
         }
 
         function stepSimpleCard(delta) {
-            if (currentSimpleStep === 5 && delta > 0) { goToSimpleCard(1); return; }
+            if (currentSimpleStep === 6 && delta > 0) { goToSimpleCard(1); return; }
             goToSimpleCard(currentSimpleStep + delta);
         }
 
@@ -1559,6 +2484,21 @@
             inputEl.value = cleaned;
             currentState.sixCharCode = cleaned;
             updateCodeBadges(cleaned);
+            updateDynamicUpiQr();
+        }
+
+        function generateRandomSixCode() {
+            triggerHaptic(20);
+            const chars = "ABCDEFGHJKLMNPQRSTUVWXYZ23456789";
+            let out = "";
+            for (let i = 0; i < 6; i++) {
+                out += chars.charAt(Math.floor(Math.random() * chars.length));
+            }
+            const inputEl = document.getElementById('sixCharCodeInput');
+            inputEl.value = out;
+            currentState.sixCharCode = out;
+            updateCodeBadges(out);
+            updateDynamicUpiQr();
         }
 
         function updateCodeBadges(codeStr) {
@@ -1577,6 +2517,7 @@
             inputEl.value = "";
             currentState.sixCharCode = "";
             updateCodeBadges("");
+            updateDynamicUpiQr();
             inputEl.focus();
         }
 
@@ -1686,13 +2627,13 @@
             const panelNoApi = document.getElementById('panelNoApi');
             const panelLiveApi = document.getElementById('panelLiveApi');
             if (mode === 'no-api') {
-                tabNoApi.className = "px-2.5 py-1 rounded-lg text-[11px] font-semibold transition bg-indigo-600 text-white shadow";
-                tabLiveApi.className = "px-2.5 py-1 rounded-lg text-[11px] font-semibold transition text-slate-400";
+                tabNoApi.className = "px-2 py-1 rounded-lg text-[10px] font-semibold transition bg-indigo-600 text-white shadow";
+                tabLiveApi.className = "px-2 py-1 rounded-lg text-[10px] font-semibold transition text-slate-400";
                 panelNoApi.classList.remove('hidden');
                 panelLiveApi.classList.add('hidden');
             } else {
-                tabLiveApi.className = "px-2.5 py-1 rounded-lg text-[11px] font-semibold transition bg-indigo-600 text-white shadow";
-                tabNoApi.className = "px-2.5 py-1 rounded-lg text-[11px] font-semibold transition text-slate-400";
+                tabLiveApi.className = "px-2 py-1 rounded-lg text-[10px] font-semibold transition bg-indigo-600 text-white shadow";
+                tabNoApi.className = "px-2 py-1 rounded-lg text-[10px] font-semibold transition text-slate-400";
                 panelLiveApi.classList.remove('hidden');
                 panelNoApi.classList.add('hidden');
                 if (!localStorage.getItem(STORAGE_KEY_API)) toggleApiModal();
@@ -1718,8 +2659,10 @@
         function updateCurrentBusinessMeta() {
             currentState.businessName = document.getElementById('bizNameInput').value.trim();
             currentState.phoneNumber = document.getElementById('bizPhoneInput').value.trim();
+            updateDynamicUpiQr();
         }
 
+        // Enhanced Place ID & Business Name parser supporting !1sChIJ..., ?placeid=, /maps/place/..., etc.
         function parseGoogleMapsUrlForDetails(rawText) {
             const text = (rawText || "").trim();
             if (!text) return null;
@@ -1728,8 +2671,13 @@
             if (urlMatch) result.extractedUrl = urlMatch[0];
             const lines = text.split(/\r?\n/).map(l => l.trim()).filter(Boolean);
             if (lines.length > 1 && !lines[0].startsWith('http')) result.businessName = lines[0];
-            const pidMatch = text.match(/[?&]place_?id=([A-Za-z0-9_-]+)/i) || text.match(/\b(ChIJ[A-Za-z0-9_-]{10,})\b/);
+
+            const pidMatch =
+                text.match(/[?&]place_?id=([A-Za-z0-9_-]+)/i) ||
+                text.match(/!1s(ChIJ[A-Za-z0-9_-]{10,})/i) ||
+                text.match(/\b(ChIJ[A-Za-z0-9_-]{10,})\b/);
             if (pidMatch && pidMatch[1]) result.placeId = pidMatch[1];
+
             const placePathMatch = text.match(/\/maps\/place\/([^/@?]+)/i);
             if (placePathMatch && placePathMatch[1]) {
                 try {
@@ -1759,17 +2707,13 @@
                 return;
             }
             if (parsed.businessName) {
-                document.getElementById('bizNameInput').value = parsed.businessName;
-                document.getElementById('manualBizQuery').value = parsed.businessName;
-                updateCurrentBusinessMeta();
+                populateBox1AndQuery(parsed.businessName);
             }
             if (parsed.placeId) {
-                currentState.placeId = parsed.placeId;
-                document.getElementById('smartInput').value = parsed.placeId;
+                applyExtractedPlaceIdAndPopulate(parsed.placeId, parsed.businessName);
                 badge.textContent = "✓ Place ID Found";
                 badge.className = "text-[10px] font-mono px-2 py-0.5 rounded bg-emerald-500/20 text-emerald-300 border border-emerald-500/30";
-                statusEl.innerHTML = `Extracted Place ID <code class="text-emerald-400 font-mono">${escapeHtml(parsed.placeId)}</code> directly from link!`;
-                updateAllOutputs(false);
+                statusEl.innerHTML = `Extracted Place ID <code class="text-emerald-400 font-mono">${escapeHtml(parsed.placeId)}</code> &amp; populated Box 1 + NFC Link!`;
                 return;
             }
             badge.textContent = "Link Ready";
@@ -1793,22 +2737,21 @@
 
             const initialParsed = parseGoogleMapsUrlForDetails(rawVal);
             if (initialParsed && initialParsed.placeId) {
-                handleSmartInput(initialParsed.placeId);
-                showToast("Extracted Place ID & generated Review Link!");
+                applyExtractedPlaceIdAndPopulate(initialParsed.placeId, initialParsed.businessName);
                 return;
             }
 
             iconEl.className = "fa-solid fa-spinner fa-spin";
             textEl.textContent = "Resolving...";
-            statusEl.textContent = "Unshortening link & looking up Google Place ID...";
+            statusEl.textContent = "Unshortening link & extracting Google Place ID...";
 
             let expandedUrl = initialParsed?.extractedUrl || rawVal;
             let discoveredBizName = initialParsed?.businessName || "";
 
-            if (/goo\.gl|maps\.app/i.test(expandedUrl)) {
+            if (/goo\.gl|maps\.app|g\.page|bit\.ly/i.test(expandedUrl)) {
                 try {
                     const controller = new AbortController();
-                    const timer = setTimeout(() => controller.abort(), 3000);
+                    const timer = setTimeout(() => controller.abort(), 3500);
                     const r = await fetch(`https://unshorten.me/json/${encodeURIComponent(expandedUrl)}`, { signal: controller.signal });
                     clearTimeout(timer);
                     if (r.ok) {
@@ -1820,20 +2763,12 @@
                 const expandedParsed = parseGoogleMapsUrlForDetails(expandedUrl);
                 if (expandedParsed) {
                     if (expandedParsed.placeId) {
-                        currentState.placeId = expandedParsed.placeId;
-                        if (expandedParsed.businessName) {
-                            document.getElementById('bizNameInput').value = expandedParsed.businessName;
-                            document.getElementById('manualBizQuery').value = expandedParsed.businessName;
-                            updateCurrentBusinessMeta();
-                        }
-                        document.getElementById('smartInput').value = expandedParsed.placeId;
-                        handleSmartInput(expandedParsed.placeId);
+                        applyExtractedPlaceIdAndPopulate(expandedParsed.placeId, expandedParsed.businessName || discoveredBizName);
                         badge.textContent = "✓ Resolved";
                         badge.className = "text-[10px] font-mono px-2 py-0.5 rounded bg-emerald-500/20 text-emerald-300";
                         statusEl.innerHTML = `Resolved Place ID: <code class="text-emerald-400 font-mono">${escapeHtml(expandedParsed.placeId)}</code>`;
                         iconEl.className = "fa-solid fa-location-arrow";
                         textEl.textContent = "Extract Review Link from Maps Share Link";
-                        showToast("Review link extracted from Maps share link!");
                         return;
                     }
                     if (expandedParsed.businessName && !discoveredBizName) discoveredBizName = expandedParsed.businessName;
@@ -1841,21 +2776,20 @@
             }
 
             if (discoveredBizName) {
-                document.getElementById('bizNameInput').value = discoveredBizName;
-                document.getElementById('manualBizQuery').value = discoveredBizName;
-                updateCurrentBusinessMeta();
+                populateBox1AndQuery(discoveredBizName);
                 copyTextFallback(discoveredBizName);
-                statusEl.innerHTML = `Extracted <strong class="text-white">${escapeHtml(discoveredBizName)}</strong> (copied). Tap <strong>Find Place ID</strong> above.`;
-                showToast(`Extracted "${discoveredBizName}"! Copied.`);
+                statusEl.innerHTML = `Auto-filled Box 1 with <strong class="text-white">${escapeHtml(discoveredBizName)}</strong>. Tap <strong>Find Place ID</strong> above.`;
+                showToast(`Populated Box 1: "${discoveredBizName}"!`);
             } else {
-                statusEl.textContent = "Could not auto-extract ChIJ ID. Copy the business name into Step A or use a full Google Maps link.";
-                showToast("Tip: Use Step A instead.");
+                statusEl.textContent = "Could not auto-extract ChIJ ID. Copy the business name into Step A or scan QR.";
+                showToast("Tip: Use Step A or Scan QR.");
             }
 
             iconEl.className = "fa-solid fa-location-arrow";
             textEl.textContent = "Extract Review Link from Maps Share Link";
         }
 
+        // Instant Place ID & Business Name Extraction on any URL / ID input
         function handleSmartInput(rawInput) {
             const input = rawInput.trim();
             const badge = document.getElementById('parserBadge');
@@ -1865,6 +2799,13 @@
                 badge.className = "text-[10px] font-mono px-2 py-0.5 rounded bg-slate-800 text-slate-400";
                 return;
             }
+
+            // Check if URL also contains a Business Name (/maps/place/Name/...) and populate Box 1
+            const urlDetails = parseGoogleMapsUrlForDetails(input);
+            if (urlDetails && urlDetails.businessName) {
+                populateBox1AndQuery(urlDetails.businessName);
+            }
+
             if (/^https?:\/\/(g\.page\/r\/[A-Za-z0-9_-]+)/i.test(input)) {
                 currentState.reviewUrl = input;
                 badge.textContent = "✓ Short Review URL";
@@ -1872,9 +2813,8 @@
                 updateAllOutputs(true);
                 return;
             }
-            let extractedId = null;
-            const urlParamMatch = input.match(/[?&]place_?id=([A-Za-z0-9_-]+)/i);
-            if (urlParamMatch && urlParamMatch[1]) extractedId = urlParamMatch[1];
+
+            let extractedId = urlDetails?.placeId || null;
             if (!extractedId) {
                 const colonMatch = input.match(/place_?id\s*[:=]\s*["']?([A-Za-z0-9_-]{15,})["']?/i);
                 if (colonMatch && colonMatch[1]) extractedId = colonMatch[1];
@@ -1884,17 +2824,21 @@
                 if (chijMatch && chijMatch[1]) extractedId = chijMatch[1];
                 else if (/^[A-Za-z0-9_-]{18,65}$/.test(input)) extractedId = input;
             }
+
             if (extractedId) {
                 currentState.placeId = extractedId;
                 badge.textContent = "✓ Place ID Set";
                 badge.className = "text-[10px] font-mono px-2 py-0.5 rounded bg-emerald-500/20 text-emerald-300 border border-emerald-500/30";
-                hint.innerHTML = `Active Place ID: <code class="text-emerald-400 font-mono">${extractedId}</code>`;
+                hint.innerHTML = `Active Place ID: <code class="text-emerald-400 font-mono">${escapeHtml(extractedId)}</code> (NFC Link Updated)`;
                 updateAllOutputs(false);
                 triggerHaptic(30);
+            } else if (/goo\.gl|maps\.app/i.test(input)) {
+                document.getElementById('mapsShareLinkInput').value = input;
+                resolveGoogleMapsShareLink();
             } else {
                 badge.textContent = "No Place ID";
                 badge.className = "text-[10px] font-mono px-2 py-0.5 rounded bg-amber-500/20 text-amber-300";
-                hint.innerHTML = `Tap <strong>"Find Place ID"</strong> above to copy the <code class="text-slate-200">ChIJ...</code> ID.`;
+                hint.innerHTML = `Tap <strong>"Find Place ID"</strong> or <strong>"Scan QR"</strong> above to extract <code class="text-slate-200">ChIJ...</code> ID.`;
             }
         }
 
@@ -1926,7 +2870,7 @@
                         } else {
                             handleSmartInput(cleaned);
                         }
-                        showToast("Pasted from clipboard!");
+                        showToast("Pasted & extracted Place ID!");
                         return;
                     } else {
                         showToast("Clipboard is empty.");
@@ -2100,6 +3044,7 @@
                                     bytes: r.bytes || 75,
                                     status: r.status || "Programmed",
                                     createdAt: r.createdAt || formatDateTimeHuman(new Date()),
+                                    createdTimestamp: r.createdTimestamp || null,
                                     location: r.location || null
                                 }));
                             loadedRecords = mergeOrderLists(loadedRecords, normalized);
@@ -2142,9 +3087,10 @@
             triggerHaptic(35);
             updateCurrentBusinessMeta();
             const code = document.getElementById('sixCharCodeInput').value.toUpperCase().replace(/[^A-Z0-9]/g, '').slice(0, 6);
-            const nowFormatted = formatDateTimeHuman(new Date());
+            const now = new Date();
+            const nowFormatted = formatDateTimeHuman(now);
             const newRecord = {
-                id: "ord_" + Date.now(),
+                id: "ord_" + now.getTime(),
                 businessName: currentState.businessName || "Untitled Business",
                 phoneNumber: currentState.phoneNumber || "",
                 sixCharCode: code || "------",
@@ -2153,12 +3099,20 @@
                 bytes: currentState.byteSize,
                 status: "Programmed",
                 createdAt: nowFormatted,
+                createdTimestamp: now.getTime(),
                 location: currentState.location ? { ...currentState.location } : null
             };
             batchList.unshift(newRecord);
+
+            // Auto-deduct 1 blank NFC tag from inventory if enabled
+            if (inventoryState.autoDeduct !== false && inventoryState.stock > 0) {
+                inventoryState.stock = Math.max(0, inventoryState.stock - 1);
+                saveInventoryToStorage();
+            }
+
             await saveBatchToStorage(false);
             renderBatchQueue();
-            if (!silent) showToast(`Saved [${newRecord.sixCharCode}] ${newRecord.businessName}!`);
+            if (!silent) showToast(`Saved [${newRecord.sixCharCode}] ${newRecord.businessName}! (${inventoryState.stock} tags left)`);
         }
 
         async function toggleOrderStatus(orderId) {
@@ -2196,8 +3150,76 @@
             updateCodeBadges(currentState.sixCharCode);
             renderCurrentGpsPreview();
             updateAllOutputs();
+            updateDynamicUpiQr();
             window.scrollTo({ top: 0, behavior: 'smooth' });
             showToast(`Loaded [${item.sixCharCode}] into editor.`);
+        }
+
+        // ==========================================
+        // AUTOMATED 30-DAY SCHEDULE FLAG & FOLLOW-UP
+        // ==========================================
+        function getOrderCreatedTimestamp(item) {
+            if (!item) return Date.now();
+            if (item.createdTimestamp && !isNaN(item.createdTimestamp)) return Number(item.createdTimestamp);
+            if (item.id && String(item.id).startsWith("ord_")) {
+                const rawTs = parseInt(String(item.id).replace("ord_", ""), 10);
+                if (!isNaN(rawTs) && rawTs > 1600000000000) return rawTs;
+            }
+            if (item.createdAt) {
+                const parsed = Date.parse(item.createdAt);
+                if (!isNaN(parsed)) return parsed;
+            }
+            return Date.now();
+        }
+
+        function getOrderAgeDays(item) {
+            const ts = getOrderCreatedTimestamp(item);
+            const diffMs = Date.now() - ts;
+            return Math.max(0, Math.floor(diffMs / (1000 * 60 * 60 * 24)));
+        }
+
+        function isOrderDueForFollowUp(item) {
+            return getOrderAgeDays(item) >= FOLLOWUP_DAYS_THRESHOLD;
+        }
+
+        function setQueueFilterTab(tab) {
+            triggerHaptic(15);
+            activeQueueFilterTab = tab;
+            const tabAll = document.getElementById('queueTabAll');
+            const tabFollow = document.getElementById('queueTabFollowup');
+            const tabPend = document.getElementById('queueTabPending');
+            const banner = document.getElementById('followupFilterBanner');
+
+            const activeCls = "py-2 px-2 rounded-lg text-[11px] font-bold bg-indigo-600 text-white shadow flex items-center justify-center gap-1";
+            const idleCls = "py-2 px-2 rounded-lg text-[11px] font-bold bg-slate-900 text-slate-400 border border-slate-800 flex items-center justify-center gap-1";
+            const followIdleCls = "py-2 px-2 rounded-lg text-[11px] font-bold bg-slate-900 text-amber-300 border border-amber-500/30 flex items-center justify-center gap-1";
+            const followActiveCls = "py-2 px-2 rounded-lg text-[11px] font-bold bg-amber-500 text-slate-950 shadow flex items-center justify-center gap-1";
+
+            tabAll.className = tab === 'all' ? activeCls : idleCls;
+            tabFollow.className = tab === 'followup' ? followActiveCls : followIdleCls;
+            tabPend.className = tab === 'pending' ? activeCls : idleCls;
+
+            if (banner) banner.classList.toggle('hidden', tab !== 'followup');
+            renderBatchQueue();
+        }
+
+        function send30DayFollowUpWhatsApp(orderId) {
+            triggerHaptic(30);
+            const item = batchList.find(o => o.id === orderId);
+            if (!item) return;
+
+            const biz = item.businessName || "there";
+            const phone = (item.phoneNumber || "").replace(/[^0-9]/g, '');
+            const msg = `Hi ${biz}, it's been a month since you started using your TapReview card! How is your review count looking? Let us know if you need additional cards for other counters.`;
+
+            item.lastFollowUpAt = formatDateTimeHuman(new Date());
+            saveBatchToStorage(false);
+            renderBatchQueue();
+
+            const waUrl = phone
+                ? `https://wa.me/${phone}?text=${encodeURIComponent(msg)}`
+                : `https://wa.me/?text=${encodeURIComponent(msg)}`;
+            window.open(waUrl, "_blank", "noopener,noreferrer");
         }
 
         function renderBatchQueue() {
@@ -2206,7 +3228,19 @@
             const filterQuery = (document.getElementById('queueFilterInput').value || "").trim().toLowerCase();
             badge.textContent = batchList.length;
 
+            // Update filter tab counts
+            const followUpCount = batchList.filter(item => isOrderDueForFollowUp(item)).length;
+            const pendingCount = batchList.filter(item => item.status !== "Programmed").length;
+            const tabCountAll = document.getElementById('tabCountAll');
+            const tabCountFollow = document.getElementById('tabCountFollowup');
+            const tabCountPend = document.getElementById('tabCountPending');
+            if (tabCountAll) tabCountAll.textContent = `(${batchList.length})`;
+            if (tabCountFollow) tabCountFollow.textContent = String(followUpCount);
+            if (tabCountPend) tabCountPend.textContent = `(${pendingCount})`;
+
             const filtered = batchList.filter(item => {
+                if (activeQueueFilterTab === 'followup' && !isOrderDueForFollowUp(item)) return false;
+                if (activeQueueFilterTab === 'pending' && item.status === "Programmed") return false;
                 if (!filterQuery) return true;
                 return (
                     (item.businessName && item.businessName.toLowerCase().includes(filterQuery)) ||
@@ -2218,30 +3252,62 @@
             });
 
             if (filtered.length === 0) {
-                container.innerHTML = `<div class="p-6 rounded-xl bg-slate-950/70 border border-slate-800 text-center text-xs text-slate-500">No saved client entries yet. Fill in the details above and tap <strong>"Save to Order Queue"</strong> or <strong>"Load from GitHub"</strong>.</div>`;
+                if (activeQueueFilterTab === 'followup') {
+                    container.innerHTML = `<div class="p-6 rounded-xl bg-slate-950/70 border border-amber-500/30 text-center text-xs text-slate-400">No clients have crossed the 30-day follow-up threshold yet. Orders automatically appear here 30 days after creation!</div>`;
+                } else {
+                    container.innerHTML = `<div class="p-6 rounded-xl bg-slate-950/70 border border-slate-800 text-center text-xs text-slate-500">No saved client entries match this view.</div>`;
+                }
                 hydrateOfflineSvgIcons(container);
                 return;
             }
 
             container.innerHTML = filtered.map(item => {
                 const isDone = item.status === "Programmed";
+                const ageDays = getOrderAgeDays(item);
+                const isFollowUpDue = ageDays >= FOLLOWUP_DAYS_THRESHOLD;
+                const daysRemaining = Math.max(0, FOLLOWUP_DAYS_THRESHOLD - ageDays);
+
                 const statusBadge = isDone
                     ? `<span class="px-2 py-0.5 rounded-md bg-emerald-500/15 text-emerald-400 border border-emerald-500/30 text-[10px] font-mono font-bold">✓ ENCODED</span>`
                     : `<span class="px-2 py-0.5 rounded-md bg-amber-500/15 text-amber-300 border border-amber-500/30 text-[10px] font-mono font-bold">⏳ PENDING</span>`;
+
+                const followUpBannerHtml = isFollowUpDue
+                    ? `<div onclick="send30DayFollowUpWhatsApp('${item.id}')" class="cursor-pointer p-2.5 rounded-xl bg-amber-500/15 active:bg-amber-500/25 border border-amber-500/40 flex items-center justify-between gap-2 transition">
+                        <div class="min-w-0">
+                            <div class="text-[10px] font-mono font-extrabold uppercase text-amber-300 flex items-center gap-1.5">
+                                <i class="fa-solid fa-bell animate-bounce"></i>
+                                <span>30-Day Follow-up Due (${ageDays}d old)</span>
+                            </div>
+                            <p class="text-[11px] text-amber-100 truncate mt-0.5">Tap to send 1-month review &amp; counter upsell WhatsApp</p>
+                        </div>
+                        <span class="px-2.5 py-1.5 rounded-lg bg-emerald-600 text-white text-[10px] font-bold flex items-center gap-1 flex-shrink-0 shadow">
+                            <i class="fa-brands fa-whatsapp"></i>
+                            <span>Follow Up</span>
+                        </span>
+                    </div>`
+                    : `<div class="flex items-center justify-between px-2.5 py-1.5 rounded-xl bg-slate-900/70 border border-slate-800/80 text-[10px] font-mono text-slate-400">
+                        <span><i class="fa-regular fa-calendar text-indigo-400 mr-1"></i>Next Follow-up in ${daysRemaining}d (${ageDays}d old)</span>
+                        <button type="button" onclick="send30DayFollowUpWhatsApp('${item.id}')" class="text-emerald-400 font-bold hover:underline flex items-center gap-1">
+                            <i class="fa-brands fa-whatsapp"></i>
+                            <span>1-Mo Msg</span>
+                        </button>
+                    </div>`;
+
                 const hasLocation = item.location && item.location.lat !== undefined;
                 const gpsHtml = hasLocation
                     ? `<div class="flex items-center justify-between gap-1"><a href="${escapeHtml(item.location.mapUrl)}" target="_blank" rel="noopener noreferrer" class="text-[11px] font-mono font-semibold text-emerald-400 underline truncate"><i class="fa-solid fa-location-dot text-rose-400 mr-1"></i>${item.location.lat}, ${item.location.lng}</a><button onclick="capturePhoneGps('${item.id}')" class="text-[10px] text-slate-400 active:text-white px-1.5 py-0.5 rounded bg-slate-800" title="Refresh GPS"><i class="fa-solid fa-arrows-rotate"></i></button></div><div class="text-[10px] text-slate-400 truncate mt-0.5" title="${escapeHtml(item.location.address || '')}">${escapeHtml(item.location.address || '')}</div>`
                     : `<button onclick="capturePhoneGps('${item.id}')" class="mt-0.5 w-full py-1 px-2 rounded-lg bg-indigo-500/15 active:bg-indigo-500/30 border border-indigo-500/30 text-[10px] font-semibold text-indigo-300 flex items-center justify-center gap-1"><i class="fa-solid fa-location-crosshairs text-rose-400"></i><span>Add GPS Location</span></button>`;
 
                 return `
-                    <div class="p-3 rounded-2xl bg-slate-950/90 border border-slate-800/90 space-y-2">
+                    <div class="p-3 rounded-2xl bg-slate-950/90 border ${isFollowUpDue ? 'border-amber-500/50' : 'border-slate-800/90'} space-y-2">
+                        ${followUpBannerHtml}
                         <div class="grid grid-cols-12 gap-2 items-stretch">
-                            <div class="col-span-7 p-2.5 rounded-xl bg-slate-900 border border-slate-800 flex flex-col justify-between min-w-0">
+                            <div onclick="send30DayFollowUpWhatsApp('${item.id}')" class="cursor-pointer col-span-7 p-2.5 rounded-xl bg-slate-900 border border-slate-800 flex flex-col justify-between min-w-0" title="Tap to message ${escapeHtml(item.businessName)}">
                                 <div class="flex items-center justify-between gap-1">
                                     <span class="text-[9px] font-mono uppercase text-slate-400">1. Business</span>
                                     <span class="text-[9px] font-mono text-emerald-400">${item.bytes || 75}/137B</span>
                                 </div>
-                                <div class="font-bold text-xs text-white truncate mt-1" title="${escapeHtml(item.businessName)}">${escapeHtml(item.businessName)}</div>
+                                <div class="font-bold text-xs text-white truncate mt-1">${escapeHtml(item.businessName)}</div>
                             </div>
                             <div class="col-span-5 p-2.5 rounded-xl bg-indigo-950/40 border-2 border-indigo-500/40 flex flex-col items-center justify-center text-center">
                                 <span class="text-[9px] font-mono uppercase text-indigo-300">3. 6-Char Code</span>
@@ -2423,6 +3489,7 @@
                 if (phone) { currentState.phoneNumber = phone; document.getElementById('bizPhoneInput').value = phone; }
                 document.getElementById('smartInput').value = place.place_id;
                 handleSmartInput(place.place_id);
+                updateDynamicUpiQr();
                 showToast(`Selected "${place.name || 'Business'}"!`);
             });
         }
@@ -2445,9 +3512,10 @@
         function downloadDatabaseFile() {
             triggerHaptic(30);
             const dbPayload = {
-                databaseVersion: 3,
+                databaseVersion: 4,
                 exportedAt: new Date().toISOString(),
                 totalRecords: batchList.length,
+                inventoryStock: inventoryState.stock,
                 records: batchList,
                 finances: financeList,
                 notes: notesList
@@ -2477,10 +3545,15 @@
                         const parsed = JSON.parse(content);
                         if (Array.isArray(parsed)) extractedRecords = parsed;
                         else if (parsed && Array.isArray(parsed.records)) extractedRecords = parsed.records;
+                        if (parsed && typeof parsed.inventoryStock === 'number') {
+                            inventoryState.stock = parsed.inventoryStock;
+                            saveInventoryToStorage();
+                        }
                         if (parsed && Array.isArray(parsed.finances)) {
                             financeList = mergeOrderLists(parsed.finances, financeList);
                             localStorage.setItem(STORAGE_KEY_FINANCE, JSON.stringify(financeList));
                             renderFinanceList();
+                            updateQuickPayTodayTotal();
                         }
                         if (parsed && Array.isArray(parsed.notes)) {
                             notesList = mergeOrderLists(parsed.notes, notesList);
