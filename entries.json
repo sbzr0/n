@@ -1,8 +1,27 @@
 {
   "databaseVersion": 3,
-  "updatedAt": "2026-10-23T11:24:09.172Z",
-  "totalRecords": 1,
+  "updatedAt": "2026-10-29T15:42:52.099Z",
+  "totalRecords": 3,
   "records": [
+    {
+      "id": "ord_1793288571027",
+      "businessName": "The+Third+Space",
+      "phoneNumber": "7798393879",
+      "sixCharCode": "R4456Y",
+      "placeId": "ChIJBUxDOLy_wjsR6DZJ7JbUqxQ",
+      "reviewUrl": "https://search.google.com/local/writereview?placeid=ChIJBUxDOLy_wjsR6DZJ7JbUqxQ",
+      "bytes": 78,
+      "status": "Programmed",
+      "createdAt": "29 Oct 2026, 09:12 pm",
+      "createdTimestamp": 1793288571027,
+      "location": {
+        "lat": 18.542442,
+        "lng": 73.836171,
+        "accuracy": 19,
+        "address": "Mandalay Lines, Pune, Pune City Subdistrict, Pune District",
+        "mapUrl": "https://www.google.com/maps?q=18.542442,73.836171"
+      }
+    },
     {
       "id": "ord_1792754619677",
       "businessName": "Miya kebab",
@@ -20,9 +39,37 @@
         "address": "Mandalay Lines, Pune, Pune City Subdistrict, Pune District",
         "mapUrl": "https://www.google.com/maps?q=18.542354,73.836157"
       }
+    },
+    {
+      "id": "ord_1792503653970",
+      "businessName": "shawarma king",
+      "phoneNumber": "74487788445",
+      "sixCharCode": "FE8F88",
+      "placeId": "ChIJmWA7P1e_wjsR95e0zjTK-2A",
+      "reviewUrl": "https://search.google.com/local/writereview?placeid=ChIJmWA7P1e_wjsR95e0zjTK-2A",
+      "bytes": 78,
+      "status": "Programmed",
+      "createdAt": "20 Oct 2026, 07:10 pm",
+      "location": {
+        "lat": 18.542357,
+        "lng": 73.836155,
+        "accuracy": 15,
+        "address": "Mandalay Lines, Pune, Pune City Subdistrict, Pune District",
+        "mapUrl": "https://www.google.com/maps?q=18.542357,73.836155"
+      }
     }
   ],
   "finances": [
+    {
+      "id": "fin_1793288556610",
+      "type": "income",
+      "amount": 1598,
+      "category": "NFC Card Sale",
+      "paymentMode": "UPI",
+      "description": "The+Third+Space #R4456Y • 2 Cards [UPI (arnavv4l@fam)]",
+      "createdAt": "29 Oct 2026, 09:12 pm",
+      "createdTimestamp": 1793288556611
+    },
     {
       "id": "ord_1792503653970",
       "businessName": "shawarma king",
@@ -49,6 +96,24 @@
       "body": "Bruh wtffffff",
       "createdAt": "23 Oct 2026, 02:52 pm",
       "updatedAt": "23 Oct 2026, 02:52 pm"
+    },
+    {
+      "id": "ord_1792503653970",
+      "businessName": "shawarma king",
+      "phoneNumber": "74487788445",
+      "sixCharCode": "FE8F88",
+      "placeId": "ChIJmWA7P1e_wjsR95e0zjTK-2A",
+      "reviewUrl": "https://search.google.com/local/writereview?placeid=ChIJmWA7P1e_wjsR95e0zjTK-2A",
+      "bytes": 78,
+      "status": "Programmed",
+      "createdAt": "20 Oct 2026, 07:10 pm",
+      "location": {
+        "lat": 18.54246,
+        "lng": 73.836298,
+        "accuracy": 146,
+        "address": "Mandalay Lines, Pune, Pune City Subdistrict, Pune District",
+        "mapUrl": "https://www.google.com/maps?q=18.54246,73.836298"
+      }
     }
   ]
 }
